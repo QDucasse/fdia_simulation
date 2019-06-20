@@ -19,14 +19,23 @@ from fdia_simulation.helpers.plotting import plot_measurements
 
 
 class FaultDetector(ABC):
-    r'''Abstract class defining the basic function of outlier detectors
+    r'''Abstract class defining the basic function of outlier detectors.
+    Attributes
+    ----------
+    reviewed_values: float list
+        Measurements treated by the fault detector.
+
+    comparison_results: string list
+        Results of the measurements, list composed of "Success" and "Failure"
     '''
     def __init__(self):
         super().__init__()
+        self.reviewed_values    = []
+        self.comparison_results = []
 
     @abstractmethod
     def review_measurement(self,data,kf,error_rate):
-        r'''Abstract method that needs to be overloaded by the subclasses
+        r'''Abstract method that needs to be overloaded by the subclasses.
         '''
         pass
 
@@ -36,11 +45,22 @@ class ChiSquareDetector(FaultDetector):
     '''
     def __init__(self):
         super().__init__()
-        self.reviewed_values    = []
-        self.comparison_results = []
 
     def review_measurement(self,new_measurement,kf,error_rate = 0.05):
-        r'''Tests the input data and detects faulty measurements using Chi-square approach
+        '''
+        Tests the input data and detects faulty measurements using Chi-square approach.
+        Parameters
+        ----------
+        new_measurement: float
+            New measurement given by the sensors and that needs to be verified.
+
+        kf: KalmanFilter object
+            State estimator of our model (Kalman filter here).
+
+        error_rate: float
+            Error rate within which errors are detected. For example, for an
+            error rate of 0.05, we are 95% sure that the measurements obtained
+            through the output of the fault detector will be correct.
         '''
         dim_z = np.shape(kf.R)[0]
 
@@ -71,11 +91,10 @@ class ChiSquareDetector(FaultDetector):
 
 
 class EuclidianDetector(FaultDetector):
-
+    r'''Fault detector based on the Euclidian distance tests
+    '''
     def __init__(self):
         super().__init__()
-        self.reviewed_values = []
-        self.comparison_results = []
 
     def review_measurement(self,new_measurement,kf,error_rate = 0.05):
         r'''Tests the input data and detects faulty measurements using Euclidian distance approach
@@ -107,6 +126,7 @@ class MahalanobisDetector(FaultDetector):
 
 
 if __name__ == "__main__":
+    # Example Kalman filter for a kinematic model
     kinematic_test_kf = kinematic_kf(dim=1,order=1,dt=1)
     x         = [0.,2.]
     zs        = [x[0]]
@@ -134,6 +154,7 @@ if __name__ == "__main__":
     plt.figure()
     plot_measurements(zs,alpha = 0.5)
     plt.plot(pos,'b--')
+    plt.show()
 
     # Detector instanciation
     chiDetector = ChiSquareDetector()

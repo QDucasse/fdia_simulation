@@ -30,8 +30,42 @@ def angle_between(x, y):
     '''
     return min(y-x, y-x+360, y-x-360, key=abs)
 
-class ManeuveredBicycle(MovingTarget):
 
+class ManeuveredBicycle(MovingTarget):
+    r'''Implements a model for a maneuvered bicycle: two wheels, commands on heading and velocity.
+    The only sensor in action is a position sensor computing both x and y positions.
+
+    Parameters
+    ----------
+    x0: float
+        Initial position following x-axis.
+
+    y0: float
+        Initial position following y-axis.
+
+    v0: float
+        Initial velocity of the system.
+
+    h0: int
+        Initial heading of the system.
+
+    command_list: Command iterable
+        List of the Command objects refering to the commanded variables in our system.
+
+    Attributes
+    ----------
+    x: float
+        Position of the system following x-axis.
+
+    y: float
+        Position of the system following y-axis.
+
+    vel: float
+        Velocity of the system.
+
+    head: int
+        Heading of the system.
+    '''
     def __init__(self, x0, y0 ,v0, h0, command_list):
         super().__init__(command_list)
         self.x        = x0 # Position following x-axis
@@ -163,3 +197,4 @@ if __name__ == "__main__":
         plt.axis('equal')
         plt.legend(loc=4)
         plt.grid(True)
+        plt.show()

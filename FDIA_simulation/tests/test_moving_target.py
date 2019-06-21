@@ -6,6 +6,7 @@ Created on Fri Jun 14 15:14:47 2019
 """
 
 import unittest
+from nose.tools import raises
 from fdia_simulation.models.moving_target import Command,MovingTarget
 
 class CommandTestCase(unittest.TestCase):
@@ -32,7 +33,7 @@ class CommandTestCase(unittest.TestCase):
 
 
 class MovingTargetTestCase(unittest.TestCase):
-    @unittest.expectedFailure
+    @raises(TypeError)
     def test_no_initialization(self):
         abstractClassInstance = MovingTarget()
 

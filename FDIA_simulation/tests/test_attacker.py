@@ -7,11 +7,13 @@ Created on Tue Jun 18 10:15:55 2019
 
 import unittest
 import numpy as np
+from nose.tools import raises
 from fdia_simulation.attackers.attacker import Attacker, MoAttacker
 from filterpy.common import kinematic_kf
 
 class AttackerTestCase(unittest.TestCase):
-    @unittest.expectedFailure
+
+    @raises(TypeError)
     def test_no_initialization(self):
         abstractClassInstance = Attacker()
         abstractClassInstance.change_measurements()

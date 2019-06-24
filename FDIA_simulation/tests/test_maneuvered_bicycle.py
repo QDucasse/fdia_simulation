@@ -7,9 +7,35 @@ Created on Fri Jun 14 16:32:12 2019
 
 import unittest
 from fdia_simulation.models.moving_target import Command
-from fdia_simulation.models.maneuvered_bicycle import ManeuveredBicycle
+from fdia_simulation.models.maneuvered_bicycle import ManeuveredBicycle, angle_between
 
-class bicycle_testCase(unittest.TestCase):
+class AngleTestCase(unittest.TestCase):
+    def test_angle_two_positives(self):
+        x = 40
+        y = 50
+        self.assertEqual(angle_between(x,y),10)
+        self.assertEqual(angle_between(y,x),-10)
+
+    def test_angle_two_positives_over_360(self):
+        x = 350
+        y = 50
+        self.assertEqual(angle_between(x,y),60)
+        self.assertEqual(angle_between(y,x),-60)
+
+    def test_angle_positive_negative(self):
+        x = 40
+        y = -30
+        self.assertEqual(angle_between(x,y),-70)
+        self.assertEqual(angle_between(y,x),70)
+
+    def test_angle_two_negatives(self):
+        x = -40
+        y = -30
+        self.assertEqual(angle_between(x,y),10)
+        self.assertEqual(angle_between(y,x),-10)
+
+
+class BicycleTestCase(unittest.TestCase):
     def setUp(self):
         self.head_cmd_test  = Command('head',0,0,0)
         self.vel_cmd_test = Command('vel',0.3,0,0)
@@ -54,27 +80,32 @@ class bicycle_testCase(unittest.TestCase):
         self.assertEqual(cmd_vel.steps,15)
 
     def test_change_command_with_heading(self):
-        self.bicycle_test.change_command('head',13,17)
+        self.bicycle_test.change_command('head',15,20)
         cmd_head = self.bicycle_test.commands['head']
-        self.assertEqual(cmd_head.value,13)
-        self.assertEqual(cmd_head.steps,17)
+        self.assertEqual(cmd_head.value,15)
+        self.assertEqual(cmd_head.steps,20)
+        delta = angle_between(15,0)/20
+        self.assertEqual(cmd_head.delta,delta)
 
     def test_change_command_with_velocity(self):
         self.bicycle_test.change_command('vel',5,20)
         cmd_vel  = self.bicycle_test.commands['vel']
         self.assertEqual(cmd_vel.value,5)
         self.assertEqual(cmd_vel.steps,20)
+        delta = (5 - 0.3) / 20
+        self.assertEqual(cmd_vel.delta,delta)
+
 
     def test_change_velocity_command_effect(self):
         self.bicycle_test.change_command('vel',5.,20)
         cmd_vel = self.bicycle_test.commands['vel']
         for _ in range(20):
             self.bicycle_test.update()
-        self.assertEqual(self.bicycle_test.vel,5.)
+        self.assertAlmostEqual(self.bicycle_test.vel,5.) # 5.+1e-15
         self.assertEqual(cmd_vel.value,5.)
         self.assertEqual(cmd_vel.steps,0.)
 
-    def test_change_headx_command_effect(self):
+    def test_change_head_command_effect(self):
         self.bicycle_test.change_command('head',5.,20)
         cmd_head = self.bicycle_test.commands['head']
         for _ in range(20):

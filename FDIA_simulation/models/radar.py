@@ -7,9 +7,10 @@ Created on Fri Jun 21 13:07:46 2019
 
 import numpy as np
 import matplotlib.pyplot as plt
-from math import cos,sin,sqrt
-from fdia_simulation.models.moving_target import MovingTarget, Command, NoisySensor
+from math import cos,sin,sqrt,pi
+from fdia_simulation.models.moving_target import MovingTarget, Command
 from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
+from fdia_simulation.models.sensors import NoisySensor
 
 class Radar(object):
     r'''Implements a simulated radar.
@@ -44,27 +45,18 @@ class Radar(object):
             List of positions in the form of lists [x_k, y_k, z_k].
             Corresponding to:
             x_k: float
-                Position following x-axis.
+                Position along x-axis.
 
             y_k: float
-                Position following y-axis.
+                Position along y-axis.
 
             z_k: float
-                Position following z-axis.
+                Position along z-axis.
 
         Returns
         -------
-        sensed_values: float list numpy array
-            List of radar sensed values in the form of lists [r_k, theta_k, phi_k].
-            Corresponding to:
-            r_k: float
-                Range, distance of the target.
-
-            theta_k: float
-                Azimuth angle (turning angle).
-
-            phi_k: float
-                Elevation angle.
+        rs, thetas, phis: float iterables
+            Distances, azimuth/turn angles and elevation angles.
         '''
         xs = position_data[:,0]
         ys = position_data[:,1]
@@ -72,15 +64,38 @@ class Radar(object):
         rs, thetas, phis = [], [], []
 
         for k in range(len(position_data)):
+            # Computation of the supposed distance of the aircraft
             r_k     = sqrt(xs[k]**2 + ys[k]**2 + zs[k]**2)
+
+            # Computation of the supposed turning angle of the aircraft
             theta_k = np.arctan(ys[k]/xs[k])
+            if theta_k < 0:
+                theta_k += pi
+
+            # Computation of the supposed elevation angle of the aircraft
             phi_k   = np.arctan(zs[k]/ sqrt(xs[k]**2 + ys[k]**2))
+            if phi_k < 0:
+                phi_k += pi
 
             rs.append(r_k)
             thetas.append(theta_k)
             phis.append(phi_k)
 
-        radar_values = np.array(list(zip(rs,thetas,phis)))
+        return rs, thetas, phis
+
+    def sense(self, rs, thetas, phis):
+        '''
+        Simulates real sensors by adding noise to the predicted simulated values.
+        Parameters
+        ----------
+        rs, thetas, phis: float iterable
+            Distances, azimuth/turn angles and elevation angles.
+
+        Returns
+        -------
+        noisy_rs, noisy_thetas, noisy_phis: float iterable
+            Distances, azimuth/turn angles and elevation angles with added white noise.
+        '''
 
         nsr     = NoisySensor(self.r_noise_std)
         nstheta = NoisySensor(self.theta_noise_std)
@@ -90,9 +105,35 @@ class Radar(object):
         noisy_thetas = [nstheta.sense(theta) for theta in thetas]
         noisy_phis   = [nsphi.sense(phi) for phi in phis]
 
-        return noisy_rs,noisy_thetas,noisy_phis
+        return noisy_rs, noisy_thetas, noisy_phis
+
 
     def radar2cartesian(self,rs,thetas,phis):
+        '''
+        Transcripts the radar measured values (r, theta, phi) to cartesian
+        positions (x, y, z).
+        Parameters
+        ----------
+        rs: float iterable
+            List of the rs (distance) measured by the radar.
+
+        thetas: float iterable
+            List of the thetas (azimuth/turn angle) measured by the radar.
+
+        phis: float iterable
+            List of the phis (elevation angle) measured by the radar.
+
+        Returns
+        -------
+        xs: float iterable
+            List of the computed positions along x-axis.
+
+        ys: float iterable
+            List of the computed positions along y-axis.
+
+        zs: float iterable
+            List of the computed positions along z-axis.
+        '''
         xs,ys,zs = [],[],[]
         for k in range(len(rs)):
             x_k = rs[k] * cos(thetas[k]) * cos(phis[k])
@@ -107,7 +148,7 @@ class Radar(object):
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
-    # Route generation example with a ManeuveredBicycle
+    # Route generation example with a ManeuveredAircraft
     sensor_std = 1.
     headx_cmd = Command('headx',0,0,0)
     headz_cmd = Command('headz',0,0,0)
@@ -147,18 +188,21 @@ if __name__ == "__main__":
         zs.append(z)
 
     position_data = np.array(list(zip(xs,ys,zs)))
+    print("Aircraft position:\n{0}\n".format(position_data[-25:,:]))
+
 
     # ================= Radar generation ======================
 
     radar = Radar()
-    noisy_rs, noisy_thetas, noisy_phis = radar.gen_data(position_data)
+    rs, thetas, phis = radar.gen_data(position_data)
+    noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
     xs_from_rad, ys_from_rad, zs_from_rad = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
 
     radar_values = np.array(list(zip(noisy_rs, noisy_thetas, noisy_phis)))
-    print(radar_values)
+    print("Noisy radar data:\n{0}\n".format(radar_values[-25:,:]))
 
     radar_computed_values = np.array(list(zip(xs_from_rad, ys_from_rad, zs_from_rad)))
-    print(radar_computed_values)
+    print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
 
     # ================ Plotting ====================
 

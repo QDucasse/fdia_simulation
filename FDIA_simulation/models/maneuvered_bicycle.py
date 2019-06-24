@@ -8,7 +8,8 @@ Created on Fri Jun 14 16:30:25 2019
 import numpy as np
 import matplotlib.pyplot as plt
 from math import cos,sin,radians
-from fdia_simulation.models.moving_target import MovingTarget, Command, NoisySensor
+from fdia_simulation.models.moving_target import MovingTarget, Command
+from fdia_simulation.models.sensors import NoisySensor
 from fdia_simulation.helpers.plotting import plot_measurements
 
 def angle_between(x, y):
@@ -17,16 +18,13 @@ def angle_between(x, y):
 
     Parameters
     ----------
-    x : int
-        First angle.
-
-    y : int
-        Second angle.
+    x, y : int
+        First and second angle (in degrees).
 
     Returns
     -------
     angle : int
-        Angle between x and y taking in consideration the modulo 360.
+        Angle between x and y taking in consideration the 360 modulo.
     '''
     return min(y-x, y-x+360, y-x-360, key=abs)
 
@@ -37,14 +35,8 @@ class ManeuveredBicycle(MovingTarget):
 
     Parameters
     ----------
-    x0: float
-        Initial position following x-axis.
-
-    y0: float
-        Initial position following y-axis.
-
-    v0: float
-        Initial velocity of the system.
+    x0, y0: floats
+        Initial positions along x-axis and y-axis.
 
     h0: int
         Initial heading of the system.
@@ -54,11 +46,8 @@ class ManeuveredBicycle(MovingTarget):
 
     Attributes
     ----------
-    x: float
-        Position of the system following x-axis.
-
-    y: float
-        Position of the system following y-axis.
+    x, y: floats
+        Positions of the system along x-axis and y-axis.
 
     vel: float
         Velocity of the system.
@@ -68,8 +57,8 @@ class ManeuveredBicycle(MovingTarget):
     '''
     def __init__(self, x0, y0 ,v0, h0, command_list):
         super().__init__(command_list)
-        self.x        = x0 # Position following x-axis
-        self.y        = y0 # Position following y-axis
+        self.x        = x0 # Position along x-axis
+        self.y        = y0 # Position along y-axis
         self.vel      = v0 # Velocity
         self.head     = h0 # Heading of the front wheel
 
@@ -81,11 +70,8 @@ class ManeuveredBicycle(MovingTarget):
 
         Returns
         -------
-        x : float
-            New position following x-axis.
-
-        y : float
-            New position following y-axis.
+        x, y : floats
+            New positions following x-axis and y-axis.
         '''
         cmd_head = self.commands['head']
         cmd_vel  = self.commands['vel']
@@ -159,7 +145,7 @@ class ManeuveredBicycle(MovingTarget):
 
 if __name__ == "__main__":
 
-        # Route generation example with a ManeuveredBicycle
+        # ======== Route generation example with a ManeuveredBicycle ========
         sensor_std = 1.
         head_cmd = Command('head',0,0,0)
         vel_cmd  = Command('vel',0.3,0,0)
@@ -173,7 +159,7 @@ if __name__ == "__main__":
             ys.append(y)
 
         # Change in commands
-        bicycle.change_command("head",310, 25)
+        bicycle.change_command("head",50, 25)
         bicycle.change_command("vel",1, 15)
 
         # Second phase

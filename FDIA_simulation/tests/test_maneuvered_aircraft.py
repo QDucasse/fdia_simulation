@@ -7,9 +7,9 @@ Created on Fri Jun 21 16:38:04 2019
 
 import unittest
 from fdia_simulation.models.moving_target import Command
-from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
+from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft, angle_between
 
-class aircraft_testCase(unittest.TestCase):
+class AircraftTestCase(unittest.TestCase):
     def setUp(self):
         self.headx_cmd_test  = Command('headx',0,0,0)
         self.headz_cmd_test  = Command('headz',0,0,0)
@@ -74,16 +74,20 @@ class aircraft_testCase(unittest.TestCase):
         self.assertEqual(cmd_vel.steps,15)
 
     def test_change_command_with_headingx(self):
-        self.aircraft_test.change_command('headx',13,17)
-        cmd_head = self.aircraft_test.commands['headx']
-        self.assertEqual(cmd_head.value,13)
-        self.assertEqual(cmd_head.steps,17)
+        self.aircraft_test.change_command('headx',15,20)
+        cmd_headx = self.aircraft_test.commands['headx']
+        self.assertEqual(cmd_headx.value,15)
+        self.assertEqual(cmd_headx.steps,20)
+        delta = angle_between(15,0)/20
+        self.assertEqual(cmd_headx.delta,delta)
 
     def test_change_command_with_headingz(self):
-        self.aircraft_test.change_command('headz',13,17)
-        cmd_head = self.aircraft_test.commands['headz']
-        self.assertEqual(cmd_head.value,13)
-        self.assertEqual(cmd_head.steps,17)
+        self.aircraft_test.change_command('headz',15,20)
+        cmd_headz = self.aircraft_test.commands['headz']
+        self.assertEqual(cmd_headz.value,15)
+        self.assertEqual(cmd_headz.steps,20)
+        delta = angle_between(15,0)/20
+        self.assertEqual(cmd_headz.delta,delta)
 
     def test_change_command_with_velocity(self):
         self.aircraft_test.change_command('vel',5,20)

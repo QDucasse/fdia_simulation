@@ -9,7 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from math import cos,sin,radians
-from fdia_simulation.models.moving_target import MovingTarget, Command, NoisySensor
+from fdia_simulation.models.moving_target import MovingTarget, Command
+from fdia_simulation.models.sensors import NoisySensor
 
 def angle_between(x, y):
     '''
@@ -17,11 +18,8 @@ def angle_between(x, y):
 
     Parameters
     ----------
-    x : int
-        First angle.
-
-    y : int
-        Second angle.
+    x, y : int
+        First and second angle (in degrees).
 
     Returns
     -------
@@ -37,14 +35,8 @@ class ManeuveredAircraft(MovingTarget):
 
     Parameters
     ----------
-    x0: float
-        Initial position following x-axis.
-
-    y0: float
-        Initial position following y-axis.
-
-    z0: float
-        Initial position following z-axis.
+    x0, y0, z0: floats
+        Initial positions along x-axis, y-axis and z-axis.
 
     v0: float
         Initial velocity of the system.
@@ -60,14 +52,8 @@ class ManeuveredAircraft(MovingTarget):
 
     Attributes
     ----------
-    x: float
-        Position of the system following x-axis.
-
-    y: float
-        Position of the system following y-axis.
-
-    z: float
-        Position of the system following z-axis.
+    x, y, z: floats
+        Positions of the system along x-axis, y-axis and z-axis.
 
     vel: float
         Velocity of the system.
@@ -80,9 +66,9 @@ class ManeuveredAircraft(MovingTarget):
     '''
     def __init__(self, x0, y0, z0, v0, hz0, hx0,command_list):
         super().__init__(command_list)
-        self.x        = x0 # Position following x-axis.
-        self.y        = y0 # Position following y-axis.
-        self.z        = z0 # Position following y-axis.
+        self.x        = x0 # Position along x-axis.
+        self.y        = y0 # Position along y-axis.
+        self.z        = z0 # Position along y-axis.
         self.vel      = v0 # Velocity.
         self.headz    = hz0 # Heading around z-axis.
         self.headx    = hx0 # Heading around x-axis.
@@ -94,14 +80,8 @@ class ManeuveredAircraft(MovingTarget):
 
         Returns
         -------
-        x : float
-            New position following x-axis.
-
-        y : float
-            New position following y-axis.
-
-        z: float
-            New position following z-axis.
+        x, y , z : floats
+            New positions along x-axis, y-axis and z-axis.
         '''
         cmd_headz = self.commands['headz']
         cmd_headx = self.commands['headx']
@@ -210,7 +190,7 @@ class ManeuveredAircraft(MovingTarget):
 
 if __name__ == "__main__":
 
-        # Route generation example with a ManeuveredBicycle
+        # Route generation example with a ManeuveredAircraft
         sensor_std = 1.
         headx_cmd = Command('headx',0,0,0)
         headz_cmd = Command('headz',0,0,0)

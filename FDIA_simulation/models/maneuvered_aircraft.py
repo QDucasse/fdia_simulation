@@ -244,4 +244,7 @@ if __name__ == "__main__":
         ax = fig.gca(projection='3d')
         ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
         ax.scatter(noisy_xs, noisy_ys, noisy_zs,color='b',marker='o')
+        ax.set_xlabel('X axis')
+        ax.set_ylabel('Y axis')
+        ax.set_zlabel('Z axis')
         plt.show()

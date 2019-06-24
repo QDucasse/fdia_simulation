@@ -189,10 +189,8 @@ if __name__ == "__main__":
 
     position_data = np.array(list(zip(xs,ys,zs)))
     print("Aircraft position:\n{0}\n".format(position_data[-25:,:]))
-
-
-    # ================= Radar generation ======================
-
+    # ==========================================================================
+    # ========================== Radar generation ==============================
     radar = Radar()
     rs, thetas, phis = radar.gen_data(position_data)
     noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
@@ -203,11 +201,15 @@ if __name__ == "__main__":
 
     radar_computed_values = np.array(list(zip(xs_from_rad, ys_from_rad, zs_from_rad)))
     print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
-
-    # ================ Plotting ====================
-
+    # ==========================================================================
+    # =============================== Plotting =================================
     fig = plt.figure()
+    plt.rc('font', family='serif')
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad,color='b',marker='o')
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
     plt.show()
+    # ==========================================================================

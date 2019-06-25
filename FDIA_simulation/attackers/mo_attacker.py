@@ -110,8 +110,9 @@ class MoAttacker(Attacker):
         -------
         ss_K: matrix
             Kalman gain matrix when the system is on steady state.
+            K = P*H'*inv(H*P*H'+R)
         '''
-        ss_K = ss_P@kf.H.T@inv(kf.H@ss_P@kf.H.T + kf.R)
+        ss_K = ss_P@(kf.H.T)@inv(kf.H@ss_P@kf.H.T + kf.R)
         return ss_K
 
     def compute_attackers_input(self,kf,ss_P,ss_K,Gamma):
@@ -137,7 +138,7 @@ class MoAttacker(Attacker):
         attackers_input: float matrix
             Matrix
         '''
-        attackers_input = np.concatenate((-(kf.F - ss_K@kf.H@kf.F)@ss_K*Gamma, -ss_K@Gamma),axis=1)
+        attackers_input = np.concatenate((-(kf.F - ss_K@kf.H@kf.F)@ss_K@Gamma, -ss_K@Gamma),axis=1)
         return attackers_input
 
     def initialize_attack_sequence(self,kf,attackers_input,attack_vector):
@@ -192,6 +193,7 @@ class MoAttacker(Attacker):
         - z corresponds to the cimulation of a received measurement by the compromised
         system (real measure + compromission of a subset of sensors)
         '''
+        # e: error between healthy and compromised system
         e = np.zeros((kf.dim_z,2))
         e[:,0] = (-kf.K@Gamma@ya0).squeeze()
         e[:,1] = (kf.F-kf.K@kf.H@kf.F)@(e[:,0].reshape((kf.dim_z,1))-kf.K@Gamma@ya1).squeeze()
@@ -271,6 +273,10 @@ class MoAttacker(Attacker):
             # Choice of an eigenvalue under which the attack will be created
             attack_val,attack_vect,Gamma = self.attack_parameters(kf,0)
 
+        if logs: print("Eigen value: \n{0}\n".format(attack_val))
+        if logs: print("Eigen vector: \n{0}\n".format(attack_vect))
+        if logs: print("Attack matrix: \n{0}\n".format(Gamma))
+
         # Attacker's input to reach v
 
         ss_P = self.compute_steady_state_P(kf)
@@ -316,15 +322,16 @@ class MoAttacker(Attacker):
 if __name__ == "__main__":
     #  ================== Filter and system generation ========================
     kf = KalmanFilter(dim_x=2,dim_z=2)
-    kf.x      = [0.,2.]   # Initial value
+    kf.x      = [0.,0.]   # Initial values state-space is [ x xdot ]'
     kf.H      = np.array([[1.,0.],  # Observation matrix
                           [0.,1.]])
     kf.F      = np.array([[1., 1.],
                           [0., 1.]]) # State transition matrix
     kf.R      = np.eye(2)
     kf.Q      = np.eye(2)
-    kf.P      = np.array([[1000.,    0.],
-                          [   0., 1000.]])
+    kf.P      = np.array([[1., 0.],
+                          [0., 1.]])
+    kf.B      = np.array([[0.5, 1.]]).T
     xs        = kf.x      # Initial values for the data generation
     zs        = [[kf.x[0],kf.x[1]]] # We are measuring both the position and velocity
     pos       = [kf.x[0]] # Initialization of the true position values

@@ -33,9 +33,20 @@ class FaultDetector(ABC):
         self.reviewed_values    = []
         self.comparison_results = []
 
+    def zipped_review(self):
+        '''
+        Return a zipped list of the tested quantities and the results.
+        Returns
+        -------
+        zipped_review: tuple iterable
+            List composed of tuples (quantity tested, result)
+        '''
+        return  list(zip(self.reviewed_values,self.comparison_results))
+
     @abstractmethod
     def review_measurement(self,data,kf,error_rate):
-        r'''Abstract method that needs to be overloaded by the subclasses.
+        '''
+        Abstract method that needs to be overloaded by the subclasses.
         '''
         pass
 
@@ -61,26 +72,32 @@ class ChiSquareDetector(FaultDetector):
             Error rate within which errors are detected. For example, for an
             error rate of 0.05, we are 95% sure that the measurements obtained
             through the output of the fault detector will be correct.
+
+        Returns
+        -------
+        result: string
+            "Success" or "Failure".
+
+        Notes
+        -----
+        The returned string is also added to the instance variable
+        comparison_results.
         '''
         dim_z = np.shape(kf.R)[0]
 
         #! TODO: Raise error if wrong dimension
 
         # Simulated update sequence with no influence on the real filter kf
-        R = kf.R
-        H = kf.H
-        P = kf.P
-        x = kf.x
-        y = new_measurement - np.dot(H, x)
-        PHT = np.dot(P, H.T)
-        S = np.dot(H, PHT) + R
-        K = np.dot(PHT, kf.inv(S))
-        x = x + np.dot(K, y)
+        y   = kf.residual_of(new_measurement) # Residual:              z - Hx
+        PHT = np.dot(kf.P, kf.H.T)            # Intermediate variable: P*H*T
+        S   = np.dot(kf.H, PHT) + kf.R        # Innovation covariance: H*P*HT + R
+        K   = np.dot(PHT, kf.inv(S))          # Kalman gain:           P*HT*inv(S)
+        x   = kf.x + np.dot(kf.K, y)          # New state:             x + Ky
 
         # Threshold calculated by reversing the chi-square table for 0.95 (by default)
-        test_quantity = y.T * kf.inv(S) * y
+        test_quantity = y.T @ kf.inv(S) @ y
         threshold = chi2.ppf(1-error_rate,dim_z)
-        self.reviewed_values.append(*test_quantity)
+        self.reviewed_values.append(test_quantity)
 
         if test_quantity <= threshold:
             self.comparison_results.append("Success")
@@ -151,25 +168,27 @@ if __name__ == "__main__":
     zs[20] += 10.
     zs[25] += 10.
 
-    plt.figure()
-    plot_measurements(zs,alpha = 0.5)
-    plt.plot(pos,'b--')
-    plt.show()
-
     # Detector instanciation
-    chiDetector = ChiSquareDetector()
-    eucDetector = EuclidianDetector()
+    chi_detector = ChiSquareDetector()
+    euc_detector = EuclidianDetector()
 
     for z in zs:
             kinematic_test_kf.predict()
-            chiDetector.review_measurement(z,kinematic_test_kf)
-            eucDetector.review_measurement(z,kinematic_test_kf)
+            chi_detector.review_measurement(z,kinematic_test_kf)
+            euc_detector.review_measurement(z,kinematic_test_kf)
             kinematic_test_kf.update(z)
 
     print('==================CHISQUARE DETECTOR====================')
-    pprint(list(zip(chiDetector.reviewed_values,chiDetector.comparison_results)))
+    zipped_chi = chi_detector.zipped_review()
+    pprint(zipped_chi)
 
     print('\n\n')
 
     print('==================EUCLIDIAN DETECTOR====================')
-    pprint(list(zip(eucDetector.reviewed_values,eucDetector.comparison_results)))
+    zipped_euc = euc_detector.zipped_review()
+    pprint(zipped_euc)
+
+    plt.figure()
+    plot_measurements(zs,alpha = 0.5)
+    plt.plot(pos,'b--')
+    plt.show()

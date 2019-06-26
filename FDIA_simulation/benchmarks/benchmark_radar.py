@@ -11,7 +11,7 @@ from fdia_simulation.models.moving_target          import Command
 from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from filterpy.kalman                               import KalmanFilter
+from filterpy.kalman                               import KalmanFilter, ExtendedKalmanFilter
 
 
 if __name__ == "__main__":
@@ -56,29 +56,43 @@ if __name__ == "__main__":
         zs.append(z)
 
     position_data = np.array(list(zip(xs,ys,zs)))
-    print("Aircraft position:\n{0}\n".format(position_data[-25:,:]))
     # ==========================================================================
     # ======================== Radar data generation ===========================
-    radar = Radar()
-    rs, thetas, phis = radar.gen_data(position_data)
-    noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
-    xs_from_rad, ys_from_rad, zs_from_rad = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
+    # Radar 1
+    radar1 = Radar(x=800,y=800)
+    rs, thetas, phis = radar1.gen_data(position_data)
+    noisy_rs, noisy_thetas, noisy_phis = radar1.sense(rs, thetas, phis)
+    xs_from_rad1, ys_from_rad1, zs_from_rad1 = radar1.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
 
-    radar_values = np.array(list(zip(noisy_rs, noisy_thetas, noisy_phis)))
-    print("Noisy radar data:\n{0}\n".format(radar_values[-25:,:]))
+    radar1_values = np.array(list(zip(noisy_rs, noisy_thetas, noisy_phis)))
+    radar1_computed_values = np.array(list(zip(xs_from_rad1, ys_from_rad1, zs_from_rad1)))
 
-    radar_computed_values = np.array(list(zip(xs_from_rad, ys_from_rad, zs_from_rad)))
-    print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
+    # Radar 2
+    radar2 = Radar(x=-1000,y=500)
+    rs, thetas, phis = radar2.gen_data(position_data)
+    noisy_rs, noisy_thetas, noisy_phis = radar2.sense(rs, thetas, phis)
+    xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
+
+    radar2_values = np.array(list(zip(noisy_rs, noisy_thetas, noisy_phis)))
+    radar2_computed_values = np.array(list(zip(xs_from_rad2, ys_from_rad2, zs_from_rad2)))
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure()
     plt.rc('font', family='serif')
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
-    ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad,color='b',marker='o')
+    ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar 1 measurements')
+    ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar 1')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')
+
+    ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='g',marker='o',alpha = 0.3, label = 'Radar 2 measurements')
+    ax.scatter(radar2.x,radar2.y,radar2.z,color='magenta',label='Radar 2')
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
+    ax.legend()
     plt.show()
     # ==========================================================================
     # ======================== Filter generation  ==============================

@@ -7,7 +7,7 @@ Created on Fri Jun 21 13:07:46 2019
 
 import numpy as np
 import matplotlib.pyplot as plt
-from math import cos,sin,sqrt,pi
+from math import cos,sin,sqrt,pi,atan2
 from fdia_simulation.models.moving_target import MovingTarget, Command
 from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
 from fdia_simulation.models.sensors import NoisySensor
@@ -17,6 +17,9 @@ class Radar(object):
     The radar will output a data set corresponding to typical radar values.
     Attributes
     ----------
+    x, y, z: floats
+        Radar position along x, y and z-axis.
+
     r_noise_std: float
         Standard deviation on the measurement of r. Default value of 1.
 
@@ -31,10 +34,13 @@ class Radar(object):
     Identical to Attributes
     '''
 
-    def __init__(self, r_noise_std = 1., theta_noise_std = 0.01, phi_noise_std = 0.01):
-            self.r_noise_std      = r_noise_std
-            self.theta_noise_std  = theta_noise_std
-            self.phi_noise_std    = phi_noise_std
+    def __init__(self, x, y, z=0, r_noise_std = 1., theta_noise_std = 0.01, phi_noise_std = 0.01):
+        self.x                = x
+        self.y                = y
+        self.z                = z
+        self.r_noise_std      = r_noise_std
+        self.theta_noise_std  = theta_noise_std
+        self.phi_noise_std    = phi_noise_std
 
     def gen_data(self,position_data):
         '''
@@ -58,9 +64,9 @@ class Radar(object):
         rs, thetas, phis: float iterables
             Distances, azimuth/turn angles and elevation angles.
         '''
-        xs = position_data[:,0]
-        ys = position_data[:,1]
-        zs = position_data[:,2]
+        xs = position_data[:,0] - self.x
+        ys = position_data[:,1] - self.y
+        zs = position_data[:,2] - self.z
         rs, thetas, phis = [], [], []
 
         for k in range(len(position_data)):
@@ -68,14 +74,10 @@ class Radar(object):
             r_k     = sqrt(xs[k]**2 + ys[k]**2 + zs[k]**2)
 
             # Computation of the supposed turning angle of the aircraft
-            theta_k = np.arctan(ys[k]/xs[k])
-            if theta_k < 0:
-                theta_k += pi
+            theta_k = atan2(ys[k],xs[k])
 
             # Computation of the supposed elevation angle of the aircraft
-            phi_k   = np.arctan(zs[k]/ sqrt(xs[k]**2 + ys[k]**2))
-            if phi_k < 0:
-                phi_k += pi
+            phi_k   = atan2(zs[k], sqrt(xs[k]**2 + ys[k]**2))
 
             rs.append(r_k)
             thetas.append(theta_k)
@@ -136,9 +138,9 @@ class Radar(object):
         '''
         xs,ys,zs = [],[],[]
         for k in range(len(rs)):
-            x_k = rs[k] * cos(thetas[k]) * cos(phis[k])
-            y_k = rs[k] * sin(thetas[k]) * cos(phis[k])
-            z_k = rs[k] * sin(phis[k])
+            x_k = rs[k] * cos(thetas[k]) * cos(phis[k]) + self.x
+            y_k = rs[k] * sin(thetas[k]) * cos(phis[k]) + self.y
+            z_k = rs[k] * sin(phis[k]) + self.z
 
             xs.append(x_k)
             ys.append(y_k)
@@ -190,26 +192,27 @@ if __name__ == "__main__":
     position_data = np.array(list(zip(xs,ys,zs)))
     print("Aircraft position:\n{0}\n".format(position_data[-25:,:]))
     # ==========================================================================
-    # ========================== Radar generation ==============================
-    radar = Radar()
+    # ========================== Radars generation =============================
+    radar = Radar(x=800,y=800)
     rs, thetas, phis = radar.gen_data(position_data)
     noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
     xs_from_rad, ys_from_rad, zs_from_rad = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
 
     radar_values = np.array(list(zip(noisy_rs, noisy_thetas, noisy_phis)))
-    print("Noisy radar data:\n{0}\n".format(radar_values[-25:,:]))
+    # print("Noisy radar data:\n{0}\n".format(radar_values[-25:,:]))
 
     radar_computed_values = np.array(list(zip(xs_from_rad, ys_from_rad, zs_from_rad)))
-    print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
+    # print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure()
     plt.rc('font', family='serif')
     ax = fig.gca(projection='3d')
-    ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
-    ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad,color='b',marker='o')
+    ax.plot(xs, ys, zs, label='Real airplane position', color='k', linestyle='dashed')
+    ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad, color='b', marker='o', label='Measurements')
+    ax.scatter(radar.x,radar.y,radar.z,color='r',label='Radar position')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')
+    ax.legend()
     plt.show()
-    # ==========================================================================

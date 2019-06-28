@@ -12,7 +12,7 @@ from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft, angle
 
 class RadarTestCase(unittest.TestCase):
     def setUp(self):
-        self.radar_test = Radar(r_noise_std = 1., theta_noise_std = 0.1, phi_noise_std = 0.1)
+        self.radar_test = Radar(r_noise_std = 1., theta_noise_std = 0.1, phi_noise_std = 0.1,x = 50, y = 50)
 
     def test_initial_r_noise_std(self):
         self.assertEqual(self.radar_test.r_noise_std,1.)

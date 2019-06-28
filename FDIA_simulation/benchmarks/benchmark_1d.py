@@ -11,7 +11,7 @@ from numpy.random import randn
 from pprint import pprint
 from filterpy.kalman import KalmanFilter
 from fdia_simulation.attackers.mo_attacker import MoAttacker
-from fdia_simulation.fault_detectors.fault_detector import ChiSquareDetector
+from fdia_simulation.fault_detectors.fault_detector import ChiSquareDetector, EuclidianDetector
 
 
 if __name__ == "__main__":
@@ -55,24 +55,9 @@ if __name__ == "__main__":
     # ========================= Attacker generation ============================
 
     mo_attacker = MoAttacker(kf)
-    # Eigenvalues/vectors localization
-    mo_attacker.compute_unstable_eig(kf.F)
-
-    # Steady state parameters
-    ss_P = mo_attacker.compute_steady_state_P(kf)
-    ss_K = mo_attacker.compute_steady_state_K(kf,ss_P)
-    kf.K = ss_K
-
-    # Attack parameters
-    attack_value, attack_vector, Gamma = mo_attacker.attack_parameters(kf,0)
-    attackers_input = mo_attacker.compute_attackers_input(kf,ss_P,ss_K,Gamma)
-
-    # Initialization of the attack sequence
-    ya0,ya1 = mo_attacker.initialize_attack_sequence(kf,attackers_input,attack_vector)
-    M = mo_attacker.compute_max_norm(kf,Gamma,ya0,ya1)
 
     # Computation of the whole attack sequence
-    zas = mo_attacker.compute_attack_sequence(kf, sample_nb, logs = True)
+    zas, Gamma = mo_attacker.compute_attack_sequence(attack_size = sample_nb, pos_value = 0, logs = True)
 
     # Adding the attack sequence to the real measurements
     zs = np.array(zs).T
@@ -87,14 +72,15 @@ if __name__ == "__main__":
 
     xs = [] # Estimated states
     for i in range(len(zs[0])): # -1 because last point is not well computed
+
         kf.predict()
         fault_detector.review_measurement(zs[:,i],kf)
+        print('New measurement: \n{0}\n'.format(kf.x))
         kf.update(zs[:,i])
+        print('State space vector: \n{0}\n'.format(kf.x))
         xs.append(kf.x)
 
-
     xs = np.array(xs)
-
 
     # ==========================================================================
     # ========================== Comparison ====================================
@@ -105,11 +91,11 @@ if __name__ == "__main__":
     for res in zipped_review:
         if res[1]=="Failure":
             count += 1
-    print('Wrong values detected: {0}\n'.format(count))
+    print('Wrong values: {0} out of {1} samples\n'.format(count,sample_nb))
     # pprint(zipped_review)
 
     t = np.linspace(0.,sample_nb,sample_nb)
-    plt.plot(t,xs[:,0],'go')
+    plt.plot(t,xs[:,0],'go',alpha = 0.1)
     plt.plot(t,pos,linestyle='dashed')
     plt.legend(['Compromised position','Healthy position'])
     plt.xlabel('Time')

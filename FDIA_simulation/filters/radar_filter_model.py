@@ -46,7 +46,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
     def predict(self,u = 0):
         if u == None:
             u = 0
-        super().predict(u)
+        ExtendedKalmanFilter.predict(self, u)
 
     def update(self,z, logs=False):
         z = np.reshape(z,(-2,1))

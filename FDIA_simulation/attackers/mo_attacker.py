@@ -33,10 +33,12 @@ class MoAttacker(Attacker):
         corresponding to the values the attacker will have to inject in the
         system to compromise it.
     '''
-    def __init__(self,kf):
+    def __init__(self,kf,fb = False):
         super().__init__()
         self.unst_data = []
         self.attack_sequence = np.zeros((kf.dim_z,0))
+        self.kf = kf
+        self.fb = fb
 
     def add_false_measurement(self,yai):
         '''
@@ -77,7 +79,7 @@ class MoAttacker(Attacker):
         self.unst_data = unst_data
         return unst_data
 
-    def compute_steady_state_P(self,kf):
+    def compute_steady_state_P(self):
         '''
         Computes the process to get P (covariance matrix on state) in steady
         state as the solution of a discrete Ricatti equation.
@@ -90,11 +92,16 @@ class MoAttacker(Attacker):
         -------
         ss_P: matrix
             Covariance matrix on state when the system is on steady state.
+
+        Notes
+        -----
+        This function should be used if the system is equiped with some kind of
+        feedback linearization.
         '''
-        ss_P = solve_discrete_are(kf.F.T, kf.H.T, kf.Q, kf.R)
+        ss_P = solve_discrete_are(self.kf.F.T, self.kf.H.T, self.kf.Q, self.kf.R)
         return ss_P
 
-    def compute_steady_state_K(self,kf,ss_P):
+    def compute_steady_state_K(self):
         '''
         Computes the process to get K (Kalman gain) in steady state as the
         solution of a discrete Ricatti equation.
@@ -112,10 +119,13 @@ class MoAttacker(Attacker):
             Kalman gain matrix when the system is on steady state.
             K = P*H'*inv(H*P*H'+R)
         '''
-        ss_K = ss_P@(kf.H.T)@inv(kf.H@ss_P@kf.H.T + kf.R)
+        kf = self.kf
+        if self.fb: P = self.compute_steady_state_P()
+        else: P = kf.P
+        ss_K = P@(kf.H.T)@inv(kf.H@P@kf.H.T + kf.R)
         return ss_K
 
-    def compute_attackers_input(self,kf,ss_P,ss_K,Gamma):
+    def compute_attackers_input(self,ss_K,Gamma):
         '''
         Computes the initial space in which the attacker will have to find the
         initial steps of the attack sequence.
@@ -123,9 +133,6 @@ class MoAttacker(Attacker):
         ----------
         kf: KalmanFilter
             The state estimator of the attacked system.
-
-        ss_P: float matrix
-            State covariance in steady state
 
         ss_K: float matrix
             Kalman gain of the estimator in steady state.
@@ -138,10 +145,11 @@ class MoAttacker(Attacker):
         attackers_input: float matrix
             Matrix
         '''
+        kf = self.kf
         attackers_input = np.concatenate((-(kf.F - ss_K@kf.H@kf.F)@ss_K@Gamma, -ss_K@Gamma),axis=1)
         return attackers_input
 
-    def initialize_attack_sequence(self,kf,attackers_input,attack_vector):
+    def initialize_attack_sequence(self,attackers_input,attack_vector):
         '''
         Computes the two first element of the attack sequence.
         Parameters
@@ -164,11 +172,11 @@ class MoAttacker(Attacker):
         false_measurements,_,_,_ = lstsq(attackers_input, attack_vector)
 
         # Reshape correctly the result
-        ya0 = false_measurements[0:kf.dim_z,0].reshape((kf.dim_z,1))
-        ya1 = false_measurements[kf.dim_z:, 0].reshape((kf.dim_z,1))
+        ya0 = false_measurements[0:self.kf.dim_z,0].reshape((self.kf.dim_z,1))
+        ya1 = false_measurements[self.kf.dim_z:, 0].reshape((self.kf.dim_z,1))
         return ya0, ya1
 
-    def compute_max_norm(self,kf,Gamma,ya0,ya1):
+    def compute_max_norm(self,Gamma,ya0,ya1):
         '''
         Computes the maximal norm after simulating the first two measurements.
         Parameters
@@ -194,20 +202,23 @@ class MoAttacker(Attacker):
         system (real measure + compromission of a subset of sensors)
         '''
         # e: error between healthy and compromised system
+        kf = self.kf
         e = np.zeros((kf.dim_z,2))
         e[:,0] = (-kf.K@Gamma@ya0).squeeze()
         e[:,1] = (kf.F-kf.K@kf.H@kf.F)@(e[:,0].reshape((kf.dim_z,1))-kf.K@Gamma@ya1).squeeze()
 
         # z: simulation of the received measure by the plant (real measure + compromission)
         z = np.zeros((kf.dim_z,2))
+        # First state is null so the received measure = attacker's input
         z[:,0] = (Gamma@ya0).squeeze()
+        # Second state needs to be estimated (H*F*e) then added to the attacker's input
         z[:,1] = (kf.H@kf.F@e[:,0].reshape((kf.dim_z,1)) + Gamma@ya1).squeeze()
 
         M = max(norm(z[:,0]),norm(z[:,1]))
 
         return M
 
-    def attack_parameters(self,kf,value_position):
+    def attack_parameters(self,value_position):
         '''
         Given a position value, returns the corresponding eigenvalue, eigenvector
         and attack matrix Gamma.
@@ -233,16 +244,16 @@ class MoAttacker(Attacker):
         '''
         chosen_attack = self.unst_data[value_position]
         attack_val  = chosen_attack.value
-        attack_vect = chosen_attack.vector.reshape((kf.dim_z,1))
+        attack_vect = chosen_attack.vector.reshape((self.kf.dim_z,1))
         attack_pos  = chosen_attack.position
 
-        Gamma  = np.zeros((kf.dim_z,kf.dim_z))
+        Gamma  = np.zeros((self.kf.dim_z,self.kf.dim_z))
         Gamma[attack_pos][attack_pos] = 1
 
         return attack_val,attack_vect,Gamma
 
 
-    def compute_attack_sequence(self,kf,attack_size,logs=False):
+    def compute_attack_sequence(self, attack_size, pos_value = 0, logs=False):
         '''
         Creates the attack sequence (aka the falsified measurements passed to the filter).
         Parameters:
@@ -253,6 +264,9 @@ class MoAttacker(Attacker):
         attack_size: int
             Duration of the attack (number of steps).
 
+        fb: boolean
+            Presence of a feedback linearisator. Influences the value of P.
+
         logs: boolean
             Displays the logs of the different steps if True. Default value: False
 
@@ -262,7 +276,11 @@ class MoAttacker(Attacker):
             Column-stacked array as np.array([[ y0 | y1 | ... | y_attsize ]])
             corresponding to the values the attacker will have to inject in the
             system to compromise it.
+
+        Gamma: float numpy array
+            Attack vector
         '''
+        kf = self.kf
         # Unstable eigenvalues of A and associated eigenvectors
         self.compute_unstable_eig(kf.F)
         if not self.unst_data:
@@ -271,30 +289,27 @@ class MoAttacker(Attacker):
 
         else:
             # Choice of an eigenvalue under which the attack will be created
-            attack_val,attack_vect,Gamma = self.attack_parameters(kf,0)
+            attack_val,attack_vect,Gamma = self.attack_parameters(pos_value)
 
         if logs: print("Eigen value: \n{0}\n".format(attack_val))
         if logs: print("Eigen vector: \n{0}\n".format(attack_vect))
         if logs: print("Attack matrix: \n{0}\n".format(Gamma))
 
         # Attacker's input to reach v
-
-        ss_P = self.compute_steady_state_P(kf)
-        if logs: print("Steady State P: \n{0}\n".format(ss_P))
-        ss_K = self.compute_steady_state_K(kf,ss_P)
+        ss_K = self.compute_steady_state_K()
         if logs: print("Steady State K: \n{0}\n".format(ss_K))
 
         # Attacker input: -[(A-KCA)KGamma KGamma]
-        attackers_input = self.compute_attackers_input(kf, ss_P, ss_K, Gamma)
+        attackers_input = self.compute_attackers_input(ss_K, Gamma)
         if logs: print("Attackers input: \n{0}\n".format(attackers_input))
 
         # Attack sequence initialization
         #1. Initialization of the false measurements
-        ya0, ya1 = self.initialize_attack_sequence(kf,attackers_input,attack_vect)
+        ya0, ya1 = self.initialize_attack_sequence(attackers_input,attack_vect)
         if logs: print("First false measurements: \nya0:\n{0}\nya1:\n{1}\n".format(ya0,ya1))
 
         #2. Initialization of the first "real" measurements -> to determine the max norm
-        M = self.compute_max_norm(kf,Gamma,ya0,ya1)
+        M = self.compute_max_norm(Gamma,ya0,ya1)
 
         ya0 = ya0/M
         ya1 = ya1/M
@@ -310,7 +325,7 @@ class MoAttacker(Attacker):
 
         if logs: print("Attack Sequence: \n{0}\n".format(self.attack_sequence))
 
-        return self.attack_sequence
+        return self.attack_sequence, Gamma
 
     def change_measurements(self):
         '''
@@ -354,15 +369,14 @@ if __name__ == "__main__":
 
     # ==========================================================================
     # ========================= Attacker generation ============================
-    mo_attacker = MoAttacker(kf)
-    ss_P = mo_attacker.compute_steady_state_P(kf)
-    ss_K = mo_attacker.compute_steady_state_K(kf,ss_P)
+    mo_attacker = MoAttacker(kf,fb = False)
+    ss_K = mo_attacker.compute_steady_state_K()
     kf.K = ss_K
     Gamma = np.array([[0., 0.],
                       [0., 1.]])
-    attackers_input = mo_attacker.compute_attackers_input(kf,ss_P,ss_K,Gamma)
+    attackers_input = mo_attacker.compute_attackers_input(ss_K,Gamma)
     attack_vector = np.array([[0.,1.]]).T
-    ya0,ya1 = mo_attacker.initialize_attack_sequence(kf,attackers_input,attack_vector)
-    M = mo_attacker.compute_max_norm(kf,Gamma,ya0,ya1)
-    mo_attacker.compute_attack_sequence(kf,30,logs = True)
+    ya0,ya1 = mo_attacker.initialize_attack_sequence(attackers_input,attack_vector)
+    M = mo_attacker.compute_max_norm(Gamma,ya0,ya1)
+    mo_attacker.compute_attack_sequence(attack_size = 30,logs = True)
     # ==========================================================================

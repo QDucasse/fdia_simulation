@@ -18,7 +18,6 @@ from fdia_simulation.filters.radar_filter_ca       import RadarFilterCA
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     # Route generation example with a ManeuveredAircraft
-    sensor_std = 1.
     headx_cmd = Command('headx',0,0,0)
     headz_cmd = Command('headz',0,0,0)
     vel_cmd   = Command('vel',1,0,0)
@@ -35,8 +34,8 @@ if __name__ == "__main__":
         zs.append(z)
 
     # Change in commands -> Take off
-    aircraft.change_command("headx",315, 25)
-    aircraft.change_command("headz",315, 25)
+    aircraft.change_command("headx",45, 25)
+    aircraft.change_command("headz",90, 25)
 
     # Second phase -> Take off
     for i in range(30):
@@ -46,8 +45,8 @@ if __name__ == "__main__":
         zs.append(z)
 
     # Change in commands -> Steady state
-    aircraft.change_command("headx",90, 25)
-    aircraft.change_command("headz",270, 25)
+    aircraft.change_command("headx",-45, 25)
+    aircraft.change_command("headz",180, 25)
 
     # Third phase -> Steady state
     for i in range(60):
@@ -72,7 +71,7 @@ if __name__ == "__main__":
     # # ==========================================================================
     # # ====================== Radar filter generation ===========================
     # Filter: constant acceleration
-    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400., x0 = 500, y0 = 500, x_rad=800,y_rad=800)
+    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 3600., x0 = 1000, y0 = 1000, x_rad=800,y_rad=800)
     est_xs_ca, est_ys_ca, est_zs_ca = [],[],[]
     for val in radar_values:
         radar_filter_ca.predict()
@@ -85,9 +84,9 @@ if __name__ == "__main__":
     fig = plt.figure(1)
     plt.rc('font', family='serif')
     ax = fig.gca(projection='3d')
-    ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
+    ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar measurements')
-    ax.plot(est_xs_ca, est_ys_ca, est_zs_ca,color='m', label = 'Constant accleration')
+    ax.plot(est_xs_ca, est_ys_ca, est_zs_ca,color='m', label = 'Estimation-CA')
     ax.scatter(radar.x,radar.y,radar.z,color='r', label = 'Radar')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')

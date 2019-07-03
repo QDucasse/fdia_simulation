@@ -18,48 +18,9 @@ from fdia_simulation.models.tracks                 import Track
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
-    headx_cmd = Command('headx',0,0,0)
-    headz_cmd = Command('headz',0,0,0)
-    vel_cmd   = Command('vel',1,0,0)
-    aircraft  = ManeuveredAircraft(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
-    xs, ys, zs = [], [], []
-
-    # Take off acceleration objective
-    aircraft.change_command("vel",200, 20)
-    # First phase -> Acceleration
-    for i in range(10):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
-
-    # Change in commands -> Take off
-    aircraft.change_command("headx",45, 25)
-    aircraft.change_command("headz",90, 25)
-
-    # Second phase -> Take off
-    for i in range(30):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
-
-    # Change in commands -> Steady state
-    aircraft.change_command("headx",-45, 25)
-    aircraft.change_command("headz",180, 25)
-
-    # Third phase -> Steady state
-    for i in range(60):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
-
+    trajectory = Track()
+    xs, ys, zs = trajectory.gen_takeoff()
     position_data = np.array(list(zip(xs,ys,zs)))
-
-    # trajectory = Track()
-    # xs, ys, zs = trajectory.gen_acc()
-    # position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
     # ======================== Radar data generation ===========================
     radar = Radar(x=800,y=800)
@@ -74,7 +35,7 @@ if __name__ == "__main__":
     # # ==========================================================================
     # # ====================== Radar filter generation ===========================
     # Filter: constant acceleration
-    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400., x0=100.,y0=100., radar = radar)
+    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 3600., x0=100.,y0=100., radar = radar)
     est_xs_ca, est_ys_ca, est_zs_ca = [],[],[]
     for val in radar_values:
         radar_filter_ca.predict()

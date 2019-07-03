@@ -7,17 +7,17 @@ Created on Fri Jun 21 16:38:04 2019
 
 import unittest
 from fdia_simulation.models.moving_target import Command
-from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft, angle_between
+from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
 
 class AircraftTestCase(unittest.TestCase):
     def setUp(self):
         self.headx_cmd_test  = Command('headx',0,0,0)
         self.headz_cmd_test  = Command('headz',0,0,0)
         self.vel_cmd_test = Command('vel',0.3,0,0)
-        self.aircraft_test = ManeuveredAircraft(x0 = 0, y0 = 0, z0=0, v0 = 0.3, hx0 = 0, hz0 = 0,
-                                                       command_list = [self.headx_cmd_test,
-                                                                       self.headz_cmd_test,
-                                                                       self.vel_cmd_test])
+        self.aircraft_test = ManeuveredAircraft(v0 = 0.3,
+                                                command_list = [self.headx_cmd_test,
+                                                                self.headz_cmd_test,
+                                                                self.vel_cmd_test])
 
     def test_initial_x(self):
         self.assertEqual(self.aircraft_test.x,0)
@@ -78,16 +78,14 @@ class AircraftTestCase(unittest.TestCase):
         cmd_headx = self.aircraft_test.commands['headx']
         self.assertEqual(cmd_headx.value,15)
         self.assertEqual(cmd_headx.steps,20)
-        delta = angle_between(0,15)/20
-        self.assertEqual(cmd_headx.delta,delta)
+        self.assertEqual(cmd_headx.delta,15/20)
 
     def test_change_command_with_headingz(self):
         self.aircraft_test.change_command('headz',15,20)
         cmd_headz = self.aircraft_test.commands['headz']
         self.assertEqual(cmd_headz.value,15)
         self.assertEqual(cmd_headz.steps,20)
-        delta = angle_between(0,15)/20
-        self.assertEqual(cmd_headz.delta,delta)
+        self.assertEqual(cmd_headz.delta,15/20)
 
     def test_change_command_with_velocity(self):
         self.aircraft_test.change_command('vel',5,20)

@@ -8,11 +8,12 @@ Created on Fri Jun 28 13:50:12 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from numpy import dot
+from filterpy.kalman                               import KalmanFilter
 from fdia_simulation.models.moving_target          import Command
 from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_cv       import RadarFilterCV
+from fdia_simulation.filters.radar_filter_cv       import CVMultipleRadars
 
 
 if __name__ == "__main__":
@@ -58,21 +59,37 @@ if __name__ == "__main__":
 
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
-    # ======================== Radar data generation ===========================
+    # ======================== Radars data generation ===========================
     # Radar 1
-    radar = Radar(x=800,y=800)
-    rs, thetas, phis = radar.gen_data(position_data)
-    noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
-    xs_from_rad1, ys_from_rad1, zs_from_rad1 = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
+    radar1 = Radar(x=800,y=800)
+    rs1, thetas1, phis1 = radar1.gen_data(position_data)
+    noisy_rs1, noisy_thetas1, noisy_phis1 = radar1.sense(rs1, thetas1, phis1)
+    xs_from_rad1, ys_from_rad1, zs_from_rad1 = radar1.radar2cartesian(noisy_rs1, noisy_thetas1, noisy_phis1)
 
-    radar_values = np.array(list(zip(noisy_rs, noisy_thetas, noisy_phis)))
-    # print("Noisy radar values: \n{0}\n".format(radar_values[:10]))
-    radar_computed_values = np.array(list(zip(xs_from_rad1, ys_from_rad1, zs_from_rad1)))
-    # print("Radar computed position values: \n{0}\n".format(radar_computed_values[:10]))
-    # # ==========================================================================
-    # # ====================== Radar filter generation ===========================
+    radar1_values = np.array(list(zip(noisy_rs1, noisy_thetas1, noisy_phis1)))
+    # print("Noisy radar1 values: \n{0}\n".format(radar1_values[:10]))
+    radar1_computed_values = np.array(list(zip(xs_from_rad1, ys_from_rad1, zs_from_rad1)))
+    # print("radar1 computed position values: \n{0}\n".format(radar1_computed_values[:10]))
+
+    # Radar 2
+    radar2 = Radar(x=200,y=200)
+    rs2, thetas2, phis2 = radar2.gen_data(position_data)
+    noisy_rs2, noisy_thetas2, noisy_phis2 = radar2.sense(rs2, thetas2, phis2)
+    xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs2, noisy_thetas2, noisy_phis2)
+
+    radar2_values = np.array(list(zip(noisy_rs2, noisy_thetas2, noisy_phis2)))
+    # print("Noisy radar2 values: \n{0}\n".format(radar2_values[:10]))
+    radar2_computed_values = np.array(list(zip(xs_from_rad2, ys_from_rad2, zs_from_rad2)))
+    # print("radar2 computed position values: \n{0}\n".format(radar2_computed_values[:10]))
+    radar_values          = np.concatenate((radar1_values,radar2_values),axis = 1)
+    radar_computed_values = np.concatenate((radar1_computed_values,radar2_computed_values),axis = 1)
+    # ==========================================================================
+    # ====================== Radar filter generation ===========================
     # Filter: constant velocity
-    radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 400., x0 = 1000, y0=1000, x_rad=800,y_rad=800)
+    radars = [radar1,radar2]
+    radar_filter_cv = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
+                                       radars = radars, radar_nb = 2,
+                                       x0 = 1000, y0=1000)
     est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
     for val in radar_values:
         radar_filter_cv.predict()
@@ -86,9 +103,11 @@ if __name__ == "__main__":
     plt.rc('font', family='serif')
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
-    ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar measurements')
+    ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
+    ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
     ax.plot(est_xs_cv, est_ys_cv, est_zs_cv,color='orange', label = 'Estimation-CV')
-    ax.scatter(radar.x,radar.y,radar.z,color='r', label = 'Radar')
+    ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
+    ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')

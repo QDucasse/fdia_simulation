@@ -34,8 +34,8 @@ if __name__ == "__main__":
         zs.append(z)
 
     # Change in commands -> Take off
-    aircraft.change_command("headx",315, 25)
-    aircraft.change_command("headz",315, 25)
+    aircraft.change_command("headx",45, 25)
+    aircraft.change_command("headz",90, 25)
 
     # Second phase -> Take off
     for i in range(30):
@@ -45,8 +45,8 @@ if __name__ == "__main__":
         zs.append(z)
 
     # Change in commands -> Steady state
-    aircraft.change_command("headx",90, 25)
-    aircraft.change_command("headz",270, 25)
+    aircraft.change_command("headx",0, 25)
+    aircraft.change_command("headz",180, 25)
 
     # Third phase -> Steady state
     for i in range(60):
@@ -54,6 +54,7 @@ if __name__ == "__main__":
         xs.append(x)
         ys.append(y)
         zs.append(z)
+
 
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================

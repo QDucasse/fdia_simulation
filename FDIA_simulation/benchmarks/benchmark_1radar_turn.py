@@ -13,7 +13,7 @@ from fdia_simulation.models.moving_target          import Command
 from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_turn       import RadarFilterTurn
+from fdia_simulation.filters.radar_filter_turn     import RadarFilterTurn
 
 
 if __name__ == "__main__":
@@ -36,8 +36,8 @@ if __name__ == "__main__":
         zs.append(z)
 
     # Change in commands -> Take off
-    aircraft.change_command("headx",315, 25)
-    aircraft.change_command("headz",315, 25)
+    aircraft.change_command("headx",45, 25)
+    aircraft.change_command("headz",90, 25)
 
     # Second phase -> Take off
     for i in range(30):
@@ -47,8 +47,8 @@ if __name__ == "__main__":
         zs.append(z)
 
     # Change in commands -> Steady state
-    aircraft.change_command("headx",90, 25)
-    aircraft.change_command("headz",270, 25)
+    aircraft.change_command("headx",-45, 25)
+    aircraft.change_command("headz",180, 25)
 
     # Third phase -> Steady state
     for i in range(60):
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # # ==========================================================================
     # # ====================== Radar filter generation ===========================
     # Filter: constant velocity
-    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 400., x0 = 500, y0=500, x_rad=800,y_rad=800)
+    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 400., x0 = 1000, y0=1000, z0=10, vx0=10.,vy0=10.,vz0=10.,x_rad=800,y_rad=800)
     est_xs_turn, est_ys_turn, est_zs_turn = [],[],[]
     for val in radar_values:
         radar_filter_turn.predict()
@@ -81,9 +81,6 @@ if __name__ == "__main__":
         est_xs_turn.append(radar_filter_turn.x[0,0])
         est_ys_turn.append(radar_filter_turn.x[3,0])
         est_zs_turn.append(radar_filter_turn.x[6,0])
-
-    radar_estimated_values = np.array(list(zip(est_xs_turn,est_ys_turn,est_zs_turn)))
-    # print("Estimated radar values: \n{0}\n".format(radar_estimated_values[:10]))
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)

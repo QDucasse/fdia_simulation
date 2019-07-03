@@ -39,12 +39,12 @@ if __name__ == "__main__":
     # ========================= IMM generation =================================
     radar_filter_cv   = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1.,x0 = 100.,y0=100.,radar = radar)
     radar_filter_ca   = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400.,x0 = 100.,y0=100.,radar = radar)
-    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 25.,x0 = 100.,y0=100.,radar = radar)
+    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 350.,x0 = 100.,y0=100.,radar = radar)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_turn]
     mu = [0.33, 0.33, 0.33]
-    trans = np.array([[0.90, 0.08, 0.02],
-                      [0.15, 0.70, 0.15],
-                      [0.04, 0.16, 0.80]])
+    trans = np.array([[0.998, 0.001, 0.001],
+                      [0.050, 0.900, 0.050],
+                      [0.001, 0.001, 0.998]])
     imm = IMMEstimator(filters, mu, trans)
 
     est_xs_imm, est_ys_imm, est_zs_imm = [],[],[]
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad,color='b',marker='o',alpha = 0.3, label = 'Radar measurements')
-    ax.plot(est_xs_imm, est_ys_imm, est_zs_imm,color='orange', label='Estimation-IMM2')
+    ax.plot(est_xs_imm, est_ys_imm, est_zs_imm,color='orange', label='Estimation-IMM3')
     ax.scatter(radar.x,radar.y,radar.z,color='r', label = 'Radar')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')

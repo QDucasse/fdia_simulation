@@ -8,6 +8,7 @@ Created on Fri Jun 28 09:59:32 2019
 import unittest
 import numpy as np
 from nose.tools import raises
+from fdia_simulation.models.radar import Radar
 from fdia_simulation.filters.radar_filter_model import RadarModel
 from fdia_simulation.filters.radar_filter_ca import RadarFilterCA, CAMultipleRadars
 from fdia_simulation.filters.radar_filter_cv import RadarFilterCV, CVMultipleRadars
@@ -36,9 +37,9 @@ class RadarFilterCVTestCase(unittest.TestCase):
 
     def test_initial_R(self):
         dt = self.filter_cv.dt
-        R = np.array([[5., 0., 0.],
-                      [0., 1., 0.],
-                      [0., 0., 1.]])
+        R = np.array([[1., 0.   , 0.   ],
+                      [0., 0.001, 0.   ],
+                      [0., 0.   , 0.001]])
         self.assertTrue(np.array_equal(self.filter_cv.R,R))
 
     def test_initial_positions(self):
@@ -73,22 +74,27 @@ class RadarFilterCVTestCase(unittest.TestCase):
         self.assertEqual(y_rad, 0.)
         self.assertEqual(z_rad, 0.)
 
-class CAMultipleRadarsTestCase(unittest.TestCase):
+class CVMultipleRadarsTestCase(unittest.TestCase):
     def setUp(self):
-        self.multiple_cv = CAMultipleRadars(dim_x = 9, dim_z = 3, q = 1., radar_nb = 3)
+        self.radar1 = Radar(x=800,y=800)
+        self.radar2 = Radar(x=200,y=200)
+        radars = [self.radar1,self.radar2]
+        self.multiple_cv = CVMultipleRadars(dim_x = 9, dim_z = 3, q = 1., radars = radars)
 
     def test_initial_F(self):
         dt = self.multiple_cv.dt
         dt2 = dt**2/2
-        F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
-                      [0,  1, dt,  0,  0,  0,  0,  0,  0],
+        F = np.array([[1, dt,  0,  0,  0,  0,  0,  0,  0],
+                      [0,  1,  0,  0,  0,  0,  0,  0,  0],
                       [0,  0,  1,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  0,  1, dt,dt2,  0,  0,  0],
-                      [0,  0,  0,  0,  1, dt,  0,  0,  0],
+                      [0,  0,  0,  1, dt,  0,  0,  0,  0],
+                      [0,  0,  0,  0,  1,  0,  0,  0,  0],
                       [0,  0,  0,  0,  0,  1,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  0,  1, dt,dt2],
-                      [0,  0,  0,  0,  0,  0,  0,  1, dt],
+                      [0,  0,  0,  0,  0,  0,  1, dt,  0],
+                      [0,  0,  0,  0,  0,  0,  0,  1,  0],
                       [0,  0,  0,  0,  0,  0,  0,  0,  1]])
+        print(F)
+        print(self.multiple_cv.F)
         self.assertTrue(np.array_equal(self.multiple_cv.F,F))
 
 
@@ -112,9 +118,9 @@ class RadarFilterCATestCase(unittest.TestCase):
 
     def test_initial_R(self):
         dt = self.filter_ca.dt
-        R = np.array([[5., 0., 0.],
-                      [0., 1., 0.],
-                      [0., 0., 1.]])
+        R = np.array([[1., 0.   , 0.   ],
+                      [0., 0.001, 0.   ],
+                      [0., 0.   , 0.001]])
         self.assertTrue(np.array_equal(self.filter_ca.R,R))
 
     def test_initial_positions(self):
@@ -152,7 +158,10 @@ class RadarFilterCATestCase(unittest.TestCase):
 
 class CAMultipleRadarsTestCase(unittest.TestCase):
     def setUp(self):
-        self.multiple_ca = CAMultipleRadars(dim_x = 9, dim_z = 3, q = 1., radar_nb = 3)
+        self.radar1 = Radar(x=800,y=800)
+        self.radar2 = Radar(x=200,y=200)
+        radars = [self.radar1,self.radar2]
+        self.multiple_ca = CAMultipleRadars(dim_x = 9, dim_z = 3, q = 1., radars = radars)
 
     def test_initial_F(self):
         dt = self.multiple_ca.dt

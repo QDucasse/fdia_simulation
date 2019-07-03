@@ -12,26 +12,9 @@ from math import cos,sin,radians
 from fdia_simulation.models.moving_target import MovingTarget, Command
 from fdia_simulation.models.sensors import NoisySensor
 
-def angle_between(x, y):
-    '''
-    Helper function computing the angle between two angles in degrees.
-
-    Parameters
-    ----------
-    x, y : int
-        First and second angle (in degrees).
-
-    Returns
-    -------
-    angle : int
-        Angle between x and y taking in consideration the modulo 360.
-    '''
-    return min(y-x, y-x+360, y-x-360, key=abs)
-
-
 class ManeuveredAircraft(MovingTarget):
-    r'''Implements a model for a maneuvered aircraft: two wheels, commands on
-    two headings and velocity. The sensors are three position sensors.
+    r'''Implements a model for a maneuvered aircraft: commands on two headings
+    and velocity. The sensors are three position sensors.
 
     Parameters
     ----------
@@ -64,7 +47,8 @@ class ManeuveredAircraft(MovingTarget):
     headx: int
         Heading of the system around x-axis.
     '''
-    def __init__(self, x0 = 0, y0 = 0, z0 = 0, v0 = 0, hz0 = 0, hx0 = 0,command_list = None):
+    def __init__(self, x0 = 0, y0 = 0, z0 = 0, v0 = 0, hz0 = 0, hx0 = 0,
+                 command_list = None, dt = 1.):
         if command_list == None:
             headx_cmd = Command('headx',0,0,0)
             headz_cmd = Command('headz',0,0,0)
@@ -77,6 +61,7 @@ class ManeuveredAircraft(MovingTarget):
         self.vel      = v0 # Velocity.
         self.headz    = hz0 # Heading around z-axis.
         self.headx    = hx0 # Heading around x-axis.
+        self.dt       = dt  # Time unit
 
     def update(self):
         '''
@@ -94,9 +79,9 @@ class ManeuveredAircraft(MovingTarget):
         velx      = self.vel * cos(radians(self.headx)) * cos(radians(self.headz))
         vely      = self.vel * cos(radians(self.headx)) * sin(radians(self.headz))
         velz      = self.vel * sin(radians(self.headx))
-        self.x    += velx # Model application: x = x + dt*velx   (dt = 1 second)
-        self.y    += vely # Model application: y = y + dt*vely   (dt = 1 second)
-        self.z    += velz # Model application: z = z + dt*velz   (dt = 1 second)
+        self.x    += self.dt*velx # Model application: x = x + dt*velx
+        self.y    += self.dt*vely # Model application: y = y + dt*vely
+        self.z    += self.dt*velz # Model application: z = z + dt*velz
 
         if cmd_headz.steps > 0:           # Heading around z command update
             cmd_headz.steps -= 1          # Diminution of the number of steps
@@ -132,7 +117,6 @@ class ManeuveredAircraft(MovingTarget):
         cmd_headx = self.commands['headx']
         cmd_headx.value = hdg_degrees
         cmd_headx.steps = steps
-        # cmd_headx.delta = angle_between(self.headx, cmd_headx.value) / steps
         cmd_headx.delta = cmd_headx.value / steps
         if abs(cmd_headx.delta) > 0:
             cmd_headx.steps = steps
@@ -161,7 +145,6 @@ class ManeuveredAircraft(MovingTarget):
         cmd_headz = self.commands['headz']
         cmd_headz.value = hdg_degrees
         cmd_headz.steps = steps
-        #cmd_headz.delta = angle_between(self.headz, cmd_headz.value) / steps
         cmd_headz.delta = cmd_headz.value / steps
         if abs(cmd_headz.delta) > 0:
             cmd_headz.steps = steps

@@ -7,7 +7,7 @@ Created on Mon Jun 24 10:20:16 2019
 
 import unittest
 from fdia_simulation.models.radar import Radar
-from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft, angle_between
+from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
 
 
 class RadarTestCase(unittest.TestCase):

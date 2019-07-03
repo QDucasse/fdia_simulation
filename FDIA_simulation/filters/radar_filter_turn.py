@@ -14,25 +14,62 @@ from scipy.linalg    import block_diag
 from fdia_simulation.filters.radar_filter_model import RadarModel
 
 class RadarFilterTurn(RadarModel):
+    r'''Implements a Kalman Filter state estimator for an aircraft-detecting
+    radar. The model is assumed to have constant velocity.
+    Parameters
+    ---------
+    x0, y0, z0: floats
+        Initial positions of the aircraft.
 
-    def __init__(self,dim_x, dim_z, q,
-                      x0  = 1, y0  = 1, z0  = 1,
-                      vx0 = 1, vy0 = 1, vz0 = 1,
-                      ax0 = 1, ay0 = 1, az0 = 1,
-                      dt = 1., std_r = 50., std_theta = 0.05, std_phi = 0.05,
-                      x_rad = 0., y_rad = 0., z_rad = 0.):
-        self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
+    vx0, vy0, vz0: floats
+        Initial velocities of the aircraft.
+
+    ax0, ay0, az0: floats
+        Initial accelerations of the aircraft.
+
+    dt: float
+        Time step.
+
+    std_r, std_theta, std_phi: floats
+        Standard deviation of the measurement noise for the three values.
+
+    x_rad, y_rad, z_rad: floats
+        Radar position.
+
+    Notes
+    -----
+    The state transition function and matrix (f & F), the measurement function
+    and matrix (h & H) and the process noise matrix (Q) are the main differences
+    between the filter models.
+    '''
+    def __init__(self, dim_x, dim_z, q, radar = None,
+                       x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
+                       vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
+                       ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
+                       dt = 1.):
+
+        self.x = np.array([[x0,y0,z0,vx0,vy0,vz0,ax0,ay0,az0]]).T
         F = self.FJacob(self.x)
         RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_z, F = F, q =q,
                             x0  = x0,  y0  = y0,  z0  = z0,
                             vx0 = vx0, vy0 = vy0, vz0 = vz0,
                             ax0 = ax0, ay0 = ay0, az0 = az0,
-                            dt = dt, std_r = std_r, std_theta = std_theta, std_phi = std_phi,
-                            x_rad = x_rad, y_rad = y_rad, z_rad = z_rad)
+                            dt = dt)
 
 
 
     def compute_Q(self,q):
+        '''
+        Computes process noise.
+        Parameters
+        ----------
+        q: float
+            Input process noise.
+        Returns
+        -------
+        Q: numpy float array
+            The process noise matrix.
+        '''
         dt = self.dt
         Q_block = np.array([[0, 0, 0],
                             [0, 0, 0],
@@ -78,6 +115,20 @@ class RadarFilterTurn(RadarModel):
         return np.array([[x_hat,vx_hat,ax_hat,y_hat,vy_hat,ay_hat,z_hat,vz_hat,az_hat]])
 
     def HJacob(self,X):
+        '''
+        Computes the matrix H at a given point in time using the Jacobian of the
+        function h.
+        Parameters
+        ----------
+        X: numpy float array
+            Space-state of the system.
+
+        Returns
+        -------
+        H: numpy float array
+            Jacobian of the h function applied to the state-space X at current
+            time.
+        '''
         x = X[0,0] - self.x_rad
         y = X[3,0] - self.y_rad
         z = X[6,0] - self.z_rad
@@ -87,6 +138,19 @@ class RadarFilterTurn(RadarModel):
         return H
 
     def hx(self,X):
+        '''
+        Computes the h measurement function (when applied to the state space,
+        should output the measurements).
+        Parameters
+        ----------
+        X: numpy float array
+            Space-state of the system.
+
+        Returns
+        -------
+        Z_k: numpy float array
+            Kth measurement as outputed by the measurement function.
+        '''
         # State space vector
         x = X[0,0] - self.x_rad
         y = X[3,0] - self.y_rad
@@ -101,7 +165,7 @@ class RadarFilterTurn(RadarModel):
 
     def predict_x(self, u=0):
         self.F = self.FJacob(self.x)
-        super().predict_x(self, u)
+        RadarModel.predict_x(self, u)
 
 
 if __name__ == "__main__":

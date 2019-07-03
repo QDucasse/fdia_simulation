@@ -9,7 +9,7 @@ import sympy
 import numpy as np
 from sympy.abc       import x, y, z
 from sympy           import symbols, Matrix
-from math            import sqrt, atan2
+from math            import sqrt, atan2, exp
 from scipy.linalg    import block_diag
 from fdia_simulation.filters.radar_filter_model import RadarModel
 

@@ -78,7 +78,7 @@ class AircraftTestCase(unittest.TestCase):
         cmd_headx = self.aircraft_test.commands['headx']
         self.assertEqual(cmd_headx.value,15)
         self.assertEqual(cmd_headx.steps,20)
-        delta = angle_between(15,0)/20
+        delta = angle_between(0,15)/20
         self.assertEqual(cmd_headx.delta,delta)
 
     def test_change_command_with_headingz(self):
@@ -86,7 +86,7 @@ class AircraftTestCase(unittest.TestCase):
         cmd_headz = self.aircraft_test.commands['headz']
         self.assertEqual(cmd_headz.value,15)
         self.assertEqual(cmd_headz.steps,20)
-        delta = angle_between(15,0)/20
+        delta = angle_between(0,15)/20
         self.assertEqual(cmd_headz.delta,delta)
 
     def test_change_command_with_velocity(self):
@@ -100,7 +100,7 @@ class AircraftTestCase(unittest.TestCase):
         cmd_headx = self.aircraft_test.commands['headx']
         for _ in range(20):
             self.aircraft_test.update()
-        self.assertEqual(self.aircraft_test.headx,-5.)
+        self.assertEqual(self.aircraft_test.headx,5.)
         self.assertEqual(cmd_headx.value,5.)
         self.assertEqual(cmd_headx.steps,0.)
 
@@ -109,7 +109,7 @@ class AircraftTestCase(unittest.TestCase):
         cmd_headz = self.aircraft_test.commands['headz']
         for _ in range(20):
             self.aircraft_test.update()
-        self.assertEqual(self.aircraft_test.headz,-5.)
+        self.assertEqual(self.aircraft_test.headz,5.)
         self.assertEqual(cmd_headz.value,5.)
         self.assertEqual(cmd_headz.steps,0.)
 

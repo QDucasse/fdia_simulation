@@ -10,16 +10,44 @@ from sympy.abc       import x, y, z
 from sympy           import symbols, Matrix
 from math            import sqrt, atan2
 from scipy.linalg    import block_diag
+from copy            import deepcopy
 from fdia_simulation.filters.radar_filter_model import RadarModel
 
 
 class RadarFilterCV(RadarModel):
+    r'''Implements a Kalman Filter state estimator for an aircraft-detecting
+    radar. The model is assumed to have constant velocity.
+    Parameters
+    ---------
+    x0, y0, z0: floats
+        Initial positions of the aircraft.
 
+    vx0, vy0, vz0: floats
+        Initial velocities of the aircraft.
+
+    ax0, ay0, az0: floats
+        Initial accelerations of the aircraft.
+
+    dt: float
+        Time step.
+
+    std_r, std_theta, std_phi: floats
+        Standard deviation of the measurement noise for the three values.
+
+    x_rad, y_rad, z_rad: floats
+        Radar position.
+
+    Notes
+    -----
+    The state transition function and matrix (f & F), the measurement function
+    and matrix (h & H) and the process noise matrix (Q) are the main differences
+    between the filter models.
+    '''
     def __init__(self, dim_x, dim_z, q,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                       dt = 1., std_r = 50., std_theta = 0.05, std_phi = 0.05,
+                       dt = 1., std_r = 1., std_theta = 0.005, std_phi = 0.005,
                        x_rad = 0., y_rad = 0., z_rad = 0.):
 
         F = np.array([[1,dt, 0, 0, 0, 0, 0, 0, 0],
@@ -38,10 +66,19 @@ class RadarFilterCV(RadarModel):
                             dt = dt, std_r = std_r, std_theta = std_theta, std_phi = std_phi,
                             x_rad = x_rad, y_rad = y_rad, z_rad = z_rad)
 
-        self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
-
 
     def compute_Q(self,q):
+        '''
+        Computes process noise.
+        Parameters
+        ----------
+        q: float
+            Input process noise.
+        Returns
+        -------
+        Q: numpy float array
+            The process noise matrix.
+        '''
         dt = self.dt
         Q_block = np.array([[dt**3/2, dt**2/2, 0],
                             [dt**2/2,      dt, 0],
@@ -51,6 +88,20 @@ class RadarFilterCV(RadarModel):
         return self.Q
 
     def HJacob(self,X):
+        '''
+        Computes the matrix H at a given point in time using the Jacobian of the
+        function h.
+        Parameters
+        ----------
+        X: numpy float array
+            Space-state of the system.
+
+        Returns
+        -------
+        H: numpy float array
+            Jacobian of the h function applied to the state-space X at current
+            time.
+        '''
         x = X[0,0] - self.x_rad
         y = X[3,0] - self.y_rad
         z = X[6,0] - self.z_rad
@@ -60,6 +111,19 @@ class RadarFilterCV(RadarModel):
         return H
 
     def hx(self,X):
+        '''
+        Computes the h measurement function (when applied to the state space,
+        should output the measurements).
+        Parameters
+        ----------
+        X: numpy float array
+            Space-state of the system.
+
+        Returns
+        -------
+        Z_k: numpy float array
+            Kth measurement as outputed by the measurement function.
+        '''
         # State space vector
         x = X[0,0] - self.x_rad
         y = X[3,0] - self.y_rad
@@ -73,8 +137,85 @@ class RadarFilterCV(RadarModel):
         return Z_k
 
 
+class CVMultipleRadars(RadarFilterCV):
+    r'''Implements a filter model using multiple sensors and combining them
+    through the measurement function and matrix.
+    Parameters
+    ----------
+    radar_nb: int
+        Number of radars.
 
+    others, same as RadarFilterCV.
+    '''
+    def __init__(self,dim_x, dim_z, q, radars,
+                       x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
+                       vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
+                       ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
+                       dt = 1., std_r = 5., std_theta = 1., std_phi = 1.,
+                       radar_nb = 1):
+        RadarFilterCV.__init__(self, dim_x, dim_z, q,
+                               x0  = x0, y0  = y0, z0  = z0,
+                               vx0 = vx0, vy0 = vy0, vz0 = vz0,
+                               ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
+                               dt = 1., std_r = 5., std_theta = 1., std_phi = 1.)
+        self.radar_nb        = radar_nb
+        self.radars          = radars
+        self.radar_positions = [radar.get_position() for radar in radars]
+        self.Rs              = [radar.R for radar in radars]
+        self.R               = block_diag(*self.Rs)
 
+    def hx(self,X):
+        '''
+        Computes the h function: Concatenation of radar_nb h functions.
+        Parameters
+        ----------
+        X: numpy float array
+            State space vector.
+
+        Returns
+        -------
+        Z: numpy float array
+            Concatenated measurement function output.
+
+        Notes
+        -----
+        The result is obtained by vertically concatenating the measurement
+        function of one radar for each of them.
+        '''
+
+        Z = np.reshape(np.array([[]]),(0,1))
+        for position in self.radar_positions:
+            X_cur = deepcopy(X)
+            X_cur[0,0] -= position[0]
+            X_cur[3,0] -= position[1]
+            X_cur[6,0] -= position[2]
+            Z_part = RadarFilterCV.hx(self,X_cur)
+            Z = np.concatenate((Z,Z_part),axis=0)
+        return Z
+
+    def HJacob(self,X):
+        '''
+        Computes H, the Jacobian of the h measurement function. Concatenation of
+        radar_nb Jacobians.
+        Parameters
+        ----------
+        X: numpy float array
+            State space vector.
+
+        Returns
+        -------
+        H: numpy float array
+            Concatenated measurement function Jacobian.
+        '''
+        H = np.reshape(np.array([[]]),(0,9))
+        for position in self.radar_positions:
+            X_cur = deepcopy(X)
+            X_cur[0,0] -= position[0]
+            X_cur[3,0] -= position[1]
+            X_cur[6,0] -= position[2]
+            H_part = RadarFilterCV.HJacob(self,X_cur)
+            H = np.concatenate((H,H_part),axis=0)
+        return H
 
 if __name__ == "__main__":
     # Jacobian matrices determination using sympy

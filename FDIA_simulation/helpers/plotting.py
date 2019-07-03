@@ -81,10 +81,10 @@ def plot_kf_output(xs, filter_xs, zs, title=None, aspect_equal=True):
     plt.xlim((-1, len(xs)))
     plt.show()
 
-def plot_track(xs, ys, zs, fig_nb):
+def plot_track(xs, ys, zs, fig_nb, label):
     fig = plt.figure(fig_nb)
     ax = fig.gca(projection='3d')
-    ax.plot(xs, ys, zs, label='Landing mode trajectory',color='r')
+    ax.plot(xs, ys, zs, label=label,color='r')
     ax.scatter(xs, ys, zs,color='b',marker='o',alpha=0.2)
     ax.scatter(xs[0], ys[0], zs[0],color='g',marker='x',s = 35,label='Starting point')
     plt.legend()

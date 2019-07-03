@@ -8,55 +8,16 @@ Created on Fri Jun 28 13:50:12 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from numpy import dot
-from filterpy.kalman                               import KalmanFilter
-from fdia_simulation.models.moving_target          import Command
-from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
 from fdia_simulation.models.radar                  import Radar
+from fdia_simulation.models.tracks                 import Track
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
 from fdia_simulation.filters.radar_filter_cv       import CVMultipleRadars
 
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
-    # Route generation example with a ManeuveredAircraft
-    sensor_std = 1.
-    headx_cmd = Command('headx',0,0,0)
-    headz_cmd = Command('headz',0,0,0)
-    vel_cmd   = Command('vel',1,0,0)
-    aircraft  = ManeuveredAircraft(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
-    xs, ys, zs = [], [], []
-
-    # Take off acceleration objective
-    aircraft.change_command("vel",200, 20)
-    # First phase -> Acceleration
-    for i in range(10):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
-
-    # Change in commands -> Take off
-    aircraft.change_command("headx",45, 25)
-    aircraft.change_command("headz",90, 25)
-
-    # Second phase -> Take off
-    for i in range(30):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
-
-    # Change in commands -> Steady state
-    aircraft.change_command("headx",-45, 25)
-    aircraft.change_command("headz",180, 25)
-
-    # Third phase -> Steady state
-    for i in range(60):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
-
+    trajectory = Track()
+    xs, ys, zs = trajectory.gen_takeoff()
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
     # ======================== Radars data generation ===========================
@@ -72,7 +33,7 @@ if __name__ == "__main__":
     # print("radar1 computed position values: \n{0}\n".format(radar1_computed_values[:10]))
 
     # Radar 2
-    radar2 = Radar(x=200,y=200)
+    radar2 = Radar(x=800,y=200)
     rs2, thetas2, phis2 = radar2.gen_data(position_data)
     noisy_rs2, noisy_thetas2, noisy_phis2 = radar2.sense(rs2, thetas2, phis2)
     xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs2, noisy_thetas2, noisy_phis2)
@@ -89,7 +50,7 @@ if __name__ == "__main__":
     radars = [radar1,radar2]
     radar_filter_cv = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
                                        radars = radars, radar_nb = 2,
-                                       x0 = 1000, y0=1000)
+                                       x0 = 100, y0=100)
     est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
     for val in radar_values:
         radar_filter_cv.predict()

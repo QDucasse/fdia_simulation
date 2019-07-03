@@ -10,7 +10,9 @@ from sympy.abc       import x, y, z
 from sympy           import symbols, Matrix
 from math            import sqrt, atan2
 from scipy.linalg    import block_diag
+from copy            import deepcopy
 from fdia_simulation.filters.radar_filter_model import RadarModel
+
 
 class RadarFilterCA(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
@@ -41,12 +43,11 @@ class RadarFilterCA(RadarModel):
     and matrix (h & H) and the process noise matrix (Q) are the main differences
     between the filter models.
     '''
-    def __init__(self,dim_x, dim_z, q,
+    def __init__(self,dim_x, dim_z, q, radar = None,
                       x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                       vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                       ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                      dt = 1., std_r = 1., std_theta = 0.005, std_phi = 0.005,
-                      x_rad = 0., y_rad = 0., z_rad = 0.):
+                      dt = 1.):
 
         dt2 = dt**2/2
         F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
@@ -59,12 +60,12 @@ class RadarFilterCA(RadarModel):
                       [0,  0,  0,  0,  0,  0,  0,  1, dt],
                       [0,  0,  0,  0,  0,  0,  0,  0,  1]])
 
-        RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_z, F = F, q =q,
+        RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_z,
+                            F = F, q =q, radar = radar,
                             x0  = x0,  y0  = y0,  z0  = z0,
                             vx0 = vx0, vy0 = vy0, vz0 = vz0,
                             ax0 = ax0, ay0 = ay0, az0 = az0,
-                            dt = dt, std_r = std_r, std_theta = std_theta, std_phi = std_phi,
-                            x_rad = x_rad, y_rad = y_rad, z_rad = z_rad)
+                            dt = dt)
 
     def compute_Q(self,q):
         '''
@@ -146,19 +147,22 @@ class CAMultipleRadars(RadarFilterCA):
 
     others, same as RadarFilterCA.
     '''
-    def __init__(self,dim_x, dim_z, q,
+    def __init__(self,dim_x, dim_z, q, radars,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                       dt = 1., std_r = 5., std_theta = 1., std_phi = 1.,
-                       x_rad = 0., y_rad = 0., z_rad = 0.,radar_nb = 1):
+                       dt = 1., radar_nb = 1):
         RadarFilterCA.__init__(self, dim_x, dim_z, q,
-                           x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
-                           vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
-                           ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                           dt = 1., std_r = 5., std_theta = 1., std_phi = 1.,
-                           x_rad = 0., y_rad = 0., z_rad = 0.)
-        self.radar_nb = radar_nb
+                               x0  = x0, y0  = y0, z0  = z0,
+                               vx0 = vx0, vy0 = vy0, vz0 = vz0,
+                               ax0 = ax0, ay0 = ay0, az0 = az0,
+                               dt = dt)
+        self.radar_nb        = radar_nb
+        self.radars          = radars
+        self.radar_positions = [radar.get_position() for radar in radars]
+        self.Rs              = [radar.R for radar in radars]
+        self.R               = block_diag(*self.Rs)
+
     def hx(self,X):
         '''
         Computes the h function: Concatenation of radar_nb h functions.
@@ -177,10 +181,14 @@ class CAMultipleRadars(RadarFilterCA):
         The result is obtained by vertically concatenating the measurement
         function of one radar for each of them.
         '''
-        Zpart = RadarFilterCA.hx(X)
-        Z     = np.array([[]])
-        for _ in range(self.radar_nb):
-            Z = np.concatenate((Z,Zpart),axis=0)
+        Z = np.reshape(np.array([[]]),(0,1))
+        for position in self.radar_positions:
+            X_cur = deepcopy(X)
+            X_cur[0,0] -= position[0]
+            X_cur[3,0] -= position[1]
+            X_cur[6,0] -= position[2]
+            Z_part = RadarFilterCA.hx(self,X_cur)
+            Z = np.concatenate((Z,Z_part),axis=0)
         return Z
 
     def HJacob(self,X):
@@ -197,13 +205,15 @@ class CAMultipleRadars(RadarFilterCA):
         H: numpy float array
             Concatenated measurement function Jacobian.
         '''
-        Hpart = RadarFilterCA.hx(X)
-        H     = np.array([[]])
-        for _ in range(self.radar_nb):
-            H = np.concatenate((H,Hpart),axis=0)
+        H = np.reshape(np.array([[]]),(0,9))
+        for position in self.radar_positions:
+            X_cur = deepcopy(X)
+            X_cur[0,0] -= position[0]
+            X_cur[3,0] -= position[1]
+            X_cur[6,0] -= position[2]
+            H_part = RadarFilterCA.HJacob(self,X_cur)
+            H = np.concatenate((H,H_part),axis=0)
         return H
-
-
 
 if __name__ == "__main__":
     # Jacobian matrices determination using sympy

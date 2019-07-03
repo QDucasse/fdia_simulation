@@ -11,6 +11,7 @@ from math            import sqrt, atan2
 from copy            import deepcopy
 from abc             import ABC,abstractmethod
 from filterpy.kalman import ExtendedKalmanFilter
+from fdia_simulation.models.radar import Radar
 
 
 class RadarModel(ExtendedKalmanFilter,ABC):
@@ -48,22 +49,21 @@ class RadarModel(ExtendedKalmanFilter,ABC):
     x_rad, y_rad, z_rad: floats
         Radar position.
     '''
-    def __init__(self, dim_x, dim_z, F, q,
+    def __init__(self, dim_x, dim_z, F, q, radar = None,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                       dt = 1., std_r = 5., std_theta = 1., std_phi = 1.,
-                       x_rad = 0., y_rad = 0., z_rad = 0.):
+                       dt = 1.):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
-        self.F = F
-        self.dt = dt
-        self.x_rad = x_rad
-        self.y_rad = y_rad
-        self.z_rad = z_rad
-        self.R = np.array([[std_r,0        ,       0],
-                           [0    ,std_theta,       0],
-                           [0    ,0        , std_phi]])
+        self.F     = F
+        self.dt    = dt
+        if radar is None:
+            radar = Radar(x=0,y=0,z=0)
+        self.x_rad = radar.x
+        self.y_rad = radar.y
+        self.z_rad = radar.z
+        self.R     = radar.R
         self.compute_Q(q)
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
 
@@ -136,21 +136,3 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         '''
         z = np.reshape(z,(-2,1))
         ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob, Hx = self.hx)
-
-        # H = self.HJacob(self.x)
-        # PHT = self.P@H.T
-        # self.S = H@PHT + self.R
-        # self.K = PHT@np.linalg.inv(self.S)
-        # hx = self.hx(self.x)
-        # self.y = np.subtract(z, hx)
-        # self.x = self.x + (self.K@self.y)
-
-        if(logs):
-            print('New Kalman gain: \n{0}\n'.format(self.K))
-            print('Estimate: \n{0}\n'.format(hx))
-            print('Innovation: \n{0}\n'.format(self.y))
-            print('State space vector after correction: \n{0}\n'.format(self.x))
-            print('KH: \n{0}\n'.format(self.K@H))
-            print('I-KH: \n{0}\n'.format(I_KH))
-            print('P: \n{0}\n'.format(self.P))
-            print('Ponderated state: \n{0}\n'.format(self.K@self.y))

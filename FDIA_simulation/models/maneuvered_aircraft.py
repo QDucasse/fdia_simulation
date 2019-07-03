@@ -196,62 +196,63 @@ class ManeuveredAircraft(MovingTarget):
 
 
 if __name__ == "__main__":
+    # Route generation example with a ManeuveredAircraft
+    sensor_std = 1.
+    headx_cmd = Command('headx',0,0,0)
+    headz_cmd = Command('headz',0,0,0)
+    vel_cmd   = Command('vel',1,0,0)
+    aircraft  = ManeuveredAircraft(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
+    xs, ys, zs = [], [], []
 
-        # Route generation example with a ManeuveredAircraft
-        sensor_std = 1.
-        headx_cmd = Command('headx',0,0,0)
-        headz_cmd = Command('headz',0,0,0)
-        vel_cmd   = Command('vel',1,0,0)
-        aircraft  = ManeuveredAircraft(x0 = 0, y0 = 0, z0=0, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
-        xs, ys, zs = [], [], []
+    # Take off acceleration objective
+    aircraft.change_command("vel",200, 20)
+    # First phase -> Acceleration
+    for i in range(10):
+        x, y, z = aircraft.update()
+        xs.append(x)
+        ys.append(y)
+        zs.append(z)
 
-        # Take off acceleration objective
-        aircraft.change_command("vel",200, 20)
-        # First phase -> Acceleration
-        for _ in range(10):
-            x, y, z = aircraft.update()
-            xs.append(x)
-            ys.append(y)
-            zs.append(z)
+    # Change in commands -> Take off
+    aircraft.change_command("headx",45, 25)
+    aircraft.change_command("headz",90, 25)
 
-        # Change in commands -> Take off
-        aircraft.change_command("headx",315, 25)
-        aircraft.change_command("headz",315, 25)
+    # Second phase -> Take off
+    for i in range(30):
+        x, y, z = aircraft.update()
+        xs.append(x)
+        ys.append(y)
+        zs.append(z)
 
-        # Second phase -> Take off
-        for _ in range(30):
-            x, y, z = aircraft.update()
-            xs.append(x)
-            ys.append(y)
-            zs.append(z)
+    # Change in commands -> Steady state
+    aircraft.change_command("headx",-45, 25)
+    aircraft.change_command("headz",180, 25)
 
-        # Change in commands -> Steady state
-        aircraft.change_command("headx",90, 25)
-        aircraft.change_command("headz",270, 25)
+    # Third phase -> Steady state
+    for i in range(60):
+        x, y, z = aircraft.update()
+        xs.append(x)
+        ys.append(y)
+        zs.append(z)
 
-        # Third phase -> Steady state
-        for _ in range(60):
-            x, y, z = aircraft.update()
-            xs.append(x)
-            ys.append(y)
-            zs.append(z)
+    position_data = np.array(list(zip(xs,ys,zs)))
 
-        # Sensor definitions: Position(x,y)
-        nsx = NoisySensor(sensor_std)   # Position sensor for the x-axis
-        nsy = NoisySensor(sensor_std)   # Position sensor for the y-axis
-        nsz = NoisySensor(sensor_std)   # Position sensor for the z-axis
-        pos = np.array(list(zip(xs, ys, zs)))             # Real positions
-        noisy_xs = [nsx.sense(x) for x in xs]
-        noisy_ys = [nsy.sense(y) for y in ys]
-        noisy_zs = [nsy.sense(z) for z in zs]
-        measurements  = np.array(list(zip(noisy_xs, noisy_ys, noisy_zs))) # Measured positions
+    # Sensor definitions: Position(x,y)
+    nsx = NoisySensor(sensor_std)   # Position sensor for the x-axis
+    nsy = NoisySensor(sensor_std)   # Position sensor for the y-axis
+    nsz = NoisySensor(sensor_std)   # Position sensor for the z-axis
+    pos = np.array(list(zip(xs, ys, zs)))             # Real positions
+    noisy_xs = [nsx.sense(x) for x in xs]
+    noisy_ys = [nsy.sense(y) for y in ys]
+    noisy_zs = [nsy.sense(z) for z in zs]
+    measurements  = np.array(list(zip(noisy_xs, noisy_ys, noisy_zs))) # Measured positions
 
-        # Route plot
-        fig = plt.figure()
-        ax = fig.gca(projection='3d')
-        ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
-        ax.scatter(noisy_xs, noisy_ys, noisy_zs,color='b',marker='o')
-        ax.set_xlabel('X axis')
-        ax.set_ylabel('Y axis')
-        ax.set_zlabel('Z axis')
-        plt.show()
+    # Route plot
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
+    ax.scatter(noisy_xs, noisy_ys, noisy_zs,color='b',marker='o')
+    ax.set_xlabel('X axis')
+    ax.set_ylabel('Y axis')
+    ax.set_zlabel('Z axis')
+    plt.show()

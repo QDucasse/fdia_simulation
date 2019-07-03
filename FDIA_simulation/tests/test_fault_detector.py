@@ -7,9 +7,12 @@ Created on Mon Jun 17 14:28:45 2019
 
 import unittest
 from nose.tools import raises
-from fdia_simulation.fault_detectors.fault_detector import FaultDetector,ChiSquareDetector,EuclidianDetector
 from filterpy.common import kinematic_kf
 from numpy.random import randn
+from fdia_simulation.fault_detectors.chi_square     import ChiSquareDetector
+from fdia_simulation.fault_detectors.euclidian      import EuclidianDetector
+from fdia_simulation.fault_detectors.fault_detector import FaultDetector
+
 
 
 class FaultDetectorTestCase(unittest.TestCase):

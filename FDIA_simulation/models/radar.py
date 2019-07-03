@@ -34,13 +34,26 @@ class Radar(object):
     Identical to Attributes
     '''
 
-    def __init__(self, x, y, z=0, r_noise_std = 1., theta_noise_std = 0.01, phi_noise_std = 0.01):
+    def __init__(self, x, y, z=0, r_noise_std = 1., theta_noise_std = 0.005, phi_noise_std = 0.005):
         self.x                = x
         self.y                = y
         self.z                = z
         self.r_noise_std      = r_noise_std
         self.theta_noise_std  = theta_noise_std
         self.phi_noise_std    = phi_noise_std
+        self.R = np.array([[r_noise_std,0              ,0            ],
+                           [0          ,theta_noise_std,0            ],
+                           [0          ,0              ,phi_noise_std]])
+
+    def get_position(self):
+        '''
+        Position accessor.
+        Returns
+        -------
+        position: float iterable
+            [x,y,z] of the radar.
+        '''
+        return [self.x,self.y,self.z]
 
     def gen_data(self,position_data):
         '''
@@ -159,28 +172,28 @@ if __name__ == "__main__":
     xs, ys, zs = [], [], []
 
     # Take off acceleration objective
-    aircraft.change_command("vel",200, 20)
+    aircraft.change_command("vel",80, 20)
     # First phase -> Acceleration
-    for i in range(10):
+    for i in range(15):
         x, y, z = aircraft.update()
         xs.append(x)
         ys.append(y)
         zs.append(z)
 
     # Change in commands -> Take off
-    aircraft.change_command("headx",315, 25)
-    aircraft.change_command("headz",315, 25)
+    aircraft.change_command("headx",45, 5)
+    aircraft.change_command("headz",-45, 5)
 
     # Second phase -> Take off
-    for i in range(30):
+    for i in range(10):
         x, y, z = aircraft.update()
         xs.append(x)
         ys.append(y)
         zs.append(z)
 
     # Change in commands -> Steady state
-    aircraft.change_command("headx",90, 25)
-    aircraft.change_command("headz",270, 25)
+    aircraft.change_command("headx",-45, 25)
+    aircraft.change_command("headz",-45, 25)
 
     # Third phase -> Steady state
     for i in range(60):

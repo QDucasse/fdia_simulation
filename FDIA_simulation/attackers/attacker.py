@@ -15,7 +15,18 @@ from numpy.random import randn
 
 
 class UnstableData(object):
+    r'''Implements a model for storing unstable data.
+    Parameters
+    ----------
+    val: float
+        Unstable eigenvalue.
 
+    vect: numpy float array
+        Unstable eigenvector linked to the previous eigenvalue.
+
+    position: int
+        Position of the eigenvalue in the studied matrix.
+    '''
     def __init__(self,val,vect,position):
         self.value    = val
         self.vector   = vect
@@ -30,6 +41,8 @@ class UnstableData(object):
 
 
 class Attacker(ABC):
+    r'''Implements common behavior to attackers. 
+    '''
     def __init__(self):
         pass
 

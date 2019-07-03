@@ -46,7 +46,7 @@ class MoAttacker(Attacker):
         to the right.
         Parameters
         ----------
-        yai: float numpy arr!ay
+        yai: float numpy array
             New vector taking part of the attack sequence for time i.
         '''
         self.attack_sequence = np.hstack([self.attack_sequence, yai])
@@ -83,10 +83,6 @@ class MoAttacker(Attacker):
         '''
         Computes the process to get P (covariance matrix on state) in steady
         state as the solution of a discrete Ricatti equation.
-        Parameters
-        ----------
-        kf: KalmanFilter
-            Kalman filter used to compute system state.
 
         Returns
         -------
@@ -105,14 +101,6 @@ class MoAttacker(Attacker):
         '''
         Computes the process to get K (Kalman gain) in steady state as the
         solution of a discrete Ricatti equation.
-        Parameters
-        ----------
-        kf: KalmanFilter
-            Kalman filter used to compute system state.
-
-        ss_P: matrix
-            Covariance on state in steady state.
-
         Returns
         -------
         ss_K: matrix
@@ -131,9 +119,6 @@ class MoAttacker(Attacker):
         initial steps of the attack sequence.
         Parameters
         ----------
-        kf: KalmanFilter
-            The state estimator of the attacked system.
-
         ss_K: float matrix
             Kalman gain of the estimator in steady state.
 
@@ -154,9 +139,6 @@ class MoAttacker(Attacker):
         Computes the two first element of the attack sequence.
         Parameters
         ----------
-        kf: KalmanFilter
-            Estimator of the system under attack.
-
         attackers_input: float matrix
             Matrix of the attacker's needed input to reach Cv.
 
@@ -181,9 +163,6 @@ class MoAttacker(Attacker):
         Computes the maximal norm after simulating the first two measurements.
         Parameters
         ----------
-        kf: KalmanFilter
-            Estimator of the system under attack.
-
         Gamma: int matrix
             Attack matrix of the system.
 
@@ -224,9 +203,6 @@ class MoAttacker(Attacker):
         and attack matrix Gamma.
         Parameters
         ----------
-        kf: KalmanFilter
-            Estimator of the system under attack.
-
         value_position: int
             Position of the targetted eigenvalue in the state transition matrix.
 
@@ -258,14 +234,12 @@ class MoAttacker(Attacker):
         Creates the attack sequence (aka the falsified measurements passed to the filter).
         Parameters:
         -----------
-        kf: KalmanFilter
-            Estimator of the system under attack.
-
         attack_size: int
             Duration of the attack (number of steps).
 
-        fb: boolean
-            Presence of a feedback linearisator. Influences the value of P.
+        pos_value: int
+            Position of the unstable value along which the attacker should
+            attack.
 
         logs: boolean
             Displays the logs of the different steps if True. Default value: False
@@ -378,5 +352,5 @@ if __name__ == "__main__":
     attack_vector = np.array([[0.,1.]]).T
     ya0,ya1 = mo_attacker.initialize_attack_sequence(attackers_input,attack_vector)
     M = mo_attacker.compute_max_norm(Gamma,ya0,ya1)
-    mo_attacker.compute_attack_sequence(attack_size = 30,logs = True)
+    mo_attacker.compute_attack_sequence(attack_size = 30,pos_value = 0,logs = True)
     # ==========================================================================

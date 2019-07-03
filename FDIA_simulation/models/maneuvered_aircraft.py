@@ -64,7 +64,12 @@ class ManeuveredAircraft(MovingTarget):
     headx: int
         Heading of the system around x-axis.
     '''
-    def __init__(self, x0, y0, z0, v0, hz0, hx0,command_list):
+    def __init__(self, x0 = 0, y0 = 0, z0 = 0, v0 = 0, hz0 = 0, hx0 = 0,command_list = None):
+        if command_list == None:
+            headx_cmd = Command('headx',0,0,0)
+            headz_cmd = Command('headz',0,0,0)
+            vel_cmd   = Command('vel',0,0,0)
+            command_list = [headx_cmd, headz_cmd, vel_cmd]
         super().__init__(command_list)
         self.x        = x0 # Position along x-axis.
         self.y        = y0 # Position along y-axis.
@@ -127,7 +132,8 @@ class ManeuveredAircraft(MovingTarget):
         cmd_headx = self.commands['headx']
         cmd_headx.value = hdg_degrees
         cmd_headx.steps = steps
-        cmd_headx.delta = angle_between(cmd_headx.value, self.headx) / steps
+        # cmd_headx.delta = angle_between(self.headx, cmd_headx.value) / steps
+        cmd_headx.delta = cmd_headx.value / steps
         if abs(cmd_headx.delta) > 0:
             cmd_headx.steps = steps
         else:
@@ -155,7 +161,8 @@ class ManeuveredAircraft(MovingTarget):
         cmd_headz = self.commands['headz']
         cmd_headz.value = hdg_degrees
         cmd_headz.steps = steps
-        cmd_headz.delta = angle_between(cmd_headz.value, self.headz) / steps
+        #cmd_headz.delta = angle_between(self.headz, cmd_headz.value) / steps
+        cmd_headz.delta = cmd_headz.value / steps
         if abs(cmd_headz.delta) > 0:
             cmd_headz.steps = steps
         else:
@@ -201,7 +208,7 @@ if __name__ == "__main__":
         # Take off acceleration objective
         aircraft.change_command("vel",200, 20)
         # First phase -> Acceleration
-        for i in range(10):
+        for _ in range(10):
             x, y, z = aircraft.update()
             xs.append(x)
             ys.append(y)
@@ -212,7 +219,7 @@ if __name__ == "__main__":
         aircraft.change_command("headz",315, 25)
 
         # Second phase -> Take off
-        for i in range(30):
+        for _ in range(30):
             x, y, z = aircraft.update()
             xs.append(x)
             ys.append(y)
@@ -223,7 +230,7 @@ if __name__ == "__main__":
         aircraft.change_command("headz",270, 25)
 
         # Third phase -> Steady state
-        for i in range(60):
+        for _ in range(60):
             x, y, z = aircraft.update()
             xs.append(x)
             ys.append(y)

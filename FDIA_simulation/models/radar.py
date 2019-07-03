@@ -34,7 +34,7 @@ class Radar(object):
     Identical to Attributes
     '''
 
-    def __init__(self, x, y, z=0, r_noise_std = 1., theta_noise_std = 0.005, phi_noise_std = 0.005):
+    def __init__(self, x, y, z=0, r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001):
         self.x                = x
         self.y                = y
         self.z                = z

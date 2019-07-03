@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 28 13:50:12 2019
+Created on Wed Jul 03 11:43:22 2019
 
 @author: qde
 """
@@ -11,7 +11,7 @@ from numpy import dot
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.models.tracks                 import Track
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_cv       import CVMultipleRadars
+from fdia_simulation.filters.radar_filter_ca       import CAMultipleRadars
 
 
 if __name__ == "__main__":
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # ====================== Radar filter generation ===========================
     # Filter: constant velocity
     radars = [radar1,radar2]
-    radar_filter_cv = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
+    radar_filter_cv = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
                                        radars = radars, radar_nb = 2,
                                        x0 = 100, y0=100)
     est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
     ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
-    ax.plot(est_xs_cv, est_ys_cv, est_zs_cv,color='orange', label = 'Estimation-CV')
+    ax.plot(est_xs_cv, est_ys_cv, est_zs_cv,color='orange', label = 'Estimation-CA')
     ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
     ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
     ax.set_xlabel('X axis')

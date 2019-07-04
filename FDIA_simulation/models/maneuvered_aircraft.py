@@ -180,7 +180,6 @@ class ManeuveredAircraft(MovingTarget):
 
 if __name__ == "__main__":
     # Route generation example with a ManeuveredAircraft
-    sensor_std = 1.
     headx_cmd = Command('headx',0,0,0)
     headz_cmd = Command('headz',0,0,0)
     vel_cmd   = Command('vel',1,0,0)
@@ -220,21 +219,11 @@ if __name__ == "__main__":
 
     position_data = np.array(list(zip(xs,ys,zs)))
 
-    # Sensor definitions: Position(x,y)
-    nsx = NoisySensor(sensor_std)   # Position sensor for the x-axis
-    nsy = NoisySensor(sensor_std)   # Position sensor for the y-axis
-    nsz = NoisySensor(sensor_std)   # Position sensor for the z-axis
-    pos = np.array(list(zip(xs, ys, zs)))             # Real positions
-    noisy_xs = [nsx.sense(x) for x in xs]
-    noisy_ys = [nsy.sense(y) for y in ys]
-    noisy_zs = [nsy.sense(z) for z in zs]
-    measurements  = np.array(list(zip(noisy_xs, noisy_ys, noisy_zs))) # Measured positions
-
     # Route plot
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
-    ax.scatter(noisy_xs, noisy_ys, noisy_zs,color='b',marker='o')
+    ax.scatter(xs, ys, zs,color='b',marker='o')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')

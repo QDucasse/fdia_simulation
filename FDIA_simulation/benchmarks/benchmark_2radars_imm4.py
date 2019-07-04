@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 03 11:52:38 2019
+Created on Thu Jul 04 11:47:32 2019
 
 @author: qde
 """
@@ -9,11 +9,13 @@ import numpy             as np
 import matplotlib.pyplot as plt
 from numpy import dot
 from filterpy.kalman import IMMEstimator
-from fdia_simulation.models.radar                  import Radar
-from fdia_simulation.models.tracks                 import Track
-from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_cv       import CVMultipleRadars
-from fdia_simulation.filters.radar_filter_ca       import CAMultipleRadars
+from fdia_simulation.models.radar               import Radar
+from fdia_simulation.models.tracks              import Track
+from fdia_simulation.attackers.mo_attacker      import MoAttacker
+from fdia_simulation.filters.radar_filter_cv    import CVMultipleRadars
+from fdia_simulation.filters.radar_filter_ca    import CAMultipleRadars
+from fdia_simulation.filters.radar_filter_turn  import TurnMultipleRadars
+from fdia_simulation.filters.radar_filter_ta    import TAMultipleRadars
 
 
 
@@ -50,15 +52,24 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
-    radar_filter_cv = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 1.,
-                                       radars = radars,
-                                       x0 = 100, y0=100)
-    radar_filter_ca = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                       radars = radars,
-                                       x0 = 100, y0=100)
-    filters = [radar_filter_cv, radar_filter_ca]
-    mu = [0.5, 0.5]
-    trans = np.array([[0.998, 0.02], [0.100, 0.900]])
+    radar_filter_cv   = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 1.,
+                                         radars = radars,
+                                         x0 = 100, y0=100)
+    radar_filter_ca   = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
+                                         radars = radars,
+                                         x0 = 100, y0=100)
+    radar_filter_turn = TurnMultipleRadars(dim_x = 9, dim_z = 6, q = 75.,
+                                         radars = radars,
+                                         x0 = 100, y0=100)
+    radar_filter_ta   = TAMultipleRadars(dim_x = 9, dim_z = 6, q = 25.,
+                                         radars = radars,
+                                         x0 = 100, y0=100)
+    filters = [radar_filter_cv, radar_filter_ca, radar_filter_turn, radar_filter_ta]
+    mu = [0.25, 0.25, 0.25, 0.25]
+    trans = np.array([[0.997, 0.001, 0.001, 0.001],
+                      [0.050, 0.850, 0.050, 0.050],
+                      [0.001, 0.001, 0.001, 0.997],
+                      [0.001, 0.001, 0.001, 0.997]])
     imm = IMMEstimator(filters, mu, trans)
 
     est_xs_imm, est_ys_imm, est_zs_imm = [],[],[]
@@ -80,7 +91,7 @@ if __name__ == "__main__":
     ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
     ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
-    ax.plot(est_xs_imm, est_ys_imm, est_zs_imm,color='orange', label='Estimation-IMM2')
+    ax.plot(est_xs_imm, est_ys_imm, est_zs_imm,color='orange', label='Estimation-IMM4')
     ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
     ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
     ax.set_xlabel('X axis')
@@ -93,6 +104,8 @@ if __name__ == "__main__":
     fig2 = plt.figure(2)
     plt.plot(probs[:,0],label='Constant Velocity')
     plt.plot(probs[:,1],label='Constant Acceleration')
+    plt.plot(probs[:,2],label='Constant Turn')
+    plt.plot(probs[:,3],label='Thrust Acceleration')
     plt.legend()
     fig2.show()
     plt.show()

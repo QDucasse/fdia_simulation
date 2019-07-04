@@ -7,32 +7,7 @@ Created on Fri Jun 14 16:32:12 2019
 
 import unittest
 from fdia_simulation.models.moving_target import Command
-from fdia_simulation.models.maneuvered_bicycle import ManeuveredBicycle, angle_between
-
-class AngleTestCase(unittest.TestCase):
-    def test_angle_two_positives(self):
-        x = 40
-        y = 50
-        self.assertEqual(angle_between(x,y),10)
-        self.assertEqual(angle_between(y,x),-10)
-
-    def test_angle_two_positives_over_360(self):
-        x = 350
-        y = 50
-        self.assertEqual(angle_between(x,y),60)
-        self.assertEqual(angle_between(y,x),-60)
-
-    def test_angle_positive_negative(self):
-        x = 40
-        y = -30
-        self.assertEqual(angle_between(x,y),-70)
-        self.assertEqual(angle_between(y,x),70)
-
-    def test_angle_two_negatives(self):
-        x = -40
-        y = -30
-        self.assertEqual(angle_between(x,y),10)
-        self.assertEqual(angle_between(y,x),-10)
+from fdia_simulation.models.maneuvered_bicycle import ManeuveredBicycle
 
 
 class BicycleTestCase(unittest.TestCase):
@@ -84,7 +59,7 @@ class BicycleTestCase(unittest.TestCase):
         cmd_head = self.bicycle_test.commands['head']
         self.assertEqual(cmd_head.value,15)
         self.assertEqual(cmd_head.steps,20)
-        delta = angle_between(15,0)/20
+        delta = 15/20
         self.assertEqual(cmd_head.delta,delta)
 
     def test_change_command_with_velocity(self):
@@ -110,7 +85,7 @@ class BicycleTestCase(unittest.TestCase):
         cmd_head = self.bicycle_test.commands['head']
         for _ in range(20):
             self.bicycle_test.update()
-        self.assertEqual(self.bicycle_test.head,-5.)
+        self.assertEqual(self.bicycle_test.head,5.)
         self.assertEqual(cmd_head.value,5.)
         self.assertEqual(cmd_head.steps,0.)
 

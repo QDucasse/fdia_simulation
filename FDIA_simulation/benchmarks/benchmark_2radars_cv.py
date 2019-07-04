@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # Filter: constant velocity
     radars = [radar1,radar2]
     radar_filter_cv = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                       radars = radars, radar_nb = 2,
+                                       radars = radars,
                                        x0 = 100, y0=100)
     est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
     for val in radar_values:

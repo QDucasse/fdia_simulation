@@ -163,29 +163,27 @@ class Radar(object):
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
-    # Route generation example with a ManeuveredAircraft
-    sensor_std = 1.
     headx_cmd = Command('headx',0,0,0)
     headz_cmd = Command('headz',0,0,0)
     vel_cmd   = Command('vel',1,0,0)
-    aircraft  = ManeuveredAircraft(x0 = 1, y0 = 1, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
+    aircraft  = ManeuveredAircraft(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
     xs, ys, zs = [], [], []
 
     # Take off acceleration objective
-    aircraft.change_command("vel",80, 20)
+    aircraft.change_command("vel",200, 20)
     # First phase -> Acceleration
-    for i in range(15):
+    for i in range(10):
         x, y, z = aircraft.update()
         xs.append(x)
         ys.append(y)
         zs.append(z)
 
     # Change in commands -> Take off
-    aircraft.change_command("headx",45, 5)
-    aircraft.change_command("headz",-45, 5)
+    aircraft.change_command("headx",45, 25)
+    aircraft.change_command("headz",90, 25)
 
     # Second phase -> Take off
-    for i in range(10):
+    for i in range(30):
         x, y, z = aircraft.update()
         xs.append(x)
         ys.append(y)
@@ -193,7 +191,7 @@ if __name__ == "__main__":
 
     # Change in commands -> Steady state
     aircraft.change_command("headx",-45, 25)
-    aircraft.change_command("headz",-45, 25)
+    aircraft.change_command("headz",180, 25)
 
     # Third phase -> Steady state
     for i in range(60):

@@ -11,6 +11,7 @@ from sympy.abc       import x, y, z
 from sympy           import symbols, Matrix
 from math            import sqrt, atan2, exp
 from scipy.linalg    import block_diag
+from copy            import deepcopy
 from fdia_simulation.filters.radar_filter_model import RadarModel
 
 class RadarFilterTA(RadarModel):
@@ -146,12 +147,12 @@ class TAMultipleRadars(RadarFilterTA):
 
     others, same as RadarFilterCA.
     '''
-    def __init__(self,dim_x, dim_z, q,
+    def __init__(self,dim_x, dim_z, q, radars = None,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
                        dt = 1.,):
-        RadarFilterCA.__init__(self, dim_x, dim_z, q,
+        RadarFilterTA.__init__(self, dim_x, dim_z, q,
                            x0  = x0, y0  = y0, z0  = z0,
                            vx0 = vx0, vy0 = vy0, vz0 = vz0,
                            ax0 = ax0, ay0 = ay0, az0 = az0,
@@ -185,7 +186,7 @@ class TAMultipleRadars(RadarFilterTA):
             X_cur[0,0] -= position[0]
             X_cur[3,0] -= position[1]
             X_cur[6,0] -= position[2]
-            Z_part = RadarFilterCV.hx(self,X_cur)
+            Z_part = RadarFilterTA.hx(self,X_cur)
             Z = np.concatenate((Z,Z_part),axis=0)
         return Z
 
@@ -209,7 +210,7 @@ class TAMultipleRadars(RadarFilterTA):
             X_cur[0,0] -= position[0]
             X_cur[3,0] -= position[1]
             X_cur[6,0] -= position[2]
-            H_part = RadarFilterCV.HJacob(self,X_cur)
+            H_part = RadarFilterTA.HJacob(self,X_cur)
             H = np.concatenate((H,H_part),axis=0)
         return H
 

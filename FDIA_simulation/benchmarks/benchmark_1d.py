@@ -10,8 +10,9 @@ import matplotlib.pyplot as plt
 from numpy.random import randn
 from pprint import pprint
 from filterpy.kalman import KalmanFilter
-from fdia_simulation.attackers.mo_attacker import MoAttacker
-from fdia_simulation.fault_detectors.fault_detector import ChiSquareDetector, EuclidianDetector
+from fdia_simulation.attackers.mo_attacker      import MoAttacker
+from fdia_simulation.fault_detectors.chi_square import ChiSquareDetector
+from fdia_simulation.fault_detectors.euclidian  import  EuclidianDetector
 
 
 if __name__ == "__main__":
@@ -75,9 +76,9 @@ if __name__ == "__main__":
 
         kf.predict()
         fault_detector.review_measurement(zs[:,i],kf)
-        print('New measurement: \n{0}\n'.format(kf.x))
+        # print('New measurement: \n{0}\n'.format(kf.x))
         kf.update(zs[:,i])
-        print('State space vector: \n{0}\n'.format(kf.x))
+        # print('State space vector: \n{0}\n'.format(kf.x))
         xs.append(kf.x)
 
     xs = np.array(xs)

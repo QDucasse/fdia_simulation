@@ -7,7 +7,6 @@ Created on Thu Jul 04 11:47:28 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from numpy import dot
 from filterpy.kalman import IMMEstimator
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.models.tracks                 import Track

@@ -7,7 +7,6 @@ Created on Thu Jul 04 11:22:16 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from numpy import dot
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
 from fdia_simulation.filters.radar_filter_ta       import RadarFilterTA

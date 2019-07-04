@@ -7,7 +7,6 @@ Created on Fri Jun 28 13:50:21 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from numpy import dot
 from fdia_simulation.models.moving_target          import Command
 from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
 from fdia_simulation.models.radar                  import Radar

@@ -51,14 +51,14 @@ if __name__ == "__main__":
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
     radar_filter_cv = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 1.,
-                                       radars = radars, radar_nb = 2,
+                                       radars = radars,
                                        x0 = 100, y0=100)
     radar_filter_ca = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                       radars = radars, radar_nb = 2,
+                                       radars = radars,
                                        x0 = 100, y0=100)
     filters = [radar_filter_cv, radar_filter_ca]
     mu = [0.5, 0.5]
-    trans = np.array([[0.95, 0.05], [0.12, 0.88]])
+    trans = np.array([[0.998, 0.02], [0.100, 0.900]])
     imm = IMMEstimator(filters, mu, trans)
 
     est_xs_imm, est_ys_imm, est_zs_imm = [],[],[]

@@ -2,3 +2,4 @@ numpy
 scipy
 filterpy
 nose
+sympy

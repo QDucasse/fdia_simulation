@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # ========================= IMM generation =================================
     radar_filter_cv   = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1.,x0 = 100.,y0=100.,radar = radar)
     radar_filter_ca   = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400.,x0 = 100.,y0=100.,radar = radar)
-    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 350.,x0 = 100.,y0=100.,radar = radar)
+    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 25.,x0 = 100.,y0=100.,radar = radar)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_turn]
     mu = [0.33, 0.33, 0.33]
     trans = np.array([[0.998, 0.001, 0.001],

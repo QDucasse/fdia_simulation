@@ -4,6 +4,7 @@ Created on Fri Jun 28 14:50:28 2019
 
 @author: qde
 """
+
 import sympy
 import numpy as np
 from sympy.abc       import x, y, z
@@ -12,7 +13,6 @@ from math            import sqrt, atan2
 from scipy.linalg    import block_diag
 from copy            import deepcopy
 from fdia_simulation.filters.radar_filter_model import RadarModel
-
 
 class RadarFilterCA(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
@@ -223,4 +223,5 @@ if __name__ == "__main__":
                  [sympy.atan2(y,x)],
                  [sympy.atan2(z,sympy.sqrt(x**2 + y**2))]])
     hjac = hx.jacobian(Matrix([x, vx, ax, y, vy, ay, z, vz, az]))
+    print(hjac)
     # For F, the matrices are not changing over time so no need for jacobians

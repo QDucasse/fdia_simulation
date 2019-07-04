@@ -48,16 +48,16 @@ if __name__ == "__main__":
     # ====================== Radar filter generation ===========================
     # Filter: constant velocity
     radars = [radar1,radar2]
-    radar_filter_cv = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                       radars = radars, radar_nb = 2,
+    radar_filter_ca = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 3600.,
+                                       radars = radars,
                                        x0 = 100, y0=100)
-    est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
+    est_xs_ca, est_ys_ca, est_zs_ca = [],[],[]
     for val in radar_values:
-        radar_filter_cv.predict()
-        radar_filter_cv.update(val)
-        est_xs_cv.append(radar_filter_cv.x[0,0])
-        est_ys_cv.append(radar_filter_cv.x[3,0])
-        est_zs_cv.append(radar_filter_cv.x[6,0])
+        radar_filter_ca.predict()
+        radar_filter_ca.update(val)
+        est_xs_ca.append(radar_filter_ca.x[0,0])
+        est_ys_ca.append(radar_filter_ca.x[3,0])
+        est_zs_ca.append(radar_filter_ca.x[6,0])
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
     ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
-    ax.plot(est_xs_cv, est_ys_cv, est_zs_cv,color='orange', label = 'Estimation-CA')
+    ax.plot(est_xs_ca, est_ys_ca, est_zs_ca,color='orange', label = 'Estimation-CA')
     ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
     ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
     ax.set_xlabel('X axis')

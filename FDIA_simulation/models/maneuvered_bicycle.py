@@ -12,22 +12,6 @@ from fdia_simulation.models.moving_target import MovingTarget, Command
 from fdia_simulation.models.sensors import NoisySensor
 from fdia_simulation.helpers.plotting import plot_measurements
 
-def angle_between(x, y):
-    '''
-    Helper function computing the angle between two angles in degrees.
-
-    Parameters
-    ----------
-    x, y : int
-        First and second angle (in degrees).
-
-    Returns
-    -------
-    angle : int
-        Angle between x and y taking in consideration the 360 modulo.
-    '''
-    return min(y-x, y-x+360, y-x-360, key=abs)
-
 
 class ManeuveredBicycle(MovingTarget):
     r'''Implements a model for a maneuvered bicycle: two wheels, commands on heading and velocity.
@@ -110,7 +94,7 @@ class ManeuveredBicycle(MovingTarget):
         cmd_head = self.commands['head']
         cmd_head.value = hdg_degrees
         cmd_head.steps = steps
-        cmd_head.delta = angle_between(cmd_head.value, self.head) / steps
+        cmd_head.delta = cmd_head.value / steps
         if abs(cmd_head.delta) > 0:
             cmd_head.steps = steps
         else:
@@ -159,11 +143,11 @@ if __name__ == "__main__":
             ys.append(y)
 
         # Change in commands
-        bicycle.change_command("head",50, 25)
-        bicycle.change_command("vel",1, 15)
+        bicycle.change_command("head",50, 15)
+        bicycle.change_command("vel",3, 15)
 
         # Second phase
-        for i in range(60):
+        for i in range(30):
             x, y = bicycle.update()
             xs.append(x)
             ys.append(y)

@@ -18,7 +18,7 @@ class A(object):
 
 class B(object):
     def __init__(self,a):
-        print(a.bloub(self))
+        print(a.bloub(selfw))
 
 if __name__ == "__main__":
     b = B(A)

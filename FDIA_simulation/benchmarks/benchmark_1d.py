@@ -58,7 +58,7 @@ if __name__ == "__main__":
     mo_attacker = MoAttacker(kf)
 
     # Computation of the whole attack sequence
-    zas, Gamma = mo_attacker.compute_attack_sequence(attack_size = sample_nb, pos_value = 0, logs = True)
+    zas, Gamma = mo_attacker.compute_attack_sequence(attack_size = sample_nb, pos_value = 1, logs = True)
 
     # Adding the attack sequence to the real measurements
     zs = np.array(zs).T

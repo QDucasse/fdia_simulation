@@ -58,7 +58,7 @@ class RadarFilterCV(RadarModel):
                       [0, 0, 0, 0, 0, 0, 0, 1, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0, 1]])
 
-        RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_x,
+        RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_z,
                             F = F, q = q, radar = radar,
                             x0  = x0,  y0  = y0,  z0  = z0,
                             vx0 = vx0, vy0 = vy0, vz0 = vz0, dt = dt)

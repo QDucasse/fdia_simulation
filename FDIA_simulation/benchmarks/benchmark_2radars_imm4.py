@@ -57,17 +57,17 @@ if __name__ == "__main__":
     radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
                                          radars = radars, model = RadarFilterCA,
                                          x0 = 100, y0=100)
-    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
+    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 75.,
                                          radars = radars, model = RadarFilterCT,
                                          x0 = 100, y0=100)
-    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 25.,
+    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 50.,
                                          radars = radars, model = RadarFilterTA,
                                          x0 = 100, y0=100)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct, radar_filter_ta]
     mu = [0.25, 0.25, 0.25, 0.25]
     trans = np.array([[0.997, 0.001, 0.001, 0.001],
                       [0.050, 0.850, 0.050, 0.050],
-                      [0.001, 0.001, 0.001, 0.997],
+                      [0.001, 0.001, 0.997, 0.001],
                       [0.001, 0.001, 0.001, 0.997]])
     imm = IMMEstimator(filters, mu, trans)
 

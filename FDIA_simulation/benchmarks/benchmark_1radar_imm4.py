@@ -8,13 +8,12 @@ Created on Wed Jul 03 13:28:20 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from filterpy.kalman import IMMEstimator
-from fdia_simulation.models.radar                  import Radar
-from fdia_simulation.models.tracks                 import Track
-from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_cv       import RadarFilterCV
-from fdia_simulation.filters.radar_filter_ca       import RadarFilterCA
-from fdia_simulation.filters.radar_filter_turn     import RadarFilterTurn
-from fdia_simulation.filters.radar_filter_ta       import RadarFilterTA
+from fdia_simulation.models.radar            import Radar
+from fdia_simulation.models.tracks           import Track
+from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
+from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
+from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
+from fdia_simulation.filters.radar_filter_ta import RadarFilterTA
 
 
 
@@ -37,15 +36,15 @@ if __name__ == "__main__":
     # print("Radar computed position values: \n{0}\n".format(radar_computed_values[:10]))
     # ==========================================================================
     # ========================= IMM generation =================================
-    radar_filter_cv   = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1.,x0 = 100.,y0=100.,radar = radar)
-    radar_filter_ca   = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400.,x0 = 100.,y0=100.,radar = radar)
-    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 350.,x0 = 100.,y0=100.,radar = radar)
-    radar_filter_ta   = RadarFilterTA(dim_x = 9, dim_z = 3, q = 25.,x0 = 100.,y0=100.,radar = radar)
-    filters = [radar_filter_cv, radar_filter_ca, radar_filter_turn, radar_filter_ta]
+    radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1.,x0 = 100.,y0=100.,radar = radar)
+    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400.,x0 = 100.,y0=100.,radar = radar)
+    radar_filter_ct = RadarFilterCT(dim_x = 9, dim_z = 3, q = 350.,x0 = 100.,y0=100.,radar = radar)
+    radar_filter_ta = RadarFilterTA(dim_x = 9, dim_z = 3, q = 300.,x0 = 100.,y0=100.,radar = radar)
+    filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct, radar_filter_ta]
     mu = [0.25, 0.25, 0.25, 0.25]
     trans = np.array([[0.997, 0.001, 0.001, 0.001],
                       [0.050, 0.850, 0.050, 0.050],
-                      [0.001, 0.001, 0.001, 0.997],
+                      [0.001, 0.001, 0.997, 0.001],
                       [0.001, 0.001, 0.001, 0.997]])
     imm = IMMEstimator(filters, mu, trans)
 

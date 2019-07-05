@@ -57,7 +57,7 @@ if __name__ == "__main__":
     radar_filter_ca   = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
                                          radars = radars, model = RadarFilterCA,
                                          x0 = 100, y0=100)
-    radar_filter_ct   = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 75.,
+    radar_filter_ct   = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
                                          radars = radars, model = RadarFilterCT,
                                          x0 = 100, y0=100)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct]

@@ -9,7 +9,7 @@ import numpy             as np
 import matplotlib.pyplot as plt
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_turn     import RadarFilterTurn
+from fdia_simulation.filters.radar_filter_turn     import RadarFilterCT
 from fdia_simulation.models.tracks                 import Track
 
 

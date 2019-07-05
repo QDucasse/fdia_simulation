@@ -8,13 +8,13 @@ Created on Thu Jul 04 11:47:32 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from filterpy.kalman import IMMEstimator
-from fdia_simulation.models.radar               import Radar
-from fdia_simulation.models.tracks              import Track
-from fdia_simulation.attackers.mo_attacker      import MoAttacker
-from fdia_simulation.filters.radar_filter_cv    import CVMultipleRadars
-from fdia_simulation.filters.radar_filter_ca    import CAMultipleRadars
-from fdia_simulation.filters.radar_filter_turn  import TurnMultipleRadars
-from fdia_simulation.filters.radar_filter_ta    import TAMultipleRadars
+from fdia_simulation.models.radar            import Radar
+from fdia_simulation.models.tracks           import Track
+from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
+from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
+from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
+from fdia_simulation.filters.radar_filter_ta import RadarFilterTA
+from fdia_simulation.filters.mradar_filter   import MultipleRadarsFilter
 
 
 
@@ -51,19 +51,19 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
-    radar_filter_cv   = CVMultipleRadars(dim_x = 9, dim_z = 6, q = 1.,
-                                         radars = radars,
+    radar_filter_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 1.,
+                                         radars = radars, model = RadarFilterCV,
                                          x0 = 100, y0=100)
-    radar_filter_ca   = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                         radars = radars,
+    radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
+                                         radars = radars, model = RadarFilterCA,
                                          x0 = 100, y0=100)
-    radar_filter_turn = TurnMultipleRadars(dim_x = 9, dim_z = 6, q = 75.,
-                                         radars = radars,
+    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
+                                         radars = radars, model = RadarFilterCT,
                                          x0 = 100, y0=100)
-    radar_filter_ta   = TAMultipleRadars(dim_x = 9, dim_z = 6, q = 25.,
-                                         radars = radars,
+    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 25.,
+                                         radars = radars, model = RadarFilterTA,
                                          x0 = 100, y0=100)
-    filters = [radar_filter_cv, radar_filter_ca, radar_filter_turn, radar_filter_ta]
+    filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct, radar_filter_ta]
     mu = [0.25, 0.25, 0.25, 0.25]
     trans = np.array([[0.997, 0.001, 0.001, 0.001],
                       [0.050, 0.850, 0.050, 0.050],

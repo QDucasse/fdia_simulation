@@ -11,10 +11,14 @@ from filterpy.kalman import IMMEstimator
 from filterpy.common import kinematic_kf
 
 
-a = np.array([[1,2],
-              [3,4]])
-b = np.array([[5,6],
-              [7,8]])
 
-c = np.concatenate((a,b), axis = 1)
-print(c)
+class A(object):
+    def bloub(self):
+        return 'bloub'
+
+class B(object):
+    def __init__(self,a):
+        print(a.bloub(self))
+
+if __name__ == "__main__":
+    b = B(A)

@@ -7,10 +7,11 @@ Created on Wed Jul 03 11:43:22 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models.radar                  import Radar
-from fdia_simulation.models.tracks                 import Track
-from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_ca       import CAMultipleRadars
+from fdia_simulation.models.radar            import Radar
+from fdia_simulation.models.tracks           import Track
+from fdia_simulation.attackers.mo_attacker   import MoAttacker
+from fdia_simulation.filters.mradar_filter   import MultipleRadarsFilter
+from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
 
 
 if __name__ == "__main__":
@@ -47,9 +48,9 @@ if __name__ == "__main__":
     # ====================== Radar filter generation ===========================
     # Filter: constant velocity
     radars = [radar1,radar2]
-    radar_filter_ca = CAMultipleRadars(dim_x = 9, dim_z = 6, q = 3600.,
-                                       radars = radars,
-                                       x0 = 100, y0=100)
+    radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
+                                           radars = radars, model = RadarFilterCA,
+                                           x0 = 100, y0=100)
     est_xs_ca, est_ys_ca, est_zs_ca = [],[],[]
     for val in radar_values:
         radar_filter_ca.predict()

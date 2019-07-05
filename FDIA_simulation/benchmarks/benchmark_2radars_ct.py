@@ -7,10 +7,11 @@ Created on Thu Jul 04 11:47:42 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models.radar              import Radar
-from fdia_simulation.models.tracks             import Track
-from fdia_simulation.attackers.mo_attacker     import MoAttacker
-from fdia_simulation.filters.radar_filter_turn import TurnMultipleRadars
+from fdia_simulation.models.radar            import Radar
+from fdia_simulation.models.tracks           import Track
+from fdia_simulation.attackers.mo_attacker   import MoAttacker
+from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
+from fdia_simulation.filters.mradar_filter   import MultipleRadarsFilter
 
 
 if __name__ == "__main__":
@@ -47,16 +48,16 @@ if __name__ == "__main__":
     # ====================== Radar filter generation ===========================
     # Filter: constant velocity
     radars = [radar1,radar2]
-    radar_filter_turn = TurnMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                       radars = radars,
-                                       x0 = 100, y0=100)
-    est_xs_turn, est_ys_turn, est_zs_turn = [],[],[]
+    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
+                                           radars = radars, model = RadarFilterCT   ,
+                                           x0 = 100, y0=100)
+    est_xs_ct, est_ys_ct, est_zs_ct = [],[],[]
     for val in radar_values:
-        radar_filter_turn.predict()
-        radar_filter_turn.update(val)
-        est_xs_turn.append(radar_filter_turn.x[0,0])
-        est_ys_turn.append(radar_filter_turn.x[3,0])
-        est_zs_turn.append(radar_filter_turn.x[6,0])
+        radar_filter_ct.predict()
+        radar_filter_ct.update(val)
+        est_xs_ct.append(radar_filter_ct.x[0,0])
+        est_ys_ct.append(radar_filter_ct.x[3,0])
+        est_zs_ct.append(radar_filter_ct.x[6,0])
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
     ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
-    ax.plot(est_xs_turn, est_ys_turn, est_zs_turn,color='orange', label = 'Estimation-Turn')
+    ax.plot(est_xs_ct, est_ys_ct, est_zs_ct,color='orange', label = 'Estimation-Turn')
     ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
     ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
     ax.set_xlabel('X axis')

@@ -18,9 +18,9 @@ class Track(object):
     aircraft: ManeuveredAircraft
         The model airplane of the trajectory.
     '''
-    def __init__(self,aircraft = None):
+    def __init__(self,aircraft = None, dt = 1.):
         if aircraft == None:
-            aircraft = ManeuveredAircraft()
+            aircraft = ManeuveredAircraft(dt = dt)
         self.aircraft = aircraft
 
     def gen_cruise(self,x0 = 100,y0 = 100,z0 = 8000,t = 50,vel = 250,ax='y'):
@@ -59,6 +59,8 @@ class Track(object):
         else:
             raise ValueError('Axis must be either x or y')
 
+        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+
         xs, ys, zs = [], [], []
         for _ in range(t):
             x, y, z = self.aircraft.update()
@@ -95,6 +97,7 @@ class Track(object):
         self.aircraft.z   = z0
         self.aircraft.headz = -ang
         self.aircraft.vel = vel
+        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
         nb_steps = t//5 # Five stages maneuver each consisting of nb_steps steps
         xs, ys, zs = [], [], []
         # First stage: Straight line
@@ -173,6 +176,8 @@ class Track(object):
         self.aircraft.y   = y0
         self.aircraft.z   = z0
         self.aircraft.vel = vel
+        t = int(1/self.aircraft.dt * t)         # Consideration of the time unit
+        t_acc = int(1/self.aircraft.dt * t_acc) # Consideration of the time unit
         nb_steps = (t - t_acc)//2
         xs, ys, zs = [], [], []
         # First phase: Constant velocity for nb_steps steps
@@ -226,6 +231,7 @@ class Track(object):
         self.aircraft.z   = z0
         self.aircraft.vel = vel
         xs, ys, zs = [], [], []
+        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
         nb_steps = t//3
         # First phase: Steady mode
         for _ in range(nb_steps):
@@ -288,6 +294,8 @@ class Track(object):
         self.aircraft.vel = vel
         self.aircraft.headz = 50
         xs, ys, zs = [], [], []
+        t = int(1/self.aircraft.dt * t)           # Consideration of the time unit
+        t_turn = int(1/self.aircraft.dt * t_turn) # Consideration of the time unit
         nb_steps = t//2
         # First phase: Steady mode.
         for _ in range(nb_steps):
@@ -367,6 +375,7 @@ class Track(object):
         self.aircraft.z   = z0
         self.aircraft.headz = 50
         self.aircraft.vel = vel
+        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
         nb_steps = t//12
         xs, ys, zs = [], [], []
 
@@ -433,6 +442,7 @@ class Track(object):
         self.aircraft.z   = z0
         self.aircraft.headz = 50
         self.aircraft.vel = vel
+        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
         nb_steps = t//12
         xs, ys, zs = [], [], []
 
@@ -484,6 +494,7 @@ class Track(object):
         self.aircraft.z   = z0
         self.aircraft.headz = 50
         self.aircraft.vel = vel
+        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
         nb_steps = t//12
         xs, ys, zs = [], [], []
 
@@ -531,38 +542,38 @@ class Track(object):
         self.aircraft.headz = 50
         self.aircraft.vel = 0
         xs, ys, zs = [], [], []
-        self.aircraft.change_command("vel", 80, 20)
-        for _ in range(20):
+        self.aircraft.change_command("vel", 80, int(1/self.aircraft.dt*20))
+        for _ in range(int(1/self.aircraft.dt*20)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("vel", 200, 100)
-        self.aircraft.change_command("headx", 30, 5)
-        for _ in range(5):
+        self.aircraft.change_command("vel", 200, int(1/self.aircraft.dt*100))
+        self.aircraft.change_command("headx", 30, int(1/self.aircraft.dt*5))
+        for _ in range(int(1/self.aircraft.dt*5)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("headz", 70, 7)
-        for _ in range(20):
+        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
+        for _ in range(int(1/self.aircraft.dt*20)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("headz", 70, 7)
-        for _ in range(30):
+        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
+        for _ in range(int(1/self.aircraft.dt*30)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("headz", 70, 7)
-        self.aircraft.change_command("headx", -30, 7)
-        for _ in range(30):
+        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
+        self.aircraft.change_command("headx", -30, int(1/self.aircraft.dt*7))
+        for _ in range(int(1/self.aircraft.dt*30)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
@@ -590,30 +601,30 @@ class Track(object):
         self.aircraft.vel = 300
         xs, ys, zs = [], [], []
 
-        for _ in range(20):
+        for _ in range(int(1/self.aircraft.dt*20)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("headz", 70, 7)
-        self.aircraft.change_command("headx", -30, 7)
-        for _ in range(30):
+        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
+        self.aircraft.change_command("headx", -30, int(1/self.aircraft.dt*7))
+        for _ in range(int(1/self.aircraft.dt*30)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("headz", 70, 7)
-        for _ in range(25):
+        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
+        for _ in range(int(1/self.aircraft.dt*25)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
             zs.append(z)
 
-        self.aircraft.change_command("headx", 30, 7)
-        self.aircraft.change_command("vel",0,20)
-        for _ in range(20):
+        self.aircraft.change_command("headx", 30, int(1/self.aircraft.dt*7))
+        self.aircraft.change_command("vel",0, int(1/self.aircraft.dt*20))
+        for _ in range(int(1/self.aircraft.dt*20)):
             x, y, z = self.aircraft.update()
             xs.append(x)
             ys.append(y)
@@ -628,7 +639,7 @@ if __name__ == "__main__":
     test_track = Track()
     print('##== Figure 1: Cruise mode =========##')
     xs_cruise, ys_cruise, zs_cruise = test_track.gen_cruise()
-    plot_track(xs_cruise, ys_cruise, zs_cruise, 1, 'Cruise trajectory')
+    plot_track(xs_cruise, ys_cruise, zs_cruise, 1, 'Cruise trajectory, dt = 1.')
 
     test_track = Track()
     print('##== Figure 2: Weave mode ==========##')
@@ -670,12 +681,12 @@ if __name__ == "__main__":
     xs_dis, ys_dis, zs_dis = test_track.gen_disengagement()
     plot_track(xs_dis, ys_dis, zs_dis, 9, 'Disengagement trajectory')
 
-    test_track = Track()
+    test_track = Track(dt = 0.4)
     print('##== Figure 10: Takeoff mode =======##')
     xs_toff, ys_toff, zs_toff = test_track.gen_takeoff()
     plot_track(xs_toff, ys_toff, zs_toff, 10, 'Takeoff trajectory')
 
-    test_track = Track()
+    test_track = Track(dt = 0.4)
     print('##== Figure 11: Landing mode =======##')
     xs_land, ys_land, zs_land = test_track.gen_landing()
     plot_track(xs_land, ys_land, zs_land, 11, 'Landing trajectory')

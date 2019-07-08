@@ -7,10 +7,10 @@ Created on Fri Jun 28 16:29:18 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models.radar                  import Radar
-from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_turn     import RadarFilterCT
-from fdia_simulation.models.tracks                 import Track
+from fdia_simulation.models.radar            import Radar
+from fdia_simulation.attackers.mo_attacker   import MoAttacker
+from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
+from fdia_simulation.models.tracks           import Track
 
 
 
@@ -33,14 +33,14 @@ if __name__ == "__main__":
     # # ==========================================================================
     # # ====================== Radar filter generation ===========================
     # Filter: constant turn
-    radar_filter_turn = RadarFilterTurn(dim_x = 9, dim_z = 3, q = 400., x0 = 100., y0=100.,radar =radar)
-    est_xs_turn, est_ys_turn, est_zs_turn = [],[],[]
+    radar_filter_ct = RadarFilterCT(dim_x = 9, dim_z = 3, q = 400., x0 = 100., y0=100.,radar =radar)
+    est_xs_ct, est_ys_ct, est_zs_ct = [],[],[]
     for val in radar_values:
-        radar_filter_turn.predict()
-        radar_filter_turn.update(val)
-        est_xs_turn.append(radar_filter_turn.x[0,0])
-        est_ys_turn.append(radar_filter_turn.x[3,0])
-        est_zs_turn.append(radar_filter_turn.x[6,0])
+        radar_filter_ct.predict()
+        radar_filter_ct.update(val)
+        est_xs_ct.append(radar_filter_ct.x[0,0])
+        est_ys_ct.append(radar_filter_ct.x[3,0])
+        est_zs_ct.append(radar_filter_ct.x[6,0])
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='plot test',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad,color='b',marker='o',alpha = 0.3, label = 'Radar measurements')
-    ax.plot(est_xs_turn, est_ys_turn, est_zs_turn,color='orange', label = 'Constant velocity')
+    ax.plot(est_xs_ct, est_ys_ct, est_zs_ct,color='orange', label = 'Estimation-CT')
     ax.scatter(radar.x,radar.y,radar.z,color='r', label = 'Radar')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')

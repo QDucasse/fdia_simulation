@@ -47,7 +47,7 @@ if __name__ == "__main__":
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad,color='b',marker='o',alpha = 0.3, label = 'Radar measurements')
-    ax.plot(est_xs_ta, est_ys_ta, est_zs_ta,color='orange', label = 'Estimation-CV')
+    ax.plot(est_xs_ta, est_ys_ta, est_zs_ta,color='orange', label = 'Estimation-TA')
     ax.scatter(radar.x,radar.y,radar.z,color='r', label = 'Radar')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')

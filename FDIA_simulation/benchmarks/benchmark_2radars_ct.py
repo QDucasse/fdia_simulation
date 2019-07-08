@@ -66,7 +66,7 @@ if __name__ == "__main__":
     ax.plot(xs, ys, zs, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
     ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
-    ax.plot(est_xs_ct, est_ys_ct, est_zs_ct,color='orange', label = 'Estimation-Turn')
+    ax.plot(est_xs_ct, est_ys_ct, est_zs_ct,color='orange', label = 'Estimation-CT')
     ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
     ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
     ax.set_xlabel('X axis')

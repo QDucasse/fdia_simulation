@@ -220,7 +220,7 @@ class MoAttacker(Attacker):
         '''
         chosen_attack = self.unst_data[value_position]
         attack_val  = chosen_attack.value
-        attack_vect = chosen_attack.vector.reshape((self.kf.dim_z,1))
+        attack_vect = chosen_attack.vector.reshape((self.kf.dim_x,1))
         attack_pos  = chosen_attack.position
 
         Gamma  = np.zeros((self.kf.dim_z,self.kf.dim_z))
@@ -306,6 +306,161 @@ class MoAttacker(Attacker):
         Alters the measurements with the attack sequence
         '''
         pass
+
+
+class ExtendedMoAttacker(MoAttacker):
+
+    def compute_steady_state_K(self):
+        '''
+        Computes the process to get K (Kalman gain) in steady state as the
+        solution of a discrete Ricatti equation.
+        Returns
+        -------
+        ss_K: matrix
+            Kalman gain matrix when the system is on steady state.
+            K = P*H'*inv(H*P*H'+R)
+        '''
+        kf = self.kf
+        H = kf.HJacob(kf.x)
+        if self.fb: P = self.compute_steady_state_P()
+        else: P = kf.P
+        ss_K = P@(H.T)@inv(H@P@H.T + kf.R)
+        return ss_K
+
+    def compute_attackers_input(self,ss_K,Gamma):
+        '''
+        Computes the initial space in which the attacker will have to find the
+        initial steps of the attack sequence.
+        Parameters
+        ----------
+        ss_K: float matrix
+            Kalman gain of the estimator in steady state.
+
+        Gamma: int matrix
+            Attack matrix, saying which sensors have been compromised.
+
+        Returns:
+        --------
+        attackers_input: float matrix
+            Matrix
+        '''
+        kf = self.kf
+        H =  kf.HJacob(kf.x)
+        attackers_input = np.concatenate((-(kf.F - ss_K@H@kf.F)@ss_K@Gamma, -ss_K@Gamma),axis=1)
+        return attackers_input
+
+    def compute_max_norm(self,Gamma,ya0,ya1):
+        '''
+        Computes the maximal norm after simulating the first two measurements.
+        Parameters
+        ----------
+        Gamma: int matrix
+            Attack matrix of the system.
+
+        ya0, ya1: float numpy arrays
+            Two first steps of the attack sequence.
+
+        Returns
+        -------
+        M: float
+            Maximal norm of the attack sequence.
+
+        Notes
+        -----
+        - e corresponds to the error between the healthy and compromised system.
+        - z corresponds to the cimulation of a received measurement by the compromised
+        system (real measure + compromission of a subset of sensors)
+        '''
+        # e: error between healthy and compromised system
+        kf = self.kf
+        H = kf.HJacob(kf.x)
+        e = np.zeros((kf.dim_z,2))
+        e[:,0] = (-kf.K@Gamma@ya0).squeeze()
+        e[:,1] = (kf.F-kf.K@H@kf.F)@(e[:,0].reshape((kf.dim_z,1))-kf.K@Gamma@ya1).squeeze()
+
+        # z: simulation of the received measure by the plant (real measure + compromission)
+        z = np.zeros((kf.dim_z,2))
+        # First state is null so the received measure = attacker's input
+        z[:,0] = (Gamma@ya0).squeeze()
+        # Second state needs to be estimated (H*F*e) then added to the attacker's input
+        z[:,1] = (H@kf.F@e[:,0].reshape((kf.dim_z,1)) + Gamma@ya1).squeeze()
+
+        M = max(norm(z[:,0]),norm(z[:,1]))
+
+        return M
+
+    def compute_attack_sequence(self, attack_size, pos_value = 0, logs=False):
+        '''
+        Creates the attack sequence (aka the falsified measurements passed to the filter).
+        Parameters:
+        -----------
+        attack_size: int
+            Duration of the attack (number of steps).
+
+        pos_value: int
+            Position of the unstable value along which the attacker should
+            attack.
+
+        logs: boolean
+            Displays the logs of the different steps if True. Default value: False
+
+        Returns
+        -------
+        attack_sequence: float numpy array
+            Column-stacked array as np.array([[ y0 | y1 | ... | y_attsize ]])
+            corresponding to the values the attacker will have to inject in the
+            system to compromise it.
+
+        Gamma: float numpy array
+            Attack vector
+        '''
+        kf = self.kf
+        H = kf.HJacob(kf.x)
+        # Unstable eigenvalues of A and associated eigenvectors
+        self.compute_unstable_eig(kf.F)
+        if not self.unst_data:
+            # If the unstable list is empty, no attacks are possible
+            return "No unstable values available for attack"
+
+        else:
+            # Choice of an eigenvalue under which the attack will be created
+            attack_val,attack_vect,Gamma = self.attack_parameters(pos_value)
+
+        if logs: print("Eigen value: \n{0}\n".format(attack_val))
+        if logs: print("Eigen vector: \n{0}\n".format(attack_vect))
+        if logs: print("Attack matrix: \n{0}\n".format(Gamma))
+
+        # Attacker's input to reach v
+        ss_K = self.compute_steady_state_K()
+        if logs: print("Steady State K: \n{0}\n".format(ss_K))
+
+        # Attacker input: -[(A-KCA)KGamma KGamma]
+        attackers_input = self.compute_attackers_input(ss_K, Gamma)
+        if logs: print("Attackers input: \n{0}\n".format(attackers_input))
+
+        # Attack sequence initialization
+        #1. Initialization of the false measurements
+        ya0, ya1 = self.initialize_attack_sequence(attackers_input,attack_vect)
+        if logs: print("First false measurements: \nya0:\n{0}\nya1:\n{1}\n".format(ya0,ya1))
+
+        #2. Initialization of the first "real" measurements -> to determine the max norm
+        M = self.compute_max_norm(Gamma,ya0,ya1)
+
+        ya0 = ya0/M
+        ya1 = ya1/M
+
+        self.add_false_measurement(ya0)
+        self.add_false_measurement(ya1)
+
+        ystar = H@attack_vect
+
+        for i in range(2,attack_size):
+            yai = self.attack_sequence[:,i-2].reshape((kf.dim_z,1)) - attack_val**(i-2)/M * ystar
+            self.add_false_measurement(yai)
+
+        if logs: print("Attack Sequence: \n{0}\n".format(self.attack_sequence))
+
+        return self.attack_sequence, Gamma
 
 
 if __name__ == "__main__":

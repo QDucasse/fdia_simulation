@@ -10,8 +10,9 @@ import numpy as np
 from nose.tools import raises
 from fdia_simulation.models.radar import Radar
 from fdia_simulation.filters.radar_filter_model import RadarModel
-from fdia_simulation.filters.radar_filter_ca import RadarFilterCA, CAMultipleRadars
-from fdia_simulation.filters.radar_filter_cv import RadarFilterCV, CVMultipleRadars
+from fdia_simulation.filters.radar_filter_ca    import RadarFilterCA
+from fdia_simulation.filters.radar_filter_cv    import RadarFilterCV
+from fdia_simulation.filters.mradar_filter      import MultipleRadarsFilter
 
 class RadarModelTestCase(unittest.TestCase):
     @raises(TypeError)
@@ -74,12 +75,13 @@ class RadarFilterCVTestCase(unittest.TestCase):
         self.assertEqual(y_rad, 0.)
         self.assertEqual(z_rad, 0.)
 
-class CVMultipleRadarsTestCase(unittest.TestCase):
+class MultipleRadarsCVTestCase(unittest.TestCase):
     def setUp(self):
         self.radar1 = Radar(x=800,y=800)
         self.radar2 = Radar(x=200,y=200)
         radars = [self.radar1,self.radar2]
-        self.multiple_cv = CVMultipleRadars(dim_x = 9, dim_z = 3, q = 1., radars = radars)
+        self.multiple_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 3, q = 1., radars = radars,
+                                                model = RadarFilterCV, x0 = 100, y0 = 100)
 
     def test_initial_F(self):
         dt = self.multiple_cv.dt
@@ -161,7 +163,8 @@ class CAMultipleRadarsTestCase(unittest.TestCase):
         self.radar1 = Radar(x=800,y=800)
         self.radar2 = Radar(x=200,y=200)
         radars = [self.radar1,self.radar2]
-        self.multiple_ca = CAMultipleRadars(dim_x = 9, dim_z = 3, q = 1., radars = radars)
+        self.multiple_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 3, q = 1., radars = radars,
+                                                model = RadarFilterCA, x0 = 100, y0 = 100)
 
     def test_initial_F(self):
         dt = self.multiple_ca.dt

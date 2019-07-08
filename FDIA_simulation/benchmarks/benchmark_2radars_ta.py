@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 from fdia_simulation.models.radar            import Radar
 from fdia_simulation.models.tracks           import Track
 from fdia_simulation.attackers.mo_attacker   import MoAttacker
-from fdia_simulation.filters.radar_filter_ta import TAMultipleRadars
+from fdia_simulation.filters.mradar_filter   import MultipleRadarsFilter
+from fdia_simulation.filters.radar_filter_ta import RadarFilterTA
 
 
 if __name__ == "__main__":
@@ -47,9 +48,9 @@ if __name__ == "__main__":
     # ====================== Radar filter generation ===========================
     # Filter: constant velocity
     radars = [radar1,radar2]
-    radar_filter_ta = TAMultipleRadars(dim_x = 9, dim_z = 6, q = 400.,
-                                       radars = radars,
-                                       x0 = 100, y0=100)
+    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
+                                           radars = radars, model = RadarFilterTA,
+                                           x0 = 100, y0=100)
     est_xs_ta, est_ys_ta, est_zs_ta = [],[],[]
     for val in radar_values:
         radar_filter_ta.predict()

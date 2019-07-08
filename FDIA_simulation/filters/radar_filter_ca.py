@@ -17,25 +17,6 @@ from fdia_simulation.filters.radar_filter_model import RadarModel
 class RadarFilterCA(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
     radar. The model is assumed to have constant acceleration.
-    Parameters
-    ---------
-    x0, y0, z0: floats
-        Initial positions of the aircraft.
-
-    vx0, vy0, vz0: floats
-        Initial velocities of the aircraft.
-
-    ax0, ay0, az0: floats
-        Initial accelerations of the aircraft.
-
-    dt: float
-        Time step.
-
-    std_r, std_theta, std_phi: floats
-        Standard deviation of the measurement noise for the three values.
-
-    x_rad, y_rad, z_rad: floats
-        Radar position.
 
     Notes
     -----
@@ -43,12 +24,10 @@ class RadarFilterCA(RadarModel):
     and matrix (h & H) and the process noise matrix (Q) are the main differences
     between the filter models.
     '''
-    def __init__(self,dim_x, dim_z, q, radar = None,
-                      x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
-                      vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
-                      ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                      dt = 1.):
 
+    def compute_F(self, X, dt = None):
+        if dt is None:
+            dt = self.dt
         dt2 = dt**2/2
         F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
                       [0,  1, dt,  0,  0,  0,  0,  0,  0],
@@ -59,13 +38,9 @@ class RadarFilterCA(RadarModel):
                       [0,  0,  0,  0,  0,  0,  1, dt,dt2],
                       [0,  0,  0,  0,  0,  0,  0,  1, dt],
                       [0,  0,  0,  0,  0,  0,  0,  0,  1]])
+        self.F = F
+        return self.F
 
-        RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_z,
-                            F = F, q =q, radar = radar,
-                            x0  = x0,  y0  = y0,  z0  = z0,
-                            vx0 = vx0, vy0 = vy0, vz0 = vz0,
-                            ax0 = ax0, ay0 = ay0, az0 = az0,
-                            dt = dt)
 
     def compute_Q(self,q):
         '''

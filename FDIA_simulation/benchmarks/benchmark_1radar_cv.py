@@ -8,9 +8,10 @@ Created on Fri Jun 28 13:50:12 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from fdia_simulation.models.radar                  import Radar
-from fdia_simulation.attackers.mo_attacker         import MoAttacker
+from fdia_simulation.attackers.mo_attacker         import ExtendedMoAttacker
 from fdia_simulation.filters.radar_filter_cv       import RadarFilterCV
 from fdia_simulation.models.tracks                 import Track
+
 
 
 if __name__ == "__main__":
@@ -40,6 +41,15 @@ if __name__ == "__main__":
         est_xs_cv.append(radar_filter_cv.x[0,0])
         est_ys_cv.append(radar_filter_cv.x[3,0])
         est_zs_cv.append(radar_filter_cv.x[6,0])
+    # ==========================================================================
+    # ============================ Attacker generation =========================
+
+    # mo_attacker = ExtendedMoAttacker(radar_filter_cv)
+    # sample_nb = len(est_xs_cv)
+    #
+    # # Computation of the whole attack sequence
+    # zas, Gamma = mo_attacker.compute_attack_sequence(attack_size = sample_nb, pos_value = 1, logs = True)
+
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)

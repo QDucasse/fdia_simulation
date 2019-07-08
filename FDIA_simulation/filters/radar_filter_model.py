@@ -49,14 +49,13 @@ class RadarModel(ExtendedKalmanFilter,ABC):
     x_rad, y_rad, z_rad: floats
         Radar position.
     '''
-    def __init__(self, dim_x, dim_z, F, q, radar = None,
+    def __init__(self, dim_x, dim_z, q, radar = None,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
                        dt = 1.):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
-        self.F     = F
         self.dt    = dt
         if radar is None:
             radar = Radar(x=0,y=0,z=0)
@@ -66,6 +65,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         self.R     = radar.R
         self.compute_Q(q)
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
+        self.compute_F(self.x,self.dt)
 
     @abstractmethod
     def HJacob(self,X):
@@ -81,6 +81,17 @@ class RadarModel(ExtendedKalmanFilter,ABC):
 
     @abstractmethod
     def hx(self,X):
+        '''
+        Computes the output of the measurement function for a given space state.
+        Parameters
+        ----------
+        X: numpy float array
+            State-space vector
+        '''
+        pass
+
+    @abstractmethod
+    def compute_F(self,X,dt = None):
         '''
         Computes the output of the measurement function for a given space state.
         Parameters

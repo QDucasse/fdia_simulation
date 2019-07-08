@@ -17,25 +17,6 @@ from fdia_simulation.filters.radar_filter_model import RadarModel
 class RadarFilterCT(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
     radar. The model is assumed to have constant velocity.
-    Parameters
-    ---------
-    x0, y0, z0: floats
-        Initial positions of the aircraft.
-
-    vx0, vy0, vz0: floats
-        Initial velocities of the aircraft.
-
-    ax0, ay0, az0: floats
-        Initial accelerations of the aircraft.
-
-    dt: float
-        Time step.
-
-    std_r, std_theta, std_phi: floats
-        Standard deviation of the measurement noise for the three values.
-
-    x_rad, y_rad, z_rad: floats
-        Radar position.
 
     Notes
     -----
@@ -43,22 +24,22 @@ class RadarFilterCT(RadarModel):
     and matrix (h & H) and the process noise matrix (Q) are the main differences
     between the filter models.
     '''
-    def __init__(self, dim_x, dim_z, q, radar = None,
-                       x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
-                       vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
-                       ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                       dt = 1.):
 
-        self.x = np.array([[x0,y0,z0,vx0,vy0,vz0,ax0,ay0,az0]]).T
-        F = np.eye(9)
-        RadarModel.__init__(self, dim_x = dim_x, dim_z = dim_z,
-                            F = F, q =q, radar = radar,
-                            x0  = x0,  y0  = y0,  z0  = z0,
-                            vx0 = vx0, vy0 = vy0, vz0 = vz0,
-                            ax0 = ax0, ay0 = ay0, az0 = az0,
-                            dt = dt)
-        F = self.compute_F(self.x)
-
+    def compute_F(self, X, dt = None):
+        vx = X[1,0]
+        ax = X[2,0]
+        vy = X[4,0]
+        ay = X[5,0]
+        vz = X[7,0]
+        az = X[8,0]
+        if dt is None:
+            dt = self.dt
+        omega = sqrt(ax**2 + ay**2 + az**2)/sqrt(vx**2 + vy**2 + vz**2)
+        F_block = np.array([[1,  sin(omega*dt)/omega, (1 - cos(omega*dt))/omega**2],
+                            [0,        cos(omega*dt),          sin(omega*dt)/omega],
+                            [0, -omega*sin(omega*dt),                cos(omega*dt)]])
+        self.F = block_diag(F_block,F_block,F_block)
+        return self.F
 
     def compute_Q(self,q):
         '''
@@ -116,14 +97,15 @@ class RadarFilterCT(RadarModel):
     #     az_hat =     -omega*sin(omega*dt)* vz + cos(omega*dt)               * az
     #     return np.array([[x_hat,vx_hat,ax_hat,y_hat,vy_hat,ay_hat,z_hat,vz_hat,az_hat]])
 
-    def compute_F(self, X):
+    def compute_F(self, X, dt = None):
         vx = X[1,0]
         ax = X[2,0]
         vy = X[4,0]
         ay = X[5,0]
         vz = X[7,0]
         az = X[8,0]
-        dt = self.dt
+        if dt is None:
+            dt = self.dt
         omega = sqrt(ax**2 + ay**2 + az**2)/sqrt(vx**2 + vy**2 + vz**2)
         F_block = np.array([[1,  sin(omega*dt)/omega, (1 - cos(omega*dt))/omega**2],
                             [0,        cos(omega*dt),          sin(omega*dt)/omega],

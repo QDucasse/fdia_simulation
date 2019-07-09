@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 28 13:50:12 2019
+Created on Wed Jul 03 11:43:22 2019
 
 @author: qde
 """
@@ -11,7 +11,8 @@ from fdia_simulation.models.radar            import FrequencyRadar
 from fdia_simulation.models.tracks           import Track
 from fdia_simulation.attackers.mo_attacker   import MoAttacker
 from fdia_simulation.filters.m_radar_filter  import MultipleFreqRadarsFilter
-from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
+from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
+
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
@@ -57,21 +58,20 @@ if __name__ == "__main__":
     # radar_values          = np.concatenate((radar1_values,radar2_values),axis = 1)
     # radar_computed_values = np.concatenate((radar1_computed_values,radar2_computed_values),axis = 1)
     label_measurements    = sorted(label_measurements1 + label_measurements2)
-
     # ==========================================================================
     # ====================== Radar filter generation ===========================
     # Filter: constant velocity
     radars = [radar1,radar2]
-    radar_filter_cv = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
-                                               radars = radars, model = RadarFilterCV,
+    radar_filter_ca = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
+                                               radars = radars, model = RadarFilterCA,
                                                x0 = 100, y0=100)
-    est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
+    est_xs_ca, est_ys_ca, est_zs_ca = [],[],[]
     for label_val in label_measurements:
-        radar_filter_cv.predict()
-        radar_filter_cv.update(label_val)
-        est_xs_cv.append(radar_filter_cv.x[0,0])
-        est_ys_cv.append(radar_filter_cv.x[3,0])
-        est_zs_cv.append(radar_filter_cv.x[6,0])
+        radar_filter_ca.predict()
+        radar_filter_ca.update(label_val)
+        est_xs_ca.append(radar_filter_ca.x[0,0])
+        est_ys_ca.append(radar_filter_ca.x[3,0])
+        est_zs_ca.append(radar_filter_ca.x[6,0])
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)
@@ -80,9 +80,9 @@ if __name__ == "__main__":
     ax.plot(xs1, ys1, zs1, label='Real position',color='k',linestyle='dashed')
     ax.scatter(xs_from_rad1, ys_from_rad1, zs_from_rad1,color='b',marker='o',alpha = 0.3, label = 'Radar1 measurements')
     ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2,color='m',marker='o',alpha = 0.3, label = 'Radar2 measurements')
-    ax.plot(est_xs_cv, est_ys_cv, est_zs_cv,color='orange', label = 'Estimation-CV')
-    ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1')
-    ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2')
+    ax.plot(est_xs_ca, est_ys_ca, est_zs_ca,color='orange', label = 'Estimation-CA')
+    ax.scatter(radar1.x,radar1.y,radar1.z,color='r', label = 'Radar1', marker = '+')
+    ax.scatter(radar2.x,radar2.y,radar2.z,color='g', label = 'Radar2', marker = '+')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')

@@ -192,7 +192,7 @@ class LabelizedMeasurement(object):
 class FrequencyRadar(Radar):
     r'''
     '''
-    def __init__(self, tag, x, y, z=0,
+    def __init__(self, x, y, z=0, tag = 0,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
                  dt = 1., time_std = 0.001):
 

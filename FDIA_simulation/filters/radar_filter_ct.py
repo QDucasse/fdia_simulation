@@ -25,15 +25,14 @@ class RadarFilterCT(RadarModel):
     between the filter models.
     '''
 
-    def compute_F(self, X, dt = None):
+    def compute_F(self, X):
         vx = X[1,0]
         ax = X[2,0]
         vy = X[4,0]
         ay = X[5,0]
         vz = X[7,0]
         az = X[8,0]
-        if dt is None:
-            dt = self.dt
+        dt = self.dt
         omega = sqrt(ax**2 + ay**2 + az**2)/sqrt(vx**2 + vy**2 + vz**2)
         F_block = np.array([[1,  sin(omega*dt)/omega, (1 - cos(omega*dt))/omega**2],
                             [0,        cos(omega*dt),          sin(omega*dt)/omega],

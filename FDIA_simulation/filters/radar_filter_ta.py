@@ -17,7 +17,7 @@ from fdia_simulation.filters.radar_filter_model import RadarModel
 class RadarFilterTA(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
     radar. The model is assumed to have thrust acceleration.
-    
+
     Notes
     -----
     The state transition function and matrix (f & F), the measurement function
@@ -25,9 +25,8 @@ class RadarFilterTA(RadarModel):
     between the filter models.
     '''
 
-    def compute_F(self,X,dt = None):
-        if dt is None:
-            dt = self.dt
+    def compute_F(self,X):
+        dt = self.dt
         edt = exp(dt)
         F = np.array([[1,edt-1, 0, 0,    0, 0, 0,    0, 0],
                       [0,  edt, 0, 0,    0, 0, 0,    0, 0],

@@ -101,6 +101,14 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
                                      vx0 = vx0, vy0 = vy0, vz0 = vz0,
                                      ax0 = ax0, ay0 = ay0, az0 = az0)
         self._last_t = 0
+        self._tag_radars()
+
+    def _tag_radars(self):
+        '''
+        Attributes tags to radars
+        '''
+        for i,radar in enumerate(self.radars):
+            radar.tag = i
 
     def hx(self, X, tag):
         '''

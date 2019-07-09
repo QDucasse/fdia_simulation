@@ -63,9 +63,10 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         self.y_rad = radar.y
         self.z_rad = radar.z
         self.R     = radar.R
+        self.q     = q
         self.compute_Q(q)
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
-        self.compute_F(self.x,self.dt)
+        self.compute_F(self.x)
 
     @abstractmethod
     def HJacob(self,X):
@@ -91,7 +92,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         pass
 
     @abstractmethod
-    def compute_F(self,X,dt = None):
+    def compute_F(self,X):
         '''
         Computes the output of the measurement function for a given space state.
         Parameters
@@ -134,7 +135,8 @@ class RadarModel(ExtendedKalmanFilter,ABC):
             u = 0
         ExtendedKalmanFilter.predict(self, u = u)
 
-    def update(self,z, logs=False):
+    def update(self,z, HJacobian = None, Hx = None,
+               args = (), hx_args = ()):
         '''
         Update step of the estimator.
         Parameters
@@ -145,5 +147,11 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         logs: boolean
             Triggers the display of the in-state parameters.
         '''
+        if HJacobian is None:
+            HJacobian = self.HJacob
+        if Hx is None:
+            Hx = self.hx
+
         z = np.reshape(z,(-2,1))
-        ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob, Hx = self.hx)
+        ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob, Hx = self.hx,
+                                    args = args, hx_args = hx_args)

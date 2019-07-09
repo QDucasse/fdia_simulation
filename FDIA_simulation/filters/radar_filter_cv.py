@@ -24,9 +24,8 @@ class RadarFilterCV(RadarModel):
     between the filter models.
     '''
 
-    def compute_F(self, X, dt = None):
-        if dt is None:
-            dt = self.dt
+    def compute_F(self, X):
+        dt = self.dt
         F = np.array([[1,dt, 0, 0, 0, 0, 0, 0, 0],
                       [0, 1, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 1, 0, 0, 0, 0, 0, 0],

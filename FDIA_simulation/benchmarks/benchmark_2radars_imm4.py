@@ -14,7 +14,7 @@ from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
 from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
 from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
 from fdia_simulation.filters.radar_filter_ta import RadarFilterTA
-from fdia_simulation.filters.mradar_filter   import MultipleRadarsFilter
+from fdia_simulation.filters.m_radar_filter  import MultipleRadarsFilter
 
 
 

@@ -7,9 +7,9 @@ Created on Fri Jun 21 13:07:46 2019
 
 import numpy as np
 import matplotlib.pyplot as plt
-from math         import cos,sin,sqrt,pi,atan2
-from numpy.random import randn
-from pprint       import pprint
+from math            import cos,sin,sqrt,pi,atan2
+from numpy.random    import randn
+from filterpy.common import pretty_str
 from fdia_simulation.models.moving_target       import MovingTarget, Command
 from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
 from fdia_simulation.models.sensors             import NoisySensor
@@ -164,9 +164,34 @@ class Radar(object):
 
         return xs,ys,zs
 
+class LabelizedMeasurement(object):
+    def __init__(self,tag,time,value):
+        self.tag   = tag
+        self.time  = time
+        self.value = value
+
+    def __gt__(self,other):
+        return (self.time > other.time)
+
+    def __ge__(self,other):
+        return (self.time >= other.time)
+
+    def __le__(self,other):
+        return (self.time <= other.time)
+
+    def __lt__(self,other):
+        return (self.time < other.time)
+
+    def __repr__(self):
+        return '\n'.join([
+            'LabelizedMeasurement object',
+            pretty_str('tag', self.tag),
+            pretty_str('time', self.time),
+            pretty_str('value', self.value)])
 
 class FrequencyRadar(Radar):
-
+    r'''
+    '''
     def __init__(self, tag, x, y, z=0,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
                  dt = 1., time_std = 0.001):
@@ -178,7 +203,8 @@ class FrequencyRadar(Radar):
                        r_noise_std = r_noise_std, theta_noise_std = theta_noise_std, phi_noise_std = phi_noise_std)
 
     def compute_meas_times(self, size):
-
+        '''
+        '''
         meas_times = [0]
         t_k = meas_times[0]
         for _ in range(size-1):
@@ -187,6 +213,8 @@ class FrequencyRadar(Radar):
         return meas_times
 
     def compute_measurements(self,position_data):
+        '''
+        '''
         rs, thetas, phis = self.gen_data(position_data)
         noisy_rs, noisy_thetas, noisy_phis = self.sense(rs, thetas, phis)
         n = len(noisy_rs)
@@ -194,25 +222,28 @@ class FrequencyRadar(Radar):
         measurements = []
 
         for i in range(n):
-            measurements.append([self.tag,measurement_times[i],
-                                [noisy_rs[i], noisy_thetas[i], noisy_phis[i]]])
+            value = [noisy_rs[i], noisy_thetas[i], noisy_phis[i]]
+            measurement = LabelizedMeasurement(tag = self.tag,
+                                               time = measurement_times[i],
+                                               value = value)
+            measurements.append(measurement)
 
         return measurements
 
 
 if __name__ == "__main__":
     #================== Positions generation for the aircraft ==================
-    trajectory = Track()
+    trajectory = Track(dt = 0.1)
     xs, ys, zs = trajectory.gen_takeoff()
     position_data = np.array(list(zip(xs,ys,zs)))
 
-    trajectory2 = Track(dt = 4)
+    trajectory2 = Track(dt = 0.4)
     xs2, ys2, zs2 = trajectory2.gen_takeoff()
     position_data2 = np.array(list(zip(xs2,ys2,zs2)))
     # ==========================================================================
     # ========================== Radars generation =============================
     # Radar 1
-    radar = FrequencyRadar(tag = 'Radar1', x=800,y=800)
+    radar = FrequencyRadar(tag = 0, x=800,y=800)
     rs, thetas, phis = radar.gen_data(position_data)
     noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
     xs_from_rad, ys_from_rad, zs_from_rad = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
@@ -227,7 +258,7 @@ if __name__ == "__main__":
     print("Measurements radar1:\n{0}\n".format(measurements_info[-25:]))
 
     # Radar 2
-    radar2 = FrequencyRadar(tag = 'Radar2', x=100,y=100, r_noise_std = 5., theta_noise_std = 0.005, phi_noise_std = 0.005, dt = 4.)
+    radar2 = FrequencyRadar(tag = 1, x=1000,y=1000, r_noise_std = 5., theta_noise_std = 0.005, phi_noise_std = 0.005)
     rs2, thetas2, phis2 = radar2.gen_data(position_data2)
     noisy_rs2, noisy_thetas2, noisy_phis2 = radar2.sense(rs2, thetas2, phis2)
     xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs2, noisy_thetas2, noisy_phis2)
@@ -240,6 +271,9 @@ if __name__ == "__main__":
 
     measurements_info2 = radar2.compute_measurements(position_data2)
     print("Measurements radar2:\n{0}\n".format(measurements_info2[-25:]))
+
+
+    measurement_infos = (measurements_info + measurements_info2).sort()
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)
@@ -247,20 +281,12 @@ if __name__ == "__main__":
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='Real airplane position', color='k', linestyle='dashed')
     ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad, color='b', marker='o', label='Precision radar measurements')
+    ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2, color='m', marker='o', label='Standard radar measurements')
     ax.scatter(radar.x,radar.y,radar.z,color='r',label='Precision radar')
+    ax.scatter(radar2.x,radar2.y,radar2.z,color='r',label='Standard radar')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')
     ax.legend()
 
-    fig2 = plt.figure(2)
-    plt.rc('font', family='serif')
-    ax2 = fig2.gca(projection='3d')
-    ax2.plot(xs2, ys2, zs2, label='Real airplane position', color='k', linestyle='dashed')
-    ax2.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2, color='b', marker='o', label='Standard radar measurements')
-    ax2.scatter(radar2.x,radar2.y,radar2.z,color='r',label='Standard radar')
-    ax2.set_xlabel('X axis')
-    ax2.set_ylabel('Y axis')
-    ax2.set_zlabel('Z axis')
-    ax2.legend()
     plt.show()

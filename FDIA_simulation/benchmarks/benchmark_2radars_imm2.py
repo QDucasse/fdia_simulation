@@ -13,7 +13,7 @@ from fdia_simulation.models.tracks           import Track
 from fdia_simulation.attackers.mo_attacker   import MoAttacker
 from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
 from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
-from fdia_simulation.filters.mradar_filter   import MultipleRadarsFilter
+from fdia_simulation.filters.m_radar_filter  import MultipleRadarsFilter
 
 
 

@@ -20,20 +20,22 @@ from fdia_simulation.filters.m_radar_filter  import MultipleFreqRadarsFilter
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
-    dt_rad1 = 0.4
+    dt_rad1 = 0.1
     trajectory1 = Track(dt = dt_rad1)
-    xs1, ys1, zs1 = trajectory1.gen_takeoff()
+    states1 = trajectory1.gen_takeoff()
+    xs1, ys1, zs1 = trajectory1.output_positions(states1)
     position_data1 = np.array(list(zip(xs1,ys1,zs1)))
 
-    dt_rad2 = 1.
+    dt_rad2 = 0.4
     trajectory2 = Track(dt = dt_rad2)
-    xs2, ys2, zs2 = trajectory2.gen_takeoff()
+    states2 = trajectory2.gen_takeoff()
+    xs2, ys2, zs2 = trajectory2.output_positions(states2)
     position_data2 = np.array(list(zip(xs2,ys2,zs2)))
     # ==========================================================================
     # ======================== Radar data generation ===========================
     # Radar 1
     # Radar 1: Precision radar
-    radar1 = FrequencyRadar(tag = 0, x = 800, y = 800, dt = dt_rad1)
+    radar1 = FrequencyRadar(tag = 0, x = 0, y = 1000, dt = dt_rad1)
     rs1, thetas1, phis1 = radar1.gen_data(position_data1)
     noisy_rs1, noisy_thetas1, noisy_phis1 = radar1.sense(rs1, thetas1, phis1)
     xs_from_rad1, ys_from_rad1, zs_from_rad1 = radar1.radar2cartesian(noisy_rs1, noisy_thetas1, noisy_phis1)
@@ -66,7 +68,7 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
-    radar_filter_cv = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 100.,
+    radar_filter_cv = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 50.,
                                                radars = radars, model = RadarFilterCV,
                                                x0 = 100, y0=100)
     radar_filter_ca = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
@@ -75,7 +77,7 @@ if __name__ == "__main__":
     radar_filter_ct = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
                                                radars = radars, model = RadarFilterCT,
                                                x0 = 100, y0=100)
-    radar_filter_ta = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 50.,
+    radar_filter_ta = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 25.,
                                                radars = radars, model = RadarFilterTA,
                                                x0 = 100, y0=100)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct, radar_filter_ta]

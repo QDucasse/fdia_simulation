@@ -21,12 +21,13 @@ from fdia_simulation.filters.m_radar_filter  import MultipleRadarsFilter
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     trajectory = Track()
-    xs, ys, zs = trajectory.gen_takeoff()
+    states = trajectory.gen_takeoff()
+    xs, ys, zs = trajectory.output_positions(states)
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
     # ======================== Radar data generation ===========================
     # Radar 1
-    radar1 = Radar(x=800,y=800)
+    radar1 = Radar(x=0,y=1000)
     rs1, thetas1, phis1 = radar1.gen_data(position_data)
     noisy_rs1, noisy_thetas1, noisy_phis1 = radar1.sense(rs1, thetas1, phis1)
     xs_from_rad1, ys_from_rad1, zs_from_rad1 = radar1.radar2cartesian(noisy_rs1, noisy_thetas1, noisy_phis1)
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 75.,
                                          radars = radars, model = RadarFilterCT,
                                          x0 = 100, y0=100)
-    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 50.,
+    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 25.,
                                          radars = radars, model = RadarFilterTA,
                                          x0 = 100, y0=100)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct, radar_filter_ta]

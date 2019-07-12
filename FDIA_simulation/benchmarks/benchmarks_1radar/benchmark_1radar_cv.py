@@ -7,6 +7,8 @@ Created on Fri Jun 28 13:50:12 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
+from filterpy.stats import NESS
+from numpy.linalg   import inv
 from fdia_simulation.models.radar                  import Radar
 from fdia_simulation.attackers.mo_attacker         import ExtendedMoAttacker
 from fdia_simulation.filters.radar_filter_cv       import RadarFilterCV
@@ -17,7 +19,8 @@ from fdia_simulation.models.tracks                 import Track
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     trajectory = Track()
-    xs, ys, zs = trajectory.gen_takeoff()
+    states = trajectory.gen_takeoff()
+    xs, ys, zs = trajectory.output_positions(states)
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
     # ======================== Radar data generation ===========================
@@ -35,12 +38,20 @@ if __name__ == "__main__":
     # Filter: constant velocity
     radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 400., radar = radar)
     est_xs_cv, est_ys_cv, est_zs_cv = [],[],[]
-    for val in radar_values:
+    est_states = []
+    nees = []
+    for i,val in enumerate(radar_values):
         radar_filter_cv.predict()
         radar_filter_cv.update(val)
-        est_xs_cv.append(radar_filter_cv.x[0,0])
-        est_ys_cv.append(radar_filter_cv.x[3,0])
-        est_zs_cv.append(radar_filter_cv.x[6,0])
+        est_states.append(radar_filter_cv.x)
+        states_tilde = np.subtract(est_states[i],np.reshape(states[i,:],(-8,1)))
+        nees.append(*(states_tilde.T@inv(radar_filter_cv.P)@states_tilde))
+    est_states = np.array(est_states)
+    est_xs_c = est_states[:,0].T
+    est_ys_c = est_states[:,3].T
+    est_zs_c = est_states[:,6].T
+    nees = np.array(nees)
+    print(nees)
     # ==========================================================================
     # ============================ Attacker generation =========================
 
@@ -63,4 +74,10 @@ if __name__ == "__main__":
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')
     ax.legend()
+
+    fig2 = plt.figure(2)
+    plt.rc('font', family='serif')
+    plt.plot(nees)
+
+
     plt.show()

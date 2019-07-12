@@ -126,3 +126,6 @@ Thumbs.db
 *.log
 *.sql
 *.sqlite
+
+# Playground
+fdia_simulation/workspace.py

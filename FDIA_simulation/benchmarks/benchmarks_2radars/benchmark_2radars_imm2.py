@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+    trajectory = Track()
+    states = trajectory.gen_takeoff()
+    xs, ys, zs = trajectory.output_positions(states)
+    position_data = np.array(list(zip(xs,ys,zs)))# -*- coding: utf-8 -*-
 """
 Created on Wed Jul 03 11:52:38 2019
 
@@ -20,7 +23,8 @@ from fdia_simulation.filters.m_radar_filter  import MultipleRadarsFilter
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     trajectory = Track()
-    xs, ys, zs = trajectory.gen_takeoff()
+    states = trajectory.gen_takeoff()
+    xs, ys, zs = trajectory.output_positions(states)
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
     # ======================== Radar data generation ===========================
@@ -50,7 +54,7 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
-    radar_filter_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 1.,
+    radar_filter_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 8.,
                                        radars = radars, model = RadarFilterCV,
                                        x0 = 100, y0=100)
     radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,

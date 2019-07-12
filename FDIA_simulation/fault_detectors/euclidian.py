@@ -6,6 +6,7 @@ Created on Mon Jul 01 09:10:06 2019
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats     import chi2
 from math            import sqrt
 from filterpy.common import kinematic_kf
 from numpy.random    import randn
@@ -24,9 +25,10 @@ class EuclidianDetector(FaultDetector):
         '''
         #! TODO: sigma verification
         #! TODO: test_quantity verification
-        sigma = kf.R[0,0]
-        threshold = 3*sigma
-        test_quantity = sqrt((np.dot(kf.H,kf.x_prior) - new_measurement)**2)
+        # sigma = kf.R[0,0]
+        # threshold = 3*sigma
+        threshold = chi2.ppf(1-error_rate,kf.dim_z)
+        test_quantity = sqrt(kf.y.T@kf.y)
         self.reviewed_values.append(test_quantity)
         if test_quantity <= threshold:
             self.comparison_results.append("Success")

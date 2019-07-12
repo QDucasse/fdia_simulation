@@ -151,7 +151,6 @@ class RadarModel(ExtendedKalmanFilter,ABC):
             HJacobian = self.HJacob
         if Hx is None:
             Hx = self.hx
-
         z = np.reshape(z,(-2,1))
         ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob, Hx = self.hx,
                                     args = args, hx_args = hx_args)

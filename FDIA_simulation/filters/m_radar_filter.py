@@ -90,6 +90,9 @@ class MultipleRadarsFilter(RadarFilterCV,RadarFilterCA,RadarFilterCT,RadarFilter
         return H
 
 class MultipleFreqRadarsFilter(MultipleRadarsFilter):
+    r'''Implements a filter model using multiple sensors with different data rates
+    and combining them through the measurement function and matrix.
+    '''
     def __init__(self,dim_x, dim_z, q, radars, model,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
@@ -105,7 +108,8 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
 
     def _tag_radars(self):
         '''
-        Attributes tags to radars
+        Attributes tags to radars. Tags are the positions of each radar in the
+        radars list attribute.
         '''
         for i,radar in enumerate(self.radars):
             radar.tag = i
@@ -130,7 +134,7 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
         Notes
         -----
         The result is obtained by vertically concatenating the measurement
-        function of one radar for each of them. Each of them are null except
+        function result of one radar for each of them. Each of them are null except
         for the tagged radar.
         '''
 
@@ -167,7 +171,7 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
             X_cur[0,0] -= position[0]
             X_cur[3,0] -= position[1]
             X_cur[6,0] -= position[2]
-            if i == tag:
+            if i == tag: # If the radar if the one sending the measurement
                 H_part = self.model.HJacob(self,X_cur)
             else:
                 H_part = np.zeros((3,9))
@@ -176,6 +180,10 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
 
     def update(self, labeled_z):
         '''
+        Enhanced update method that needs to treat the labeled measurement and
+        use the correct H matrix and function with the help of radar tag.
+        Parameters
+        ----------
         z: LabeledMeasurement
             The container of tag, time and measurement
         '''

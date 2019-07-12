@@ -17,12 +17,14 @@ if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     dt_rad1 = 0.1
     trajectory1 = Track(dt = dt_rad1)
-    xs1, ys1, zs1 = trajectory1.gen_takeoff()
+    states1 = trajectory1.gen_takeoff()
+    xs1, ys1, zs1 = trajectory1.output_positions(states1)
     position_data1 = np.array(list(zip(xs1,ys1,zs1)))
 
     dt_rad2 = 0.4
     trajectory2 = Track(dt = dt_rad2)
-    xs2, ys2, zs2 = trajectory2.gen_takeoff()
+    states2 = trajectory2.gen_takeoff()
+    xs2, ys2, zs2 = trajectory2.output_positions(states2)
     position_data2 = np.array(list(zip(xs2,ys2,zs2)))
     # ==========================================================================
     # ======================== Radars data generation ===========================

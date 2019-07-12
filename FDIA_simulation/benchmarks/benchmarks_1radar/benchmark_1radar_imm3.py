@@ -20,7 +20,8 @@ from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     trajectory = Track()
-    xs, ys, zs = trajectory.gen_takeoff()
+    states = trajectory.gen_takeoff()
+    xs, ys, zs = trajectory.output_positions(states)
     position_data = np.array(list(zip(xs,ys,zs)))
     # ==========================================================================
     # ======================== Radar data generation ===========================

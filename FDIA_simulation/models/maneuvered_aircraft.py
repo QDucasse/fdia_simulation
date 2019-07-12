@@ -73,15 +73,16 @@ class ManeuveredAircraft(MovingTarget):
         x, y , z : floats
             New positions along x-axis, y-axis and z-axis.
         '''
-        cmd_headz = self.commands['headz']
-        cmd_headx = self.commands['headx']
-        cmd_vel   = self.commands['vel']
-        velx      = self.vel * cos(radians(self.headx)) * cos(radians(self.headz))
-        vely      = self.vel * cos(radians(self.headx)) * sin(radians(self.headz))
-        velz      = self.vel * sin(radians(self.headx))
-        self.x    += self.dt*velx # Model application: x = x + dt*velx
-        self.y    += self.dt*vely # Model application: y = y + dt*vely
-        self.z    += self.dt*velz # Model application: z = z + dt*velz
+        cmd_headz  = self.commands['headz']
+        cmd_headx  = self.commands['headx']
+        cmd_vel    = self.commands['vel']
+        velx       = self.vel * cos(radians(self.headx)) * cos(radians(self.headz))
+        vely       = self.vel * cos(radians(self.headx)) * sin(radians(self.headz))
+        velz       = self.vel * sin(radians(self.headx))
+        ax, ay, az = 0, 0, 0
+        self.x     += self.dt*velx # Model application: x = x + dt*velx
+        self.y     += self.dt*vely # Model application: y = y + dt*vely
+        self.z     += self.dt*velz # Model application: z = z + dt*velz
 
         if cmd_headz.steps > 0:           # Heading around z command update
             cmd_headz.steps -= 1          # Diminution of the number of steps
@@ -94,8 +95,13 @@ class ManeuveredAircraft(MovingTarget):
         if cmd_vel.steps > 0:           # Velocity command update
             cmd_vel.steps -= 1          # Diminution of the number of steps
             self.vel += cmd_vel.delta   # Adding a delta per step
+            ax       = cmd_vel.delta * cos(radians(self.headx)) * cos(radians(self.headz))
+            ay       = cmd_vel.delta * cos(radians(self.headx)) * sin(radians(self.headz))
+            az       = cmd_vel.delta * sin(radians(self.headx))
 
-        return (self.x, self.y, self.z)
+        state = [self.x, velx, ax, self.y, vely, ay, self.z, velz, az]
+
+        return state
 
     def change_headx(self, hdg_degrees, steps):
         '''
@@ -185,15 +191,13 @@ if __name__ == "__main__":
     vel_cmd   = Command('vel',1,0,0)
     aircraft  = ManeuveredAircraft(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
     xs, ys, zs = [], [], []
+    states = []
 
     # Take off acceleration objective
     aircraft.change_command("vel",200, 20)
     # First phase -> Acceleration
     for i in range(10):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
+        states.append(aircraft.update())
 
     # Change in commands -> Take off
     aircraft.change_command("headx",45, 25)
@@ -201,10 +205,7 @@ if __name__ == "__main__":
 
     # Second phase -> Take off
     for i in range(30):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
+        states.append(aircraft.update())
 
     # Change in commands -> Steady state
     aircraft.change_command("headx",-45, 25)
@@ -212,11 +213,13 @@ if __name__ == "__main__":
 
     # Third phase -> Steady state
     for i in range(60):
-        x, y, z = aircraft.update()
-        xs.append(x)
-        ys.append(y)
-        zs.append(z)
+        states.append(aircraft.update())
 
+
+    states = np.array(states)
+    xs = states[:,0]
+    ys = states[:,1]
+    zs = states[:,2]
     position_data = np.array(list(zip(xs,ys,zs)))
 
     # Route plot

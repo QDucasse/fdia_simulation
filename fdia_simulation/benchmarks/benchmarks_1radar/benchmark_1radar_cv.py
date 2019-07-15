@@ -47,9 +47,9 @@ if __name__ == "__main__":
         states_tilde = np.subtract(est_states[i],np.reshape(states[i,:],(-8,1)))
         nees.append(*(states_tilde.T@inv(radar_filter_cv.P)@states_tilde))
     est_states = np.array(est_states)
-    est_xs_c = est_states[:,0].T
-    est_ys_c = est_states[:,3].T
-    est_zs_c = est_states[:,6].T
+    est_xs_c = est_states[:,0]
+    est_ys_c = est_states[:,3]
+    est_zs_c = est_states[:,6]
     nees = np.array(nees)
     print(nees)
     # ==========================================================================

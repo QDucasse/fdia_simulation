@@ -101,8 +101,10 @@ if __name__ == "__main__":
 
     for z in zs:
             kinematic_test_kf.predict()
-            chi_detector.review_measurement(z,kinematic_test_kf)
-            kinematic_test_kf.update(z)
+            if chi_detector.review_measurement(z,kinematic_test_kf)=="Failure":
+                kinematic_test_kf.update(None)
+            else:
+                kinematic_test_kf.update(z)
 
     print('==================CHISQUARE DETECTOR====================')
     zipped_chi = chi_detector.zipped_review()

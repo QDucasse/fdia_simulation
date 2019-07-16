@@ -164,12 +164,31 @@ class Radar(object):
 
         return xs,ys,zs
 
-class LabelizedMeasurement(object):
+class LabeledMeasurement(object):
+    '''
+    Measurement labeled with a tag (radar ownership) and a timestamp (date of the
+    measurement).
+    Parameters
+    ----------
+    tag: int
+        Tag (position) of the radar emitting this measurement.
+
+    time: float
+        Time of the measurement, starting from the beginning of the observation.
+
+    value: float numpy array
+        Array containing [r, theta, phi], measurement of tagged radar at the
+        given time.
+    '''
     def __init__(self,tag,time,value):
         self.tag   = tag
         self.time  = time
         self.value = value
 
+    '''
+    Redifinition of the comparison operators using as only criteria the time of
+    measurement.
+    '''
     def __gt__(self,other):
         return (self.time > other.time)
 
@@ -184,13 +203,29 @@ class LabelizedMeasurement(object):
 
     def __repr__(self):
         return '\n'.join([
-            'LabelizedMeasurement object',
+            'LabeledMeasurement object',
             pretty_str('tag', self.tag),
             pretty_str('time', self.time),
             pretty_str('value', self.value)])
 
 class FrequencyRadar(Radar):
     r'''
+    Implements a radar with a given data rate (dt).
+    Attributes
+    ----------
+    Radar attributes +
+    dt: float
+        Data rate of the radar.
+
+    tag: int
+        Radar tag (position in the radars list).
+
+    time_std: float
+        Standard deviation of the time. Default value of 0.001
+
+    Parameters
+    ----------
+    Identical to attributes
     '''
     def __init__(self, x, y, z=0, tag = 0,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
@@ -204,6 +239,17 @@ class FrequencyRadar(Radar):
 
     def compute_meas_times(self, size):
         '''
+        Computes the measurement times adding repeatitively dt (modified by the
+        time_std).
+        Parameters
+        ----------
+        size: int
+            Size of the list of times.
+
+        Returns
+        -------
+        meas_times: float list
+            List of the sample times.
         '''
         meas_times = [0]
         t_k = meas_times[0]
@@ -214,6 +260,16 @@ class FrequencyRadar(Radar):
 
     def compute_measurements(self,position_data):
         '''
+        Computes the measurements of given positions.
+        Parameters
+        ----------
+        position_data: float numpy array
+            Array of positions [x,y,z].
+
+        Returns
+        -------
+        measurements: LabeledMeasurement list
+            List of labeled measurements with time and tag. 
         '''
         rs, thetas, phis = self.gen_data(position_data)
         noisy_rs, noisy_thetas, noisy_phis = self.sense(rs, thetas, phis)
@@ -223,9 +279,9 @@ class FrequencyRadar(Radar):
 
         for i in range(n):
             value = [noisy_rs[i], noisy_thetas[i], noisy_phis[i]]
-            measurement = LabelizedMeasurement(tag = self.tag,
-                                               time = measurement_times[i],
-                                               value = value)
+            measurement = LabeledMeasurement(tag = self.tag,
+                                             time = measurement_times[i],
+                                             value = value)
             measurements.append(measurement)
 
         return measurements

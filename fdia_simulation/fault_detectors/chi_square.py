@@ -10,6 +10,7 @@ from scipy.stats     import chi2
 from filterpy.common import kinematic_kf
 from numpy.random    import randn
 from pprint          import pprint
+from numpy.linalg    import inv
 from fdia_simulation.helpers.plotting               import plot_measurements
 from fdia_simulation.fault_detectors.fault_detector import FaultDetector
 
@@ -38,36 +39,41 @@ class ChiSquareDetector(FaultDetector):
 
         Returns
         -------
-        result: string
-            "Success" or "Failure".
+        result: boolean
+            True or False.
 
         Notes
         -----
-        The returned string is also added to the instance variable
+        The returned boolean is also added to the instance variable
         comparison_results.
         '''
         dim_z = np.shape(kf.R)[0]
 
         #! TODO: Raise error if wrong dimension
-
+        from fdia_simulation.filters.radar_filter_model import RadarModel
+        if isinstance(kf,RadarModel):
+            H = kf.HJacob(kf.x)
+        else:
+            H = kf.H
+            
         # Simulated update sequence with no influence on the real filter kf
         y   = kf.residual_of(new_measurement) # Residual:              z - Hx
-        PHT = np.dot(kf.P, kf.H.T)            # Intermediate variable: P*H*T
-        S   = np.dot(kf.H, PHT) + kf.R        # Innovation covariance: H*P*HT + R
-        K   = np.dot(PHT, kf.inv(S))          # Kalman gain:           P*HT*inv(S)
-        x   = kf.x + np.dot(kf.K, y)          # New state:             x + Ky
+        PHT = kf.P@H.T                        # Intermediate variable: P*H*T
+        S   = H@PHT + kf.R                    # Innovation covariance: H*P*HT + R
+        K   = PHT@inv(S)                      # Kalman gain:           P*HT*inv(S)
+        x   = kf.x + K@y                   # New state:             x + Ky
 
         # Threshold calculated by reversing the chi-square table for 0.95 (by default)
-        test_quantity = y.T @ kf.inv(S) @ y
+        test_quantity = y.T @ inv(S) @ y
         threshold = chi2.ppf(1-error_rate,dim_z)
         self.reviewed_values.append(test_quantity)
 
         if test_quantity <= threshold:
-            self.comparison_results.append("Success")
-            return "Success"
+            self.comparison_results.append(True)
+            return True
         else:
-            self.comparison_results.append("Failure")
-            return "Failure"
+            self.comparison_results.append(False)
+            return False
 
 
 if __name__ == "__main__":
@@ -101,10 +107,10 @@ if __name__ == "__main__":
 
     for z in zs:
             kinematic_test_kf.predict()
-            if chi_detector.review_measurement(z,kinematic_test_kf)=="Failure":
-                kinematic_test_kf.update(None)
-            else:
+            if chi_detector.review_measurement(z,kinematic_test_kf):
                 kinematic_test_kf.update(z)
+            else:
+                kinematic_test_kf.update(None)
 
     print('==================CHISQUARE DETECTOR====================')
     zipped_chi = chi_detector.zipped_review()

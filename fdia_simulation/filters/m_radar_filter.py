@@ -105,6 +105,8 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
                                      ax0 = ax0, ay0 = ay0, az0 = az0)
         self._last_t = 0
         self._tag_radars()
+        self.Hs = []
+        self.Zs = []
 
     def _tag_radars(self):
         '''
@@ -149,6 +151,7 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
             else:
                 Z_part = np.zeros((3,1))
             Z = np.concatenate((Z,Z_part),axis=0)
+        self.Zs.append(Z)
         return Z
 
     def HJacob(self,X, tag):
@@ -176,6 +179,7 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
             else:
                 H_part = np.zeros((3,9))
             H = np.concatenate((H,H_part),axis=0)
+        self.Hs.append(H)
         return H
 
     def update(self, labeled_z):
@@ -187,7 +191,7 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilter):
         z: LabeledMeasurement
             The container of tag, time and measurement
         '''
-        tag, t , z = labeled_z.tag, labeled_z.time, np.array(labeled_z.value)
+        tag, t ,z = labeled_z.tag, labeled_z.time, np.array(labeled_z.value)
         self.dt      = t - self._last_t
         self._last_t = t
         self.compute_Q(self.q)

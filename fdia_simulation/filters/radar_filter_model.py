@@ -12,6 +12,7 @@ from copy            import deepcopy
 from abc             import ABC,abstractmethod
 from filterpy.kalman import ExtendedKalmanFilter
 from fdia_simulation.models.radar import Radar
+from fdia_simulation.fault_detectors.chi_square import ChiSquareDetector
 
 
 class RadarModel(ExtendedKalmanFilter,ABC):
@@ -67,6 +68,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         self.compute_Q(q)
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
         self.compute_F(self.x)
+        self.detector = ChiSquareDetector()
 
     @abstractmethod
     def HJacob(self,X):
@@ -118,6 +120,14 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         '''
         pass
 
+
+    def residual_of(self, z):
+        """
+        Returns the residual for the given measurement (z). Does not alter
+        the state of the filter.
+        """
+        return np.subtract(z, self.HJacob(self.x)@self.x_prior)
+
     def predict(self,u = 0):
         '''
         Prediction step of the estimator.
@@ -152,5 +162,14 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         if Hx is None:
             Hx = self.hx
         z = np.reshape(z,(-2,1))
-        ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob, Hx = self.hx,
-                                    args = args, hx_args = hx_args)
+
+        # Anomaly detector à mettre en place
+        # Anomaly detection using the specified detector
+        # res_detection = self.detector.review_measurement(z,self)
+        # If res_detection = True => No problem in the measurement
+        if True: #res_detection:
+            ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob,
+                                        Hx = self.hx, args = args, hx_args = hx_args)
+        else:
+            ExtendedKalmanFilter.update(self,z = None, HJacobian = self.HJacob,
+                                        Hx = self.hx, args = args, hx_args = hx_args)

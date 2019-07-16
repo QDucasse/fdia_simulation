@@ -232,6 +232,7 @@ class FrequencyRadar(Radar):
                  dt = 1., time_std = 0.001):
 
         self.dt       = dt
+        self.step     = self.dt / Track.DT_TRACK # Sampling step from the position data
         self.tag      = tag
         self.time_std = time_std
         Radar.__init__(self,x = x, y = y, z = z,
@@ -251,12 +252,33 @@ class FrequencyRadar(Radar):
         meas_times: float list
             List of the sample times.
         '''
-        meas_times = [0]
-        t_k = meas_times[0]
+        t_k = 0
+        meas_times = [t_k]
         for _ in range(size-1):
             t_k += self.dt + randn()*self.time_std # Adding a time jitter
             meas_times.append(t_k)
         return meas_times
+
+    def gen_data(self,position_data):
+        '''
+        Apply the step attribute to the position data in order to retrieve a
+        correct number of position samples.
+        Parameters
+        ----------
+        position_data: float numpy array
+            Whole positions extracted from the Track trajectory. Time unit 0.01
+
+        Returns
+        -------
+        sampled_position_data: float numpy array
+            Extracted position sampled every "step" to represent the data rate
+            of the radar.
+        '''
+        sampled_position_data = position_data[::int(self.step)]
+        return Radar.gen_data(self,sampled_position_data)
+
+
+
 
     def compute_measurements(self,position_data):
         '''
@@ -269,7 +291,7 @@ class FrequencyRadar(Radar):
         Returns
         -------
         measurements: LabeledMeasurement list
-            List of labeled measurements with time and tag. 
+            List of labeled measurements with time and tag.
         '''
         rs, thetas, phis = self.gen_data(position_data)
         noisy_rs, noisy_thetas, noisy_phis = self.sense(rs, thetas, phis)

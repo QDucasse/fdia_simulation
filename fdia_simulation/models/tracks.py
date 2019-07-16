@@ -10,7 +10,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
 from fdia_simulation.helpers.plotting import plot_track
 
-
 class Track(object):
     r'''Implements an airplane trajectory following several modes.
     Parameters
@@ -18,10 +17,16 @@ class Track(object):
     aircraft: ManeuveredAircraft
         The model airplane of the trajectory.
     '''
-    def __init__(self,aircraft = None, dt = 1.):
-        if aircraft == None:
+    DT_TRACK = 0.01
+
+    def __init__(self,aircraft = None, dt = None ):
+        if dt is None:
+            dt = self.DT_TRACK
+
+        if aircraft is None:
             aircraft = ManeuveredAircraft(dt = dt)
         self.aircraft = aircraft
+
 
     def gen_cruise(self,x0 = 100,y0 = 100,z0 = 8000,t = 50,vel = 250,ax='y'):
         '''
@@ -526,64 +531,64 @@ class Track(object):
         return np.array(states)
 
 
-
+def output_positions(states):
+        return states[:,0],states[:,3],states[:,6]
 
 
 if __name__ == "__main__":
-
     test_track = Track()
     print('##== Figure 1: Cruise mode =========##')
-    xs_cruise, ys_cruise, zs_cruise = test_track.output_positions(test_track.gen_cruise())
+    xs_cruise, ys_cruise, zs_cruise = output_positions(test_track.gen_cruise())
     plot_track(xs_cruise, ys_cruise, zs_cruise, 1, 'Cruise trajectory, dt = 1.')
 
     test_track = Track()
     print('##== Figure 2: Weave mode ==========##')
-    xs_weave, ys_weave, zs_weave = test_track.output_positions(test_track.gen_weave())
+    xs_weave, ys_weave, zs_weave = output_positions(test_track.gen_weave())
     plot_track(xs_weave, ys_weave, zs_weave, 2, 'Weave trajectory')
 
     test_track = Track()
     print('##== Figure 3: Acceleration mode ===##')
-    xs_acc, ys_acc, zs_acc = test_track.output_positions(test_track.gen_acc())
+    xs_acc, ys_acc, zs_acc = output_positions(test_track.gen_acc())
     plot_track(xs_acc, ys_acc, zs_acc, 3, 'Acceleration trajectory')
 
     test_track = Track()
     print('##== Figure 4: Dive mode ===========##')
-    xs_dive, ys_dive, zs_dive = test_track.output_positions(test_track.gen_dive())
+    xs_dive, ys_dive, zs_dive = output_positions(test_track.gen_dive())
     plot_track(xs_dive, ys_dive, zs_dive, 4, 'Dive trajectory')
 
     test_track = Track()
     print('##== Figure 5: 1g turn mode ========##')
-    xs_turn1, ys_turn1, zs_turn1 = test_track.output_positions(test_track.gen_turn1())
+    xs_turn1, ys_turn1, zs_turn1 = output_positions(test_track.gen_turn1())
     plot_track(xs_turn1, ys_turn1, zs_turn1, 5, '1g Turn trajectory')
 
     test_track = Track()
     print('##== Figure 6: 5g turn mode ========##')
-    xs_turn5, ys_turn5, zs_turn5 = test_track.output_positions(test_track.gen_turn5())
+    xs_turn5, ys_turn5, zs_turn5 = output_positions(test_track.gen_turn5())
     plot_track(xs_turn5, ys_turn5, zs_turn5, 6, '5g Turn trajectory')
 
     test_track = Track()
     print('##== Figure 7: Offensive mode ======##')
-    xs_off, ys_off, zs_off = test_track.output_positions(test_track.gen_offensive())
+    xs_off, ys_off, zs_off = output_positions(test_track.gen_offensive())
     plot_track(xs_off, ys_off, zs_off, 7, 'Offensive trajectory')
 
     test_track = Track()
     print('##== Figure 8: Defensive mode ======##')
-    xs_def, ys_def, zs_def = test_track.output_positions(test_track.gen_defensive())
+    xs_def, ys_def, zs_def = output_positions(test_track.gen_defensive())
     plot_track(xs_def, ys_def, zs_def, 8, 'Defensive trajectory')
 
     test_track = Track()
     print('##== Figure 9: Defensive mode ======##')
-    xs_dis, ys_dis, zs_dis = test_track.output_positions(test_track.gen_disengagement())
+    xs_dis, ys_dis, zs_dis = output_positions(test_track.gen_disengagement())
     plot_track(xs_dis, ys_dis, zs_dis, 9, 'Disengagement trajectory')
 
     test_track = Track(dt = 0.4)
     print('##== Figure 10: Takeoff mode =======##')
-    xs_toff, ys_toff, zs_toff = test_track.output_positions(test_track.gen_takeoff())
+    xs_toff, ys_toff, zs_toff = output_positions(test_track.gen_takeoff())
     plot_track(xs_toff, ys_toff, zs_toff, 10, 'Takeoff trajectory')
 
     test_track = Track(dt = 0.4)
     print('##== Figure 11: Landing mode =======##')
-    xs_land, ys_land, zs_land = test_track.output_positions(test_track.gen_landing())
+    xs_land, ys_land, zs_land = output_positions(test_track.gen_landing())
     plot_track(xs_land, ys_land, zs_land, 11, 'Landing trajectory')
 
     plt.show()

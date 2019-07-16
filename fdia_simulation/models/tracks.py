@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
-from fdia_simulation.helpers.plotting           import plot_track
+from fdia_simulation.helpers.plotting import plot_track
 
 
 class Track(object):
@@ -525,8 +525,7 @@ class Track(object):
 
         return np.array(states)
 
-    def output_positions(self,states):
-        return states[:,0], states[:,3], states[:,6]
+
 
 
 

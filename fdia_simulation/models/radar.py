@@ -227,14 +227,14 @@ class FrequencyRadar(Radar):
     ----------
     Identical to attributes
     '''
-    def __init__(self, x, y, z=0, tag = 0,
+    def __init__(self, x, y, z=0,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
                  dt = 1., time_std = 0.001):
 
         self.dt       = dt
         self.step     = self.dt / Track.DT_TRACK # Sampling step from the position data
-        self.tag      = tag
         self.time_std = time_std
+        self.tag      = 0
         Radar.__init__(self,x = x, y = y, z = z,
                        r_noise_std = r_noise_std, theta_noise_std = theta_noise_std, phi_noise_std = phi_noise_std)
 

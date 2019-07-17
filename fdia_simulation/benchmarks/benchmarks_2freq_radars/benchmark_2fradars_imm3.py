@@ -7,7 +7,7 @@ Created on Thu Jul 04 11:47:28 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from filterpy.kalman import IMMEstimator
+from filterpy.kalman            import IMMEstimator
 from fdia_simulation.models     import FrequencyRadar, Track
 from fdia_simulation.filters    import MultipleFreqRadarsFilter, RadarFilterCV, RadarFilterCA, RadarFilterCT
 from fdia_simulation.attackers  import MoAttacker
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     radar_filter_ct = MultipleFreqRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
                                                radars = radars, model = RadarFilterCT,
                                                x0 = x0, y0 = y0, z0 = z0)
+
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct]
     mu = [0.33, 0.33, 0.33]
     trans = np.array([[0.998, 0.001, 0.001],

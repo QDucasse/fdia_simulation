@@ -33,16 +33,26 @@ class Radar(object):
     Identical to Attributes
     '''
 
-    def __init__(self, x, y, z=0, r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001):
+    def __init__(self, x, y, z=0, dt = 0.5,
+                 r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001):
+        self.dt = dt
         self.x                = x
         self.y                = y
         self.z                = z
+        self.step             = self.dt / Track.DT_TRACK # Sampling step from the position data
         self.r_noise_std      = r_noise_std
         self.theta_noise_std  = theta_noise_std
         self.phi_noise_std    = phi_noise_std
         self.R = np.array([[r_noise_std,0              ,0            ],
                            [0          ,theta_noise_std,0            ],
                            [0          ,0              ,phi_noise_std]])
+
+    def set_frequency(self):
+        '''
+        Sets the data rate of the radar. Default for this class is 0.5.
+        '''
+        self.dt = 0.5
+
 
     def get_position(self):
         '''
@@ -53,6 +63,14 @@ class Radar(object):
             [x,y,z] of the radar.
         '''
         return [self.x,self.y,self.z]
+
+    def sample_position_data(self,position_data):
+        '''
+        Samples the initial position data (computed with dt = 0.01) to reduce it
+        to the actual data rate of the radar.
+        '''
+        sampled_position_data = position_data[::int(self.step)]
+        return sampled_position_data
 
     def gen_data(self,position_data):
         '''
@@ -223,16 +241,15 @@ class FrequencyRadar(Radar):
     ----------
     Identical to attributes
     '''
-    def __init__(self, x, y, z=0,
+    def __init__(self, x, y, z=0, dt = 0.5,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
-                 dt = 1., time_std = 0.001):
+                 time_std = 0.001):
 
-        self.dt       = dt
-        self.step     = self.dt / Track.DT_TRACK # Sampling step from the position data
         self.time_std = time_std
         self.tag      = 0
-        Radar.__init__(self,x = x, y = y, z = z,
+        Radar.__init__(self,x = x, y = y, z = z, dt = dt,
                        r_noise_std = r_noise_std, theta_noise_std = theta_noise_std, phi_noise_std = phi_noise_std)
+
 
     def compute_meas_times(self, size):
         '''
@@ -254,26 +271,6 @@ class FrequencyRadar(Radar):
             t_k += self.dt + randn()*self.time_std # Adding a time jitter
             meas_times.append(t_k)
         return meas_times
-
-    def gen_data(self,position_data):
-        '''
-        Apply the step attribute to the position data in order to retrieve a
-        correct number of position samples.
-        Parameters
-        ----------
-        position_data: float numpy array
-            Whole positions extracted from the Track trajectory. Time unit 0.01
-
-        Returns
-        -------
-        sampled_position_data: float numpy array
-            Extracted position sampled every "step" to represent the data rate
-            of the radar.
-        '''
-        sampled_position_data = position_data[::int(self.step)]
-        return Radar.gen_data(self,sampled_position_data)
-
-
 
 
     def compute_measurements(self,position_data):

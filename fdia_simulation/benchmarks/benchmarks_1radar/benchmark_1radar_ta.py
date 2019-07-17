@@ -17,9 +17,12 @@ if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     trajectory = Track()
     states = trajectory.gen_takeoff()
+    x0=states[0,0]
+    y0=states[0,3]
+    z0=states[0,6]
 
     radar = Radar(x=0,y=2000)
-    radar_filter_ta = RadarFilterTA(dim_x = 9, dim_z = 3, q = 3600., x0=100.,y0=100., radar = radar)
+    radar_filter_ta = RadarFilterTA(dim_x = 9, dim_z = 3, q = 3600., x0=x0,y0=y0,z0=z0, radar = radar)
 
     benchmark_ta = Benchmark(radars = radar,radar_filter = radar_filter_ta,states = states)
     benchmark_ta.launch_benchmark(with_nees = True)

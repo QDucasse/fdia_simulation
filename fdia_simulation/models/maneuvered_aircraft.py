@@ -5,12 +5,11 @@ Created on Fri Jun 14 16:30:25 2019
 @author: qde
 """
 
-import numpy as np
+import numpy             as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from math import cos,sin,radians
-from fdia_simulation.models.moving_target import MovingTarget, Command
-from fdia_simulation.models.sensors import NoisySensor
+from math                   import cos,sin,radians
+from mpl_toolkits.mplot3d   import Axes3D
+from fdia_simulation.models import MovingTarget, Command, NoisySensor
 
 class ManeuveredAircraft(MovingTarget):
     r'''Implements a model for a maneuvered aircraft: commands on two headings

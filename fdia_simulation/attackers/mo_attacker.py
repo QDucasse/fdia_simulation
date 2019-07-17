@@ -6,12 +6,12 @@ Created on Fri Jun 21 16:45:28 2019
 """
 
 import numpy as np
-from numpy.linalg import inv, norm
-from scipy.linalg import solve_discrete_are,lstsq
-from filterpy.common import pretty_str
-from filterpy.kalman import KalmanFilter
-from numpy.random import randn
-from fdia_simulation.attackers.attacker import Attacker, UnstableData
+from numpy.linalg              import inv, norm
+from scipy.linalg              import solve_discrete_are,lstsq
+from numpy.random              import randn
+from filterpy.common           import pretty_str
+from filterpy.kalman           import KalmanFilter
+from fdia_simulation.attackers import Attacker, UnstableData
 
 class MoAttacker(Attacker):
     r''' Implements an attack simulation based on the research article Mo et al.

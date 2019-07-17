@@ -7,11 +7,9 @@ Created on Fri Jun 28 13:50:12 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models.radar            import Radar
-from fdia_simulation.models.tracks           import Track
-from fdia_simulation.attackers.mo_attacker   import MoAttacker
-from fdia_simulation.filters.m_radar_filter  import MultipleRadarsFilter
-from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
+from fdia_simulation.models    import Radar, Track
+from fdia_simulation.filters   import MultipleRadarsFilter, RadarFilterCV
+from fdia_simulation.attackers import MoAttacker
 
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================

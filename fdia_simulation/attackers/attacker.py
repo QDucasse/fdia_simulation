@@ -4,15 +4,13 @@ Created on Tue Jun 18 10:10:54 2019
 
 @author: qde
 """
-
-from abc import ABC, abstractmethod
 import numpy as np
-from numpy.linalg import inv, norm
-from scipy.linalg import solve_discrete_are,lstsq
+from abc             import ABC, abstractmethod
+from numpy.linalg    import inv, norm
+from scipy.linalg    import solve_discrete_are,lstsq
+from numpy.random    import randn
 from filterpy.common import pretty_str
 from filterpy.kalman import KalmanFilter
-from numpy.random import randn
-
 
 class UnstableData(object):
     r'''Implements a model for storing unstable data.
@@ -41,7 +39,7 @@ class UnstableData(object):
 
 
 class Attacker(ABC):
-    r'''Implements common behavior to attackers. 
+    r'''Implements common behavior to attackers.
     '''
     def __init__(self):
         pass

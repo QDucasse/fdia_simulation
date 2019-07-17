@@ -4,9 +4,7 @@ Created on Mon Jun 24 09:54:32 2019
 
 @author: qde
 """
-
 from numpy.random import randn
-
 
 class NoisySensor(object):
     r'''Implements a noisy sensor.

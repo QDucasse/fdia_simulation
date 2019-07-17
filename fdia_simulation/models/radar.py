@@ -4,16 +4,12 @@ Created on Fri Jun 21 13:07:46 2019
 
 @author: qde
 """
-
 import numpy as np
 import matplotlib.pyplot as plt
-from math            import cos,sin,sqrt,pi,atan2
-from numpy.random    import randn
-from filterpy.common import pretty_str
-from fdia_simulation.models.moving_target       import MovingTarget, Command
-from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
-from fdia_simulation.models.sensors             import NoisySensor
-from fdia_simulation.models.tracks              import Track
+from math                   import cos,sin,sqrt,pi,atan2
+from numpy.random           import randn
+from filterpy.common        import pretty_str
+from fdia_simulation.models import ManeuveredAircraft, NoisySensor, Track, MovingTarget, Command
 
 class Radar(object):
     r'''Implements a simulated radar.

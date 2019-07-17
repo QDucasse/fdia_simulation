@@ -6,15 +6,11 @@ Created on Mon Jul 15 15:06:12 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from numpy.linalg import inv
-from copy import deepcopy
-from filterpy.kalman import IMMEstimator
-from fdia_simulation.models.moving_target          import Command
-from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
-from fdia_simulation.models.radar                  import Radar,FrequencyRadar
-from fdia_simulation.attackers.mo_attacker         import MoAttacker
-from fdia_simulation.filters.radar_filter_ca       import RadarFilterCA
-from fdia_simulation.models.tracks                 import Track
+from copy                      import deepcopy
+from numpy.linalg              import inv
+from filterpy.kalman           import IMMEstimator
+from fdia_simulation.models    import Command, ManeuveredAircraft, Radar, FrequencyRadar, Track
+from fdia_simulation.attackers import MoAttacker
 
 
 class Benchmark(object):

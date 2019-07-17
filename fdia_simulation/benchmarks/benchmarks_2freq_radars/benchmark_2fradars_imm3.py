@@ -8,9 +8,10 @@ Created on Thu Jul 04 11:47:28 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from filterpy.kalman import IMMEstimator
-from fdia_simulation.models    import FrequencyRadar, Track
-from fdia_simulation.filters   import MultipleFreqRadarsFilter, RadarFilterCV, RadarFilterCA, RadarFilterCT
-from fdia_simulation.attackers import MoAttacker
+from fdia_simulation.models     import FrequencyRadar, Track
+from fdia_simulation.filters    import MultipleFreqRadarsFilter, RadarFilterCV, RadarFilterCA, RadarFilterCT
+from fdia_simulation.attackers  import MoAttacker
+from fdia_simulation.benchmarks import Benchmark
 
 
 if __name__ == "__main__":

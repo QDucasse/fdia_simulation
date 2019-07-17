@@ -6,15 +6,11 @@ Created on Fri Jul 05 10:31:40 2019
 """
 
 import numpy as np
-from copy import deepcopy
-# from fdia_simulation.filters.radar_filter_model import RadarModel
-from scipy.linalg    import block_diag
-from filterpy.kalman import ExtendedKalmanFilter
-from fdia_simulation.filters.radar_filter_model import RadarModel
-from fdia_simulation.filters.radar_filter_cv    import RadarFilterCV
-from fdia_simulation.filters.radar_filter_ca    import RadarFilterCA
-from fdia_simulation.filters.radar_filter_ct    import RadarFilterCT
-from fdia_simulation.filters.radar_filter_ta    import RadarFilterTA
+from copy                    import deepcopy
+from scipy.linalg            import block_diag
+from filterpy.kalman         import ExtendedKalmanFilter
+from fdia_simulation.filters import RadarModel,RadarFilterCV,RadarFilterCA,RadarFilterCT,RadarFilterTA
+
 
 class MultipleRadarsFilter(RadarFilterCV,RadarFilterCA,RadarFilterCT,RadarFilterTA):
     r'''Implements a filter model using multiple sensors and combining them

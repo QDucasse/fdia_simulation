@@ -7,11 +7,9 @@ Created on Thu Jul 04 11:47:27 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models.radar            import FrequencyRadar
-from fdia_simulation.models.tracks           import Track
-from fdia_simulation.attackers.mo_attacker   import MoAttacker
-from fdia_simulation.filters.m_radar_filter  import MultipleFreqRadarsFilter
-from fdia_simulation.filters.radar_filter_ta import RadarFilterTA
+from fdia_simulation.models    import FrequencyRadar, Track
+from fdia_simulation.filters   import MultipleFreqRadarsFilter, RadarFilterTA
+from fdia_simulation.attackers import MoAttacker
 
 
 if __name__ == "__main__":

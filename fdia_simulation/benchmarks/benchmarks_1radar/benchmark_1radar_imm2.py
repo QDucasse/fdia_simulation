@@ -7,13 +7,12 @@ Created on Wed Jun 26 15:41:38 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from filterpy.kalman import IMMEstimator
-from fdia_simulation.models.radar            import Radar
-from fdia_simulation.models.tracks           import Track
-from fdia_simulation.attackers.mo_attacker   import MoAttacker
-from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
-from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
-from fdia_simulation.benchmarks.benchmark1   import Benchmark
+from filterpy.kalman            import IMMEstimator
+from fdia_simulation.models     import Radar, Track
+from fdia_simulation.filters    import RadarFilterCV, RadarFilterCA
+from fdia_simulation.attackers  import MoAttacker
+from fdia_simulation.benchmarks import Benchmark
+
 
 
 

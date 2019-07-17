@@ -5,12 +5,11 @@ Created on Fri Jun 14 16:30:25 2019
 @author: qde
 """
 
-import numpy as np
+import numpy             as np
 import matplotlib.pyplot as plt
-from math import cos,sin,radians
-from fdia_simulation.models.moving_target import MovingTarget, Command
-from fdia_simulation.models.sensors import NoisySensor
-from fdia_simulation.helpers.plotting import plot_measurements
+from math                    import cos,sin,radians
+from fdia_simulation.models  import MovingTarget, Command, NoisySensor
+from fdia_simulation.helpers import plot_measurements
 
 
 class ManeuveredBicycle(MovingTarget):

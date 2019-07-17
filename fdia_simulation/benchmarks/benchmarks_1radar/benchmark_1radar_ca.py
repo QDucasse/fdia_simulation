@@ -7,11 +7,10 @@ Created on Fri Jun 28 13:50:21 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models.radar            import Radar
-from fdia_simulation.attackers.mo_attacker   import MoAttacker
-from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
-from fdia_simulation.models.tracks           import Track
-from fdia_simulation.benchmarks.benchmark    import Benchmark
+from fdia_simulation.models     import Radar, Track
+from fdia_simulation.filters    import RadarFilterCA
+from fdia_simulation.attackers  import MoAttacker
+from fdia_simulation.benchmarks import Benchmark
 
 
 if __name__ == "__main__":

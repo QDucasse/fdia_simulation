@@ -7,12 +7,12 @@ Created on Fri Jun 28 14:50:36 2019
 
 import sympy
 import numpy as np
-from math            import sqrt, atan2
-from copy            import deepcopy
-from abc             import ABC,abstractmethod
-from filterpy.kalman import ExtendedKalmanFilter
-from fdia_simulation.models.radar import Radar
-from fdia_simulation.fault_detectors.chi_square import ChiSquareDetector
+from math                            import sqrt, atan2
+from copy                            import deepcopy
+from abc                             import ABC,abstractmethod
+from filterpy.kalman                 import ExtendedKalmanFilter
+from fdia_simulation.models          import Radar
+from fdia_simulation.fault_detectors import ChiSquareDetector
 
 
 class RadarModel(ExtendedKalmanFilter,ABC):

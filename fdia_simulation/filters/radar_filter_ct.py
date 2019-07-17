@@ -7,12 +7,12 @@ Created on Fri Jun 28 14:50:32 2019
 
 import sympy
 import numpy as np
-from sympy.abc       import x, y, z
-from sympy           import symbols, Matrix
-from math            import sqrt, atan2, cos, sin
-from scipy.linalg    import block_diag
-from copy            import deepcopy
-from fdia_simulation.filters.radar_filter_model import RadarModel
+from sympy.abc               import x, y, z
+from sympy                   import symbols, Matrix
+from math                    import sqrt, atan2, cos, sin
+from scipy.linalg            import block_diag
+from copy                    import deepcopy
+from fdia_simulation.filters import RadarModel
 
 class RadarFilterCT(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting

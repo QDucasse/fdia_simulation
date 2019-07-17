@@ -4,15 +4,15 @@ Created on Mon Jul 01 09:10:06 2019
 
 @author: qde
 """
-import numpy as np
+import numpy             as np
 import matplotlib.pyplot as plt
-from scipy.stats     import chi2
-from math            import sqrt
-from filterpy.common import kinematic_kf
-from numpy.random    import randn
-from pprint          import pprint
-from fdia_simulation.helpers.plotting               import plot_measurements
-from fdia_simulation.fault_detectors.fault_detector import FaultDetector
+from math                            import sqrt
+from pprint                          import pprint
+from scipy.stats                     import chi2
+from numpy.random                    import randn
+from filterpy.common                 import kinematic_kf
+from fdia_simulation.helpers         import plot_measurements
+from fdia_simulation.fault_detectors import FaultDetector
 
 class EuclidianDetector(FaultDetector):
     r'''Fault detector based on the Euclidian distance tests

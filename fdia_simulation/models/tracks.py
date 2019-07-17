@@ -4,11 +4,11 @@ Created on Mon Jul 01 13:47:22 2019
 
 @author: qde
 """
-import numpy as np
+import numpy             as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
-from fdia_simulation.helpers.plotting import plot_track
+from mpl_toolkits.mplot3d    import Axes3D
+from fdia_simulation.models  import ManeuveredAircraft
+from fdia_simulation.helpers import plot_track
 
 class Track(object):
     r'''Implements an airplane trajectory following several modes.

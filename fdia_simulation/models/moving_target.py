@@ -4,11 +4,8 @@ Created on Fri Jun 14 11:31:41 2019
 
 @author: qde
 """
-
-from abc import ABC, abstractmethod
+from abc             import ABC, abstractmethod
 from filterpy.common import pretty_str
-
-
 
 class Command(object):
     r'''Representation of a commanded parameter within a dynamic system. Used

@@ -4,15 +4,15 @@ Created on Fri Jun 28 09:10:02 2019
 
 @author: qde
 """
-import numpy as np
+import numpy             as np
 import matplotlib.pyplot as plt
-from scipy.stats     import chi2
-from filterpy.common import kinematic_kf
-from numpy.random    import randn
-from pprint          import pprint
-from numpy.linalg    import inv
-from fdia_simulation.helpers.plotting               import plot_measurements
-from fdia_simulation.fault_detectors.fault_detector import FaultDetector
+from pprint                          import pprint
+from scipy.stats                     import chi2
+from numpy.linalg                    import inv
+from numpy.random                    import randn
+from filterpy.common                 import kinematic_kf
+from fdia_simulation.helpers         import plot_measurements
+from fdia_simulation.fault_detectors import FaultDetector
 
 
 class ChiSquareDetector(FaultDetector):
@@ -55,7 +55,7 @@ class ChiSquareDetector(FaultDetector):
             H = kf.HJacob(kf.x)
         else:
             H = kf.H
-            
+
         # Simulated update sequence with no influence on the real filter kf
         y   = kf.residual_of(new_measurement) # Residual:              z - Hx
         PHT = kf.P@H.T                        # Intermediate variable: P*H*T

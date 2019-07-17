@@ -14,7 +14,7 @@ from fdia_simulation.attackers.mo_attacker   import MoAttacker
 from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
 from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
 from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
-from fdia_simulation.benchmarks.benchmark1radar import Benchmark1Radar
+from fdia_simulation.benchmarks.benchmark    import Benchmark
 
 
 

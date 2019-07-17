@@ -14,7 +14,7 @@ from fdia_simulation.filters.radar_filter_cv import RadarFilterCV
 from fdia_simulation.filters.radar_filter_ca import RadarFilterCA
 from fdia_simulation.filters.radar_filter_ct import RadarFilterCT
 from fdia_simulation.filters.radar_filter_ta import RadarFilterTA
-from fdia_simulation.benchmarks.benchmark1radar import Benchmark1Radar
+from fdia_simulation.benchmarks.benchmark    import Benchmark
 
 
 
@@ -40,5 +40,5 @@ if __name__ == "__main__":
                       [0.001, 0.001, 0.001, 0.997]])
     imm = IMMEstimator(filters, mu, trans)
 
-    benchmark_imm3 = Benchmark1Radar(radar = radar,radar_filter = imm,states = states)
-    benchmark_imm3.launch_benchmark(with_nees = True)
+    benchmark_imm4 = Benchmark(radar = radar,radar_filter = imm,states = states)
+    benchmark_imm4.launch_benchmark(with_nees = True)

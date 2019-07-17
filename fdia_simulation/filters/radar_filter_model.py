@@ -161,7 +161,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
             HJacobian = self.HJacob
         if Hx is None:
             Hx = self.hx
-        z = np.reshape(z,(-2,1))
+        z = np.reshape(z,(-(self.dim_z-1),1))
 
         # Anomaly detector à mettre en place
         # Anomaly detection using the specified detector

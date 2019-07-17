@@ -37,5 +37,5 @@ if __name__ == "__main__":
                       [0.001, 0.001, 0.001, 0.997]])
     imm = IMMEstimator(filters, mu, trans)
 
-    benchmark_imm4 = Benchmark(radar = radar,radar_filter = imm,states = states)
+    benchmark_imm4 = Benchmark(radars = radar,radar_filter = imm,states = states)
     benchmark_imm4.launch_benchmark(with_nees = True)

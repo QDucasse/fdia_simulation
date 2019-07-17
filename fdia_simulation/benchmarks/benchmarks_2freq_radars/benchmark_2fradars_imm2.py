@@ -7,7 +7,7 @@ Created on Wed Jul 03 11:52:38 2019
 
 import numpy             as np
 import matplotlib.pyplot as plt
-from filterpy.kalman import IMMEstimator
+from filterpy.kalman            import IMMEstimator
 from fdia_simulation.models     import FrequencyRadar, Track
 from fdia_simulation.filters    import MultipleFreqRadarsFilter, RadarFilterCV, RadarFilterCA
 from fdia_simulation.attackers  import MoAttacker

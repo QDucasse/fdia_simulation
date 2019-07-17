@@ -14,8 +14,6 @@ from fdia_simulation.attackers  import MoAttacker
 from fdia_simulation.benchmarks import Benchmark
 
 
-
-
 if __name__ == "__main__":
     #================== Position generation for the aircraft =====================
     trajectory = Track()

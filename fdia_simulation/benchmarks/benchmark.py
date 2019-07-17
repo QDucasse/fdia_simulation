@@ -66,11 +66,17 @@ class Benchmark(object):
         It also fills the computed positions to allow plotting of the sensed
         positions.
         '''
-        self.measured_values = np.reshape(np.array([[]]),(0,len(self.pos_data)))
-        for i,radar in enumerate(self.radars):
+        # The length of the sampled position is needed in case of multiple radars
+        # with the same data rates for the concatenation.
+        first_radar = self.radars[0]
+        sampled_position_data = first_radar.sample_position_data(self.pos_data)
+        self.measured_values = np.reshape(np.array([[]]),(len(sampled_position_data),0))
 
+        
+        for i,radar in enumerate(self.radars):
+            sampled_position_data = radar.sample_position_data(self.pos_data)
             # Data generation for the radar
-            rs, thetas, phis = radar.gen_data(self.pos_data)
+            rs, thetas, phis = radar.gen_data(sampled_position_data)
             # Addition of white noise
             noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
             # Conversion in positions (for plotting purposes)
@@ -81,9 +87,7 @@ class Benchmark(object):
             self.measured_positions.append(np.array(list(zip(xs,ys,zs))))
 
             if not isinstance(radar,FrequencyRadar):
-                print(self.measured_values)
-                print(current_measured_values.T)
-                self.measured_values    = np.concatenate((self.measured_values,current_measured_values.T),axis=1)
+                self.measured_values = np.concatenate((self.measured_values,current_measured_values),axis=1)
 
             else:
                 current_labeled_measurement = radar.compute_measurements(self.pos_data)

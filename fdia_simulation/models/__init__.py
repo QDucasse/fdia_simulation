@@ -10,9 +10,9 @@ from __future__ import absolute_import
 __all__ = ["maneuvered_aircraft", "maneuvered_bicycle", "moving_target",
            "tracks", "sensors", "radar"]
 
+from .sensors             import *
+from .moving_target       import *
 from .maneuvered_aircraft import *
 from .maneuvered_bicycle  import *
-from .moving_target       import *
 from .tracks              import *
-from .sensors             import *
 from .radar               import *

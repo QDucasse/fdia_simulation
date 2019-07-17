@@ -11,13 +11,13 @@ from copy import deepcopy
 from filterpy.kalman import IMMEstimator
 from fdia_simulation.models.moving_target          import Command
 from fdia_simulation.models.maneuvered_aircraft    import ManeuveredAircraft
-from fdia_simulation.models.radar                  import Radar
+from fdia_simulation.models.radar                  import Radar,FrequencyRadar
 from fdia_simulation.attackers.mo_attacker         import MoAttacker
 from fdia_simulation.filters.radar_filter_ca       import RadarFilterCA
 from fdia_simulation.models.tracks                 import Track
 
 
-class Benchmark1Radar(object):
+class Benchmark(object):
     r'''Implements a benchmark to create an estimation of a trajectory detected
     from a set of radars and estimated by a set of filters.
     Parameters
@@ -31,8 +31,13 @@ class Benchmark1Radar(object):
     states numpy array iterable
         List of the true states of the observed system.
     '''
-    def __init__(self,radar,radar_filter,states):
-        self.radar        = radar
+    def __init__(self,radars,radar_filter,states):
+        # Checks if there are multiple radars or simply one
+        if isinstance(radars,(Radar,FrequencyRadar)):
+            self.radars = [radars]
+        else:
+            self.radars = radars
+
         self.radar_filter = radar_filter
         self.states       = states
         xs,ys,zs          = states[:,0], states[:,3], states[:,6]
@@ -42,6 +47,8 @@ class Benchmark1Radar(object):
         if type(self.radar_filter) == IMMEstimator:
             self.filter_is_imm = True
         # Actual values to be plotted
+        self.measured_values     = []
+        self.labeled_values      = []
         self.measured_positions  = []
         self.estimated_positions = []
         self.nees                = []
@@ -63,12 +70,31 @@ class Benchmark1Radar(object):
         It also fills the computed positions to allow plotting of the sensed
         positions.
         '''
-        rs, thetas, phis = self.radar.gen_data(self.pos_data)
-        noisy_rs, noisy_thetas, noisy_phis = self.radar.sense(rs, thetas, phis)
-        xs, ys, zs = self.radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
-        self.measured_values    = np.array(list(zip(noisy_rs,noisy_thetas,noisy_phis)))
-        self.measured_positions = np.array(list(zip(xs,ys,zs)))
-        return self.measured_values
+        self.measured_values = np.reshape(np.array([[]]),(0,len(self.pos_data)))
+        for i,radar in enumerate(self.radars):
+
+            # Data generation for the radar
+            rs, thetas, phis = radar.gen_data(self.pos_data)
+            # Addition of white noise
+            noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
+            # Conversion in positions (for plotting purposes)
+            xs, ys, zs = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
+            # Addition of the measurements from the radar to the global measurements
+            current_measured_values = np.array(list(zip(noisy_rs,noisy_thetas,noisy_phis)))
+            # Addition of the computed positions to the
+            self.measured_positions.append(np.array(list(zip(xs,ys,zs))))
+
+            if not isinstance(radar,FrequencyRadar):
+                print(self.measured_values)
+                print(current_measured_values.T)
+                self.measured_values    = np.concatenate((self.measured_values,current_measured_values.T),axis=1)
+
+            else:
+                current_labeled_measurement = radar.compute_measurements(self.pos_data)
+                self.labeled_values += current_labeled_measurement
+
+        self.labeled_values = sorted(self.labeled_values)
+
 
     def process_filter(self,measurements = None,with_nees = False):
         '''
@@ -84,14 +110,19 @@ class Benchmark1Radar(object):
             Estimated states of the observed system.
         '''
         if measurements is None:
-            measurements = self.measured_values
+            # Default values for FrequencyRadars
+            if isinstance(self.radars[0],FrequencyRadar):
+                measurements = self.labeled_values
+            # Default values for radars with the same data rates
+            else:
+                measurements = self.measured_values
 
         # Initialization of the lists of:
         # estimated states: results of the estimator on state space vector
         # nees: Normalized Estimated Error Squared (if mode triggered)
         est_states, nees, probs = [],[],[]
         # Scrolling through the measurements
-        for i,measurement in enumerate(self.measured_values):
+        for i,measurement in enumerate(measurements):
             self.radar_filter.predict()
             self.radar_filter.update(measurement)
             current_state = deepcopy(self.radar_filter.x)
@@ -121,18 +152,24 @@ class Benchmark1Radar(object):
         '''
         Extracts the names of radar filter(s) for plotting purposes.
         '''
+        multiple_radars = len(self.radars) > 1
         # If the filter is an IMM, we need the name of each of the used models.
         if self.filter_is_imm:
             filter_models = self.radar_filter.filters
             for model in filter_models:
-                model_name = 'Estimation-' + type(model).__name__[-2:]
+                # Model name creation (e.g.: Estimation-CV, Estimation-CA...)
+                if multiple_radars:
+                    model_name = 'Estimation-' + model.model.__name__[-2:]
+                else:
+                    model_name = 'Estimation-' + type(model).__name__[-2:]
+
                 self.radar_filters_names.append(model_name)
+
 
         # Else, we have a simple model and therefore need only its name.
         else:
             model_name = 'Estimation-' + type(self.radar_filter).__name__[-2:]
             self.radar_filters_names.append(model_name)
-
 
 
     def plot(self):
@@ -149,10 +186,6 @@ class Benchmark1Radar(object):
         real_ys = self.pos_data[:,1]
         real_zs = self.pos_data[:,2]
 
-        measured_xs = self.measured_positions[:,0]
-        measured_ys = self.measured_positions[:,1]
-        measured_zs = self.measured_positions[:,2]
-
         estimated_xs = self.estimated_positions[:,0]
         estimated_ys = self.estimated_positions[:,1]
         estimated_zs = self.estimated_positions[:,2]
@@ -162,13 +195,19 @@ class Benchmark1Radar(object):
         ax = fig.gca(projection='3d')
         ax.plot(real_xs, real_ys, real_zs, label='Real trajectory',color='k',linestyle='dashed')
         # Radar measurements
-        ax.scatter(measured_xs, measured_ys, measured_zs,marker='o',alpha = 0.3, label = 'Radar measurements')
+        for i,radar in enumerate(self.radars):
+            # Measured values by the ith radar
+            measured_xs = self.measured_positions[i][:,0]
+            measured_ys = self.measured_positions[i][:,1]
+            measured_zs = self.measured_positions[i][:,2]
+            ax.scatter(measured_xs, measured_ys, measured_zs,
+                       marker='o',alpha = 0.3, label = 'Radar n°'+str(i+1)+' measurements')
 
-        # Radar positions
-        ax.scatter(self.radar.x,self.radar.y,self.radar.z, marker = 'x', label = 'Radar position')
+            # Radar position
+            ax.scatter(radar.x,radar.y,radar.z, marker = 'x', label = 'Radar n°'+str(i+1))
 
         # Estimated positions
-        ax.plot(estimated_xs,estimated_ys,estimated_zs,color='orange', label= 'Estimated trajectory')
+        ax.plot(estimated_xs, estimated_ys, estimated_zs, color='orange', label= 'Estimated trajectory')
 
         # Axis labels
         ax.set_xlabel('X axis')
@@ -177,12 +216,14 @@ class Benchmark1Radar(object):
         ax.legend()
         fig.show()
 
+        # Plotting the Normalized Estimated Error Squared (NEES)
         if len(self.nees)>0:
             fig2 = plt.figure(2)
             plt.title('Normalized Estimation Error Squared (NEES)')
             plt.plot(self.nees)
             fig2.show()
 
+        # Plotting the model probabilities
         if self.filter_is_imm:
             fig3 = plt.figure(3)
             for i in range(len(self.probs[0,:])):

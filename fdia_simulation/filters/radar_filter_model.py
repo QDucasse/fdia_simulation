@@ -11,6 +11,7 @@ from math                            import sqrt, atan2
 from copy                            import deepcopy
 from abc                             import ABC,abstractmethod
 from filterpy.kalman                 import ExtendedKalmanFilter
+from filterpy.common                 import pretty_str
 from fdia_simulation.models          import Radar
 from fdia_simulation.fault_detectors import ChiSquareDetector
 
@@ -50,7 +51,8 @@ class RadarModel(ExtendedKalmanFilter,ABC):
     x_rad, y_rad, z_rad: floats
         Radar position.
     '''
-    def __init__(self, dim_x, dim_z, q, radar = None,
+
+    def __init__(self, dim_x, dim_z, q, radar,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
@@ -58,40 +60,64 @@ class RadarModel(ExtendedKalmanFilter,ABC):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
         self.dt    = dt
-        if radar is None:
-            radar = Radar(x=0,y=0,z=0)
         self.x_rad = radar.x
         self.y_rad = radar.y
         self.z_rad = radar.z
         self.R     = radar.R
         self.q     = q
-        self.compute_Q(q)
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
+        self.compute_Q(q)
         self.compute_F(self.x)
         self.detector = ChiSquareDetector()
 
-    @abstractmethod
     def HJacob(self,X):
         '''
-        Computes the output of the Jacobian matrix of the measurement function
-        for a given space state.
+        Computes the matrix H at a given point in time using the Jacobian of the
+        function h.
         Parameters
         ----------
         X: numpy float array
-            State-space vector
-        '''
-        pass
+            Space-state of the system.
 
-    @abstractmethod
+        Returns
+        -------
+        H: numpy float array
+            Jacobian of the h function applied to the state-space X at current
+            time.
+        '''
+        x = X[0,0]
+        y = X[3,0]
+        z = X[6,0]
+        H = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
+                      [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
+                      [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
+        return H
+
     def hx(self,X):
         '''
-        Computes the output of the measurement function for a given space state.
+        Computes the h measurement function (when applied to the state space,
+        should output the measurements).
         Parameters
         ----------
         X: numpy float array
-            State-space vector
+            Space-state of the system.
+
+        Returns
+        -------
+        Z_k: numpy float array
+            Kth measurement as outputed by the measurement function.
         '''
-        pass
+        # State space vector
+        x = X[0,0]
+        y = X[3,0]
+        z = X[6,0]
+        # Measurements
+        r     = sqrt(x**2 + y**2 + z**2)
+        theta = atan2(y,x)
+        phi   = atan2(z,sqrt(x**2 + y**2))
+        # Measurement vector
+        Z_k = np.array([[r,theta,phi]]).T
+        return Z_k
 
     @abstractmethod
     def compute_F(self,X):
@@ -167,9 +193,19 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         # Anomaly detection using the specified detector
         # res_detection = self.detector.review_measurement(z,self)
         # If res_detection = True => No problem in the measurement
-        if True: #res_detection:
-            ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob,
-                                        Hx = self.hx, args = args, hx_args = hx_args)
-        else:
-            ExtendedKalmanFilter.update(self,z = None, HJacobian = self.HJacob,
-                                        Hx = self.hx, args = args, hx_args = hx_args)
+        # if res_detection:
+        ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob,
+                                    Hx = self.hx, args = args, hx_args = hx_args)
+        # else:
+        #     ExtendedKalmanFilter.update(self,z = None, HJacobian = self.HJacob,
+        #                                 Hx = self.hx, args = args, hx_args = hx_args)
+
+    def __repr__(self):
+        return '\n'.join([
+            'RadarFilter object',
+            pretty_str('Name', type(self).__name__[-2:]),
+            pretty_str('Time unit', self.dt),
+            pretty_str('Radar position', [self.x_rad,self.y_rad,self.z_rad]),
+            pretty_str('Measurement noise', self.R),
+            pretty_str('Process noise', self.Q),
+            pretty_str('Transition matrix', self.F)])

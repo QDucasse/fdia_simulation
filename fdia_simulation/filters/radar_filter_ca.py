@@ -12,7 +12,7 @@ from sympy                   import symbols, Matrix
 from math                    import sqrt, atan2
 from scipy.linalg            import block_diag
 from copy                    import deepcopy
-from fdia_simulation.filters import RadarModel
+from fdia_simulation.filters import RadarModel, MultipleRadarsFilterModel
 
 class RadarFilterCA(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
@@ -40,7 +40,6 @@ class RadarFilterCA(RadarModel):
         self.F = F
         return self.F
 
-
     def compute_Q(self,q):
         '''
         Computes process noise.
@@ -61,54 +60,18 @@ class RadarFilterCA(RadarModel):
         self.Q = block_diag(Q_block, Q_block, Q_block)
         return self.Q
 
-    def HJacob(self,X):
-        '''
-        Computes the matrix H at a given point in time using the Jacobian of the
-        function h.
-        Parameters
-        ----------
-        X: numpy float array
-            Space-state of the system.
+class MultipleRadarsFilterCA(RadarFilterCA,MultipleRadarsFilterModel):
+    def compute_F(self,X):
+        return RadarFilterCA.compute_F(self,X)
 
-        Returns
-        -------
-        H: numpy float array
-            Jacobian of the h function applied to the state-space X at current
-            time.
-        '''
-        x = X[0,0] - self.x_rad
-        y = X[3,0] - self.y_rad
-        z = X[6,0] - self.z_rad
-        H = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
-                      [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
-                      [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
-        return H
+    def compute_Q(self,q):
+        return RadarFilterCA.compute_Q(self,q)
 
     def hx(self,X):
-        '''
-        Computes the h measurement function (when applied to the state space,
-        should output the measurements).
-        Parameters
-        ----------
-        X: numpy float array
-            Space-state of the system.
+        return MultipleRadarsFilterModel.hx(self,X)
 
-        Returns
-        -------
-        Z_k: numpy float array
-            Kth measurement as outputed by the measurement function.
-        '''
-        # State space vector
-        x = X[0,0] - self.x_rad
-        y = X[3,0] - self.y_rad
-        z = X[6,0] - self.z_rad
-        # Measurements
-        r     = sqrt(x**2 + y**2 + z**2)
-        theta = atan2(y,x)
-        phi   = atan2(z,sqrt(x**2 + y**2))
-        # Measurement vector
-        Z_k = np.array([[r,theta,phi]]).T
-        return Z_k
+    def HJacob(self,X):
+        return MultipleRadarsFilterModel.HJacob(self,X)
 
 if __name__ == "__main__":
     # Jacobian matrices determination using sympy

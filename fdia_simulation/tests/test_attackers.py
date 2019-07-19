@@ -7,11 +7,10 @@ Created on Tue Jun 18 10:15:55 2019
 
 import unittest
 import numpy as np
-from numpy.random import randn
-from nose.tools import raises
-from fdia_simulation.attackers.mo_attacker import MoAttacker
-from fdia_simulation.attackers.attacker import Attacker
-from filterpy.kalman import KalmanFilter
+from nose.tools                import raises
+from numpy.random              import randn
+from filterpy.kalman           import KalmanFilter
+from fdia_simulation.attackers import MoAttacker, Attacker
 
 class AttackerTestCase(unittest.TestCase):
 

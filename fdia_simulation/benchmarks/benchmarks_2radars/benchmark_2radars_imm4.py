@@ -8,7 +8,7 @@ import numpy             as np
 import matplotlib.pyplot as plt
 from filterpy.kalman            import IMMEstimator
 from fdia_simulation.models     import Radar, Track
-from fdia_simulation.filters    import MultipleRadarsFilter, RadarFilterCV, RadarFilterCA, RadarFilterCT
+from fdia_simulation.filters    import MultipleRadarsFilter, RadarFilterCV, RadarFilterCA, RadarFilterCT, RadarFilterTA
 from fdia_simulation.attackers  import MoAttacker
 from fdia_simulation.benchmarks import Benchmark
 
@@ -33,18 +33,18 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
-    radar_filter_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 1.,
-                                           radars = radars, model = RadarFilterCV,
-                                           x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
-                                           radars = radars, model = RadarFilterCA,
-                                           x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
-                                           radars = radars, model = RadarFilterCT,
-                                           x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ta = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 250.,
-                                           radars = radars, model = RadarFilterTA,
-                                           x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_cv = MultipleRadarsFilterCV(dim_x = 9, dim_z = 6, q = 1.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 200.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 6, q = 350.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_ta = MultipleRadarsFilterTA(dim_x = 9, dim_z = 6, q = 150.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct, radar_filter_ta]
     mu = [0.25, 0.25, 0.25, 0.25]
     trans = np.array([[0.997, 0.001, 0.001, 0.001],

@@ -7,7 +7,7 @@ Created on Thu Jul 04 11:47:42 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from fdia_simulation.models     import Radar, Track
-from fdia_simulation.filters    import MultipleRadarsFilter, RadarFilterCT
+from fdia_simulation.filters    import MultipleRadarsFilterCT
 from fdia_simulation.attackers  import MoAttacker
 from fdia_simulation.benchmarks import Benchmark
 
@@ -28,9 +28,9 @@ if __name__ == "__main__":
                    r_noise_std = 5., theta_noise_std = 0.005, phi_noise_std = 0.005)
 
     radars = [radar1,radar2]
-    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 200.,
-                                           radars = radars, model = RadarFilterCT,
-                                           x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 6, q = 3600.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
 
     benchmark_ct = Benchmark(radars = radars,radar_filter = radar_filter_ct,states = states)
     benchmark_ct.launch_benchmark(with_nees = True)

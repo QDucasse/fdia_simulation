@@ -6,8 +6,7 @@ Created on Fri Jun 21 16:38:04 2019
 """
 
 import unittest
-from fdia_simulation.models.moving_target import Command
-from fdia_simulation.models.maneuvered_aircraft import ManeuveredAircraft
+from fdia_simulation.models import Command, ManeuveredAircraft
 
 class AircraftTestCase(unittest.TestCase):
     def setUp(self):

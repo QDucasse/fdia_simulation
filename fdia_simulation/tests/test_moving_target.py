@@ -6,8 +6,8 @@ Created on Fri Jun 14 15:14:47 2019
 """
 
 import unittest
-from nose.tools import raises
-from fdia_simulation.models.moving_target import Command,MovingTarget
+from nose.tools             import raises
+from fdia_simulation.models import Command,MovingTarget
 
 class CommandTestCase(unittest.TestCase):
     def setUp(self):

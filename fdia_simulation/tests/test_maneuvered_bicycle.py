@@ -6,8 +6,7 @@ Created on Fri Jun 14 16:32:12 2019
 """
 
 import unittest
-from fdia_simulation.models.moving_target import Command
-from fdia_simulation.models.maneuvered_bicycle import ManeuveredBicycle
+from fdia_simulation.models import Command, ManeuveredBicycle
 
 
 class BicycleTestCase(unittest.TestCase):

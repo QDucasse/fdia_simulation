@@ -72,7 +72,7 @@ class Benchmark(object):
         sampled_position_data = first_radar.sample_position_data(self.pos_data)
         self.measured_values = np.reshape(np.array([[]]),(len(sampled_position_data),0))
 
-        
+
         for i,radar in enumerate(self.radars):
             sampled_position_data = radar.sample_position_data(self.pos_data)
             # Data generation for the radar
@@ -132,11 +132,10 @@ class Benchmark(object):
                 # Computation of the error between true and estimated states
                 states_tilde = np.subtract(est_states[i],np.reshape(self.states[i,:],(-8,1)))
                 nees.append(*(states_tilde.T@inv(self.radar_filter.P)@states_tilde))
-
             if self.filter_is_imm:
                 probs.append(self.radar_filter.mu)
-        # Conversion in arrays
 
+        # Conversion in arrays
         est_states = np.array(est_states)
         nees       = np.array(nees)
         probs      = np.array(probs)

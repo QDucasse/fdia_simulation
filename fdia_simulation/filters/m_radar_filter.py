@@ -17,15 +17,15 @@ class MultipleRadarsFilter(RadarFilterCV,RadarFilterCA,RadarFilterCT,RadarFilter
     through the measurement function and matrix.
     '''
     def __init__(self,dim_x, dim_z, q, radars, model,
-                       x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
-                       vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
-                       ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6):
+                 x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
+                 vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
+                 ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6):
 
+        self.model = model
         model.__init__(self, dim_x, dim_z, q,
                        x0  = x0, y0  = y0, z0  = z0,
                        vx0 = vx0, vy0 = vy0, vz0 = vz0,
                        ax0 = ax0, ay0 = ay0, az0 = az0)
-        self.model           = model
         self.radars          = radars
         self.radar_positions = [radar.get_position() for radar in radars]
         self.Rs              = [radar.R for radar in radars]

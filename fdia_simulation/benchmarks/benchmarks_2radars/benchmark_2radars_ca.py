@@ -28,7 +28,7 @@ if __name__ == "__main__":
                    r_noise_std = 5., theta_noise_std = 0.005, phi_noise_std = 0.005)
 
     radars = [radar1,radar2]
-    radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 3600.,
+    radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 400.,
                                              radars = radars,
                                              x0 = x0, y0 = y0, z0 = z0)
 

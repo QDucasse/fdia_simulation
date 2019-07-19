@@ -9,7 +9,7 @@ import numpy             as np
 import matplotlib.pyplot as plt
 from filterpy.kalman            import IMMEstimator
 from fdia_simulation.models     import Radar, Track
-from fdia_simulation.filters    import MultipleRadarsFilter, RadarFilterCV, RadarFilterCA, RadarFilterCT
+from fdia_simulation.filters    import MultipleRadarsFilterCV, MultipleRadarsFilterCA, MultipleRadarFilterCT
 from fdia_simulation.attackers  import MoAttacker
 from fdia_simulation.benchmarks import Benchmark
 
@@ -34,15 +34,15 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================= IMM generation =================================
     radars = [radar1,radar2]
-    radar_filter_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 1.,
-                                           radars = radars, model = RadarFilterCV,
-                                           x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
-                                           radars = radars, model = RadarFilterCA,
-                                           x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
-                                           radars = radars, model = RadarFilterCT,
-                                           x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_cv = MultipleRadarsFilterCV(dim_x = 9, dim_z = 6, q = 1.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 20.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
+    radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 6, q = 15.,
+                                             radars = radars,
+                                             x0 = x0, y0 = y0, z0 = z0)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct]
     mu = [0.33, 0.33, 0.33]
     trans = np.array([[0.998, 0.001, 0.001],
@@ -51,4 +51,5 @@ if __name__ == "__main__":
     imm = IMMEstimator(filters, mu, trans)
 
     benchmark_imm3 = Benchmark(radars = radars,radar_filter = imm,states = states)
+    import pdb; pdb.set_trace()
     benchmark_imm3.launch_benchmark(with_nees = True)

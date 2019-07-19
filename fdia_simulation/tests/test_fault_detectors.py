@@ -6,12 +6,10 @@ Created on Mon Jun 17 14:28:45 2019
 """
 
 import unittest
-from nose.tools import raises
-from filterpy.common import kinematic_kf
-from numpy.random import randn
-from fdia_simulation.fault_detectors.chi_square     import ChiSquareDetector
-from fdia_simulation.fault_detectors.euclidian      import EuclidianDetector
-from fdia_simulation.fault_detectors.fault_detector import FaultDetector
+from nose.tools                      import raises
+from numpy.random                    import randn
+from filterpy.common                 import kinematic_kf
+from fdia_simulation.fault_detectors import ChiSquareDetector, EuclidianDetector, FaultDetector
 
 
 
@@ -53,7 +51,7 @@ class ChiSquareDetectorTestCase(unittest.TestCase):
     def test_correct_value_not_detected(self):
         self.kinematic_test_kf.predict()
         result = self.detector.review_measurement(self.zs[0],self.kinematic_test_kf)
-        self.assertEqual(result,"Success")
+        self.assertEqual(result,True)
 
     def test_correct_value_added_to_reviewed_list(self):
         self.kinematic_test_kf.predict()
@@ -79,7 +77,7 @@ class ChiSquareDetectorTestCase(unittest.TestCase):
         self.kinematic_test_kf.predict()
         result = self.detector.review_measurement(self.zs[5],self.kinematic_test_kf)
         self.kinematic_test_kf.update(self.zs[5])
-        self.assertEqual(result,"Failure")
+        self.assertEqual(result,False)
 
 
 class EuclidianDetectorTestCase(unittest.TestCase):

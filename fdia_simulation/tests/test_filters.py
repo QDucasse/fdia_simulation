@@ -178,5 +178,50 @@ class MultipleRadarsCATestCase(unittest.TestCase):
                       [0,  0,  0,  0,  0,  0,  0,  0,  1]])
         self.assertTrue(np.array_equal(self.multiple_ca.F,F))
 
+# class MultipleRadarsCTTestCase(unittest.TestCase):
+#     def setUp(self):
+#         self.radar1 = Radar(x=800,y=800)
+#         self.radar2 = Radar(x=200,y=200)
+#         radars = [self.radar1,self.radar2]
+#         self.multiple_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 3, q = 1., radars = radars,
+#                                                 model = RadarFilterCT, x0 = 100, y0 = 100)
+#
+#     def test_initial_F(self):
+#         dt = self.multiple_ca.dt
+#         dt2 = dt**2/2
+#         F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
+#                       [0,  1, dt,  0,  0,  0,  0,  0,  0],
+#                       [0,  0,  1,  0,  0,  0,  0,  0,  0],
+#                       [0,  0,  0,  1, dt,dt2,  0,  0,  0],
+#                       [0,  0,  0,  0,  1, dt,  0,  0,  0],
+#                       [0,  0,  0,  0,  0,  1,  0,  0,  0],
+#                       [0,  0,  0,  0,  0,  0,  1, dt,dt2],
+#                       [0,  0,  0,  0,  0,  0,  0,  1, dt],
+#                       [0,  0,  0,  0,  0,  0,  0,  0,  1]])
+#         self.assertTrue(np.array_equal(self.multiple_ca.F,F))
+#
+# class MultipleRadarsTATestCase(unittest.TestCase):
+#     def setUp(self):
+#         self.radar1 = Radar(x=800,y=800)
+#         self.radar2 = Radar(x=200,y=200)
+#         radars = [self.radar1,self.radar2]
+#         self.multiple_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 3, q = 1., radars = radars,
+#                                                 model = RadarFilterTA, x0 = 100, y0 = 100)
+#
+#     def test_initial_F(self):
+#         dt = self.multiple_ca.dt
+#         dt2 = dt**2/2
+#         F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
+#                       [0,  1, dt,  0,  0,  0,  0,  0,  0],
+#                       [0,  0,  1,  0,  0,  0,  0,  0,  0],
+#                       [0,  0,  0,  1, dt,dt2,  0,  0,  0],
+#                       [0,  0,  0,  0,  1, dt,  0,  0,  0],
+#                       [0,  0,  0,  0,  0,  1,  0,  0,  0],
+#                       [0,  0,  0,  0,  0,  0,  1, dt,dt2],
+#                       [0,  0,  0,  0,  0,  0,  0,  1, dt],
+#                       [0,  0,  0,  0,  0,  0,  0,  0,  1]])
+#         self.assertTrue(np.array_equal(self.multiple_ca.F,F))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -24,9 +24,9 @@ if __name__ == "__main__":
 
     radar = Radar(x=0,y=2000)
 
-    radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1., x0=x0,y0=y0,z0=z0,radar = radar)
-    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 400., x0=x0,y0=y0,z0=z0,radar = radar)
-    radar_filter_ct = RadarFilterCT(dim_x = 9, dim_z = 3, q = 350., x0=x0,y0=y0,z0=z0,radar = radar)
+    radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1.,   x0=x0,y0=y0,z0=z0,radar = radar)
+    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 10.,  x0=x0,y0=y0,z0=z0,radar = radar)
+    radar_filter_ct = RadarFilterCT(dim_x = 9, dim_z = 3, q = 20.,  x0=x0,y0=y0,z0=z0,radar = radar)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct]
     mu = [0.33, 0.33, 0.33]
     trans = np.array([[0.998, 0.001, 0.001],
@@ -34,5 +34,5 @@ if __name__ == "__main__":
                       [0.001, 0.001, 0.998]])
     imm = IMMEstimator(filters, mu, trans)
 
-    benchmark_imm3 = Benchmark1Radar(radars = radar,radar_filter = imm,states = states)
+    benchmark_imm3 = Benchmark(radars = radar,radar_filter = imm,states = states)
     benchmark_imm3.launch_benchmark(with_nees = True)

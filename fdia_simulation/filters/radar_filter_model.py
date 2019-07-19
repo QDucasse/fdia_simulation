@@ -50,6 +50,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
     x_rad, y_rad, z_rad: floats
         Radar position.
     '''
+
     def __init__(self, dim_x, dim_z, q, radar = None,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
@@ -65,8 +66,8 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         self.z_rad = radar.z
         self.R     = radar.R
         self.q     = q
-        self.compute_Q(q)
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
+        self.compute_Q(q)
         self.compute_F(self.x)
         self.detector = ChiSquareDetector()
 

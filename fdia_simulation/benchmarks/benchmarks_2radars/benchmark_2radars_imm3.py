@@ -37,10 +37,10 @@ if __name__ == "__main__":
     radar_filter_cv = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 1.,
                                            radars = radars, model = RadarFilterCV,
                                            x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 400.,
+    radar_filter_ca = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 20.,
                                            radars = radars, model = RadarFilterCA,
                                            x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 350.,
+    radar_filter_ct = MultipleRadarsFilter(dim_x = 9, dim_z = 6, q = 15.,
                                            radars = radars, model = RadarFilterCT,
                                            x0 = x0, y0 = y0, z0 = z0)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct]

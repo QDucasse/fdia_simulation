@@ -47,12 +47,6 @@ class Radar(object):
                            [0          ,theta_noise_std,0            ],
                            [0          ,0              ,phi_noise_std]])
 
-    def set_frequency(self):
-        '''
-        Sets the data rate of the radar. Default for this class is 0.5.
-        '''
-        self.dt = 0.5
-
 
     def get_position(self):
         '''
@@ -129,9 +123,9 @@ class Radar(object):
             Distances, azimuth/turn angles and elevation angles with added white noise.
         '''
 
-        nsr     = NoisySensor(self.r_noise_std)
-        nstheta = NoisySensor(self.theta_noise_std)
-        nsphi   = NoisySensor(self.phi_noise_std)
+        nsr     = NoisySensor(std_noise = self.r_noise_std)
+        nstheta = NoisySensor(std_noise = self.theta_noise_std)
+        nsphi   = NoisySensor(std_noise = self.phi_noise_std)
 
         noisy_rs     = [nsr.sense(r) for r in rs]
         noisy_thetas = [nstheta.sense(theta) for theta in thetas]

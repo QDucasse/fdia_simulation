@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jul 19 14:24:37 2019
+Created on Mon Jul 22 09:19:36 2019
 
 @author: qde
 """
@@ -8,46 +8,40 @@ Created on Fri Jul 19 14:24:37 2019
 import unittest
 import numpy as np
 from pprint import pprint
-from math                    import sqrt,atan2
+from copy                    import deepcopy
+from math                    import sqrt,atan2, exp
 from nose.tools              import raises
 from numpy.linalg            import inv
+from scipy.linalg            import block_diag
 from fdia_simulation.models  import Radar
-from fdia_simulation.filters import RadarFilterCA, MultipleRadarsFilterCA
+from fdia_simulation.filters import RadarFilterTA, MultipleRadarsFilterTA
 
-
-class RadarFilterCATestCase(unittest.TestCase):
+class RadarFilterTATestCase(unittest.TestCase):
     def setUp(self):
-        self.radar = Radar(x=0,y=0)
-        self.q = 10.
-        self.filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = self.q,radar = self.radar)
+        self.radar     = Radar(x=0,y=0)
+        self.q         = 10.
+        self.filter_ta = RadarFilterTA(dim_x = 9, dim_z = 3, q = self.q,radar = self.radar)
 
 
     # ==========================================================================
     # ========================= Initialization tests ===========================
 
     def test_initial_F(self):
-        dt = self.filter_ca.dt
-        dt2 = dt**2/2
-        F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
-                      [0,  1, dt,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  1,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  0,  1, dt,dt2,  0,  0,  0],
-                      [0,  0,  0,  0,  1, dt,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  1,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  0,  1, dt,dt2],
-                      [0,  0,  0,  0,  0,  0,  0,  1, dt],
-                      [0,  0,  0,  0,  0,  0,  0,  0,  1]])
-        self.assertTrue(np.array_equal(self.filter_ca.F,F))
-
-    def test_initial_R(self):
-        dt = self.filter_ca.dt
-        R = np.array([[1., 0.   , 0.   ],
-                      [0., 0.001, 0.   ],
-                      [0., 0.   , 0.001]])
-        self.assertTrue(np.array_equal(self.filter_ca.R,R))
+        dt = self.filter_ta.dt
+        edt = exp(dt)
+        F = np.array([[1,edt-1, 0, 0,    0, 0, 0,    0, 0],
+                      [0,  edt, 0, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 1, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 0, 1,edt-1, 0, 0,    0, 0],
+                      [0,    0, 0, 0,  edt, 0, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 1, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 0, 1,edt-1, 0],
+                      [0,    0, 0, 0,    0, 0, 0,  edt, 0],
+                      [0,    0, 0, 0,    0, 0, 0,    0, 1]])
+        self.assertTrue(np.array_equal(self.filter_ta.F,F))
 
     def test_initial_Q(self):
-        dt = self.filter_ca.dt
+        dt = self.filter_ta.dt
         q = self.q
         Q = q*np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -58,36 +52,43 @@ class RadarFilterCATestCase(unittest.TestCase):
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0,dt]])
-        self.assertTrue(np.array_equal(self.filter_ca.Q,Q))
+        self.assertTrue(np.array_equal(self.filter_ta.Q,Q))
+
+    def test_initial_R(self):
+        dt = self.filter_ta.dt
+        R = np.array([[1., 0.   , 0.   ],
+                      [0., 0.001, 0.   ],
+                      [0., 0.   , 0.001]])
+        self.assertTrue(np.array_equal(self.filter_ta.R,R))
 
     def test_initial_positions(self):
-        x0 = self.filter_ca.x[0,0]
-        y0 = self.filter_ca.x[3,0]
-        z0 = self.filter_ca.x[6,0]
+        x0 = self.filter_ta.x[0,0]
+        y0 = self.filter_ta.x[3,0]
+        z0 = self.filter_ta.x[6,0]
         self.assertEqual(x0, 1e-6)
         self.assertEqual(y0, 1e-6)
         self.assertEqual(z0, 1e-6)
 
     def test_initial_velocities(self):
-        vx0 = self.filter_ca.x[1,0]
-        vy0 = self.filter_ca.x[4,0]
-        vz0 = self.filter_ca.x[7,0]
+        vx0 = self.filter_ta.x[1,0]
+        vy0 = self.filter_ta.x[4,0]
+        vz0 = self.filter_ta.x[7,0]
         self.assertEqual(vx0, 1e-6)
         self.assertEqual(vy0, 1e-6)
         self.assertEqual(vz0, 1e-6)
 
     def test_initial_accelerations(self):
-        vx0 = self.filter_ca.x[2,0]
-        vy0 = self.filter_ca.x[5,0]
-        vz0 = self.filter_ca.x[8,0]
+        vx0 = self.filter_ta.x[2,0]
+        vy0 = self.filter_ta.x[5,0]
+        vz0 = self.filter_ta.x[8,0]
         self.assertEqual(vx0, 1e-6)
         self.assertEqual(vy0, 1e-6)
         self.assertEqual(vz0, 1e-6)
 
     def test_initial_radar_positions(self):
-        x_rad = self.filter_ca.x_rad
-        y_rad = self.filter_ca.y_rad
-        z_rad = self.filter_ca.z_rad
+        x_rad = self.filter_ta.x_rad
+        y_rad = self.filter_ta.y_rad
+        z_rad = self.filter_ta.z_rad
         self.assertEqual(x_rad, 0.)
         self.assertEqual(y_rad, 0.)
         self.assertEqual(z_rad, 0.)
@@ -97,19 +98,20 @@ class RadarFilterCATestCase(unittest.TestCase):
 
     def test_F_computing(self):
         dt = 5.
-        dt2 = dt**2/2
-        F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
-                      [0,  1, dt,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  1,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  0,  1, dt,dt2,  0,  0,  0],
-                      [0,  0,  0,  0,  1, dt,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  1,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  0,  1, dt,dt2],
-                      [0,  0,  0,  0,  0,  0,  0,  1, dt],
-                      [0,  0,  0,  0,  0,  0,  0,  0,  1]])
-        self.filter_ca.dt = dt
-        computed_F = self.filter_ca.compute_F(self.filter_ca.x)
-        self.assertTrue(np.array_equal(self.filter_ca.F,F))
+        self.filter_ta.dt = dt
+        edt = exp(dt)
+        F = np.array([[1,edt-1, 0, 0,    0, 0, 0,    0, 0],
+                      [0,  edt, 0, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 1, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 0, 1,edt-1, 0, 0,    0, 0],
+                      [0,    0, 0, 0,  edt, 0, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 1, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 0, 1,edt-1, 0],
+                      [0,    0, 0, 0,    0, 0, 0,  edt, 0],
+                      [0,    0, 0, 0,    0, 0, 0,    0, 1]])
+
+        computed_F = self.filter_ta.compute_F(self.filter_ta.x)
+        self.assertTrue(np.array_equal(self.filter_ta.F,F))
         self.assertTrue(np.array_equal(computed_F,F))
 
     def test_Q_computing(self):
@@ -124,9 +126,9 @@ class RadarFilterCATestCase(unittest.TestCase):
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0,dt]])
-        self.filter_ca.dt = dt
-        computed_Q = self.filter_ca.compute_Q(q)
-        self.assertTrue(np.array_equal(self.filter_ca.Q,Q))
+        self.filter_ta.dt = dt
+        computed_Q = self.filter_ta.compute_Q(q)
+        self.assertTrue(np.array_equal(self.filter_ta.Q,Q))
         self.assertTrue(np.array_equal(computed_Q,Q))
 
     # ==========================================================================
@@ -140,7 +142,7 @@ class RadarFilterCATestCase(unittest.TestCase):
                       [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
                       [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
 
-        computed_H = self.filter_ca.HJacob(X)
+        computed_H = self.filter_ta.HJacob(X)
         self.assertTrue(np.array_equal(computed_H,H))
 
     def test_hx_computing(self):
@@ -152,7 +154,7 @@ class RadarFilterCATestCase(unittest.TestCase):
         theta = atan2(y,x)
         phi   = atan2(z,sqrt(x**2 + y**2))
         Zk    = np.array([[r,theta,phi]]).T
-        computed_Zk = self.filter_ca.hx(X)
+        computed_Zk = self.filter_ta.hx(X)
         self.assertTrue(np.array_equal(Zk,computed_Zk))
 
     # ==========================================================================
@@ -162,31 +164,37 @@ class RadarFilterCATestCase(unittest.TestCase):
         X       = np.array([[1000, 100, 10, 1000, 100, 10, 8000, 2, 10]]).T
         X_prior = np.array([[2000, 200, 20, 2000, 200, 20, 8000, 2, 10]]).T
         z       = np.array([[200, 10, 10]]).T
-        computed_resid   = z - self.filter_ca.HJacob(X)@X_prior
+        computed_resid   = z - self.filter_ta.HJacob(X)@X_prior
 
-        self.filter_ca.x       = X
-        self.filter_ca.x_prior = X_prior
-        resid = self.filter_ca.residual_of(z)
+        self.filter_ta.x       = X
+        self.filter_ta.x_prior = X_prior
+        resid = self.filter_ta.residual_of(z)
 
         self.assertTrue(np.array_equal(computed_resid,resid))
 
     def test_predict(self):
         X = np.array([[1000, 100, 10, 1000, 100, 10, 8000, 2, 10]]).T
-        filt = self.filter_ca
+        filt = self.filter_ta
         filt.x = X
-        predicted_X = filt.F@filt.x
-        predicted_P = filt.F@filt.P@filt.F.T + filt.Q
+        pre_F = deepcopy(filt.F)
+        F = filt.compute_F(X)
+        P = filt.P
+        Q = filt.Q
+        predicted_X = F@X
+        predicted_P = F@P@F.T + Q
 
+        filt.F = pre_F # Needed to keep F unaltered as before the predict step
         filt.predict()
         self.assertTrue(np.array_equal(predicted_X,filt.x))
         self.assertTrue(np.array_equal(predicted_P,filt.P))
         self.assertTrue(np.array_equal(predicted_X,filt.x_prior))
         self.assertTrue(np.array_equal(predicted_P,filt.P_prior))
 
+
     def test_update(self):
         X = np.array([[1000, 100, 10, 1000, 100, 10, 8000, 2, 10]]).T
         z = np.array([[200, 10, 10]]).T
-        filt = self.filter_ca
+        filt = self.filter_ta
         filt.x = X
         filt.predict()
         H = filt.HJacob(filt.x)
@@ -204,79 +212,65 @@ class RadarFilterCATestCase(unittest.TestCase):
         self.assertTrue(np.array_equal(filt.x,new_X))
 
 
-class MultipleRadarsCATestCase(unittest.TestCase):
+class MultipleRadarsTATestCase(unittest.TestCase):
     def setUp(self):
         self.radar1 = Radar(x=800,y=800)
         self.radar2 = Radar(x=200,y=200)
         radars = [self.radar1,self.radar2]
-        self.q = 10.
-        self.multiple_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 3, q = self.q,
-                                                  radars = radars,
+        self.multiple_ta = MultipleRadarsFilterTA(dim_x = 9, dim_z = 3, q = 1., radars = radars,
                                                   x0 = 100, y0 = 100)
 
     # ==========================================================================
     # ========================= Initialization tests ===========================
     def test_initial_radar_positions(self):
         positions = [[self.radar1.x,self.radar1.y,self.radar1.z],[self.radar2.x,self.radar2.y,self.radar2.z]]
-        computed_positions = self.multiple_ca.radar_positions
+        computed_positions = self.multiple_ta.radar_positions
         self.assertEqual(computed_positions,positions)
 
     def test_initial_R(self):
-        dt = self.multiple_ca.dt
+        dt = self.multiple_ta.dt
         R = np.array([[1., 0.   , 0.   , 0., 0.   , 0.   ],
                       [0., 0.001, 0.   , 0., 0.   , 0.   ],
                       [0., 0.   , 0.001, 0., 0.   , 0.   ],
                       [0., 0.   , 0.   , 1., 0.   , 0.   ],
                       [0., 0.   , 0.   , 0., 0.001, 0.   ],
                       [0., 0.   , 0.   , 0., 0.   , 0.001]])
-        self.assertTrue(np.array_equal(self.multiple_ca.R,R))
+        self.assertTrue(np.array_equal(self.multiple_ta.R,R))
 
     def test_initial_F(self):
-        dt = self.multiple_ca.dt
-        dt2 = dt**2/2
-        F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
-                      [0,  1, dt,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  1,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  0,  1, dt,dt2,  0,  0,  0],
-                      [0,  0,  0,  0,  1, dt,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  1,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  0,  1, dt,dt2],
-                      [0,  0,  0,  0,  0,  0,  0,  1, dt],
-                      [0,  0,  0,  0,  0,  0,  0,  0,  1]])
-        self.assertTrue(np.array_equal(self.multiple_ca.F,F))
+        dt = self.multiple_ta.dt
+        edt = exp(dt)
+        F = np.array([[1,edt-1, 0, 0,    0, 0, 0,    0, 0],
+                      [0,  edt, 0, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 1, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 0, 1,edt-1, 0, 0,    0, 0],
+                      [0,    0, 0, 0,  edt, 0, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 1, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 0, 1,edt-1, 0],
+                      [0,    0, 0, 0,    0, 0, 0,  edt, 0],
+                      [0,    0, 0, 0,    0, 0, 0,    0, 1]])
+        self.assertTrue(np.array_equal(self.multiple_ta.F,F))
 
-    def test_initial_Q(self):
-        dt = self.multiple_ca.dt
-        q = self.q
-        Q = q*np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0,dt, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0,dt, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0, 0, 0, 0,dt]])
-        self.assertTrue(np.array_equal(self.multiple_ca.Q,Q))
 
     # ==========================================================================
     # ========================= Q/F generation tests ===========================
 
     def test_F_computing(self):
         dt = 5.
-        dt2 = dt**2/2
-        F = np.array([[1, dt,dt2,  0,  0,  0,  0,  0,  0],
-                      [0,  1, dt,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  1,  0,  0,  0,  0,  0,  0],
-                      [0,  0,  0,  1, dt,dt2,  0,  0,  0],
-                      [0,  0,  0,  0,  1, dt,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  1,  0,  0,  0],
-                      [0,  0,  0,  0,  0,  0,  1, dt,dt2],
-                      [0,  0,  0,  0,  0,  0,  0,  1, dt],
-                      [0,  0,  0,  0,  0,  0,  0,  0,  1]])
-        self.multiple_ca.dt = dt
-        computed_F = self.multiple_ca.compute_F(self.multiple_ca.x)
-        self.assertTrue(np.array_equal(self.multiple_ca.F,F))
+        self.multiple_ta.dt = dt
+        edt = exp(dt)
+        F = np.array([[1,edt-1, 0, 0,    0, 0, 0,    0, 0],
+                      [0,  edt, 0, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 1, 0,    0, 0, 0,    0, 0],
+                      [0,    0, 0, 1,edt-1, 0, 0,    0, 0],
+                      [0,    0, 0, 0,  edt, 0, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 1, 0,    0, 0],
+                      [0,    0, 0, 0,    0, 0, 1,edt-1, 0],
+                      [0,    0, 0, 0,    0, 0, 0,  edt, 0],
+                      [0,    0, 0, 0,    0, 0, 0,    0, 1]])
+
+        computed_F = self.multiple_ta.compute_F(self.multiple_ta.x)
+        self.assertTrue(np.array_equal(self.multiple_ta.F,F))
         self.assertTrue(np.array_equal(computed_F,F))
 
     def test_Q_computing(self):
@@ -291,9 +285,9 @@ class MultipleRadarsCATestCase(unittest.TestCase):
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0, 0, 0,dt]])
-        self.multiple_ca.dt = dt
-        computed_Q = self.multiple_ca.compute_Q(q)
-        self.assertTrue(np.array_equal(self.multiple_ca.Q,Q))
+        self.multiple_ta.dt = dt
+        computed_Q = self.multiple_ta.compute_Q(q)
+        self.assertTrue(np.array_equal(self.multiple_ta.Q,Q))
         self.assertTrue(np.array_equal(computed_Q,Q))
 
     # ==========================================================================
@@ -314,7 +308,7 @@ class MultipleRadarsCATestCase(unittest.TestCase):
                       [-y2/(x2**2 + y2**2), 0, 0, x2/(x2**2 + y2**2), 0, 0, 0, 0, 0],
                       [-x2*z2/(sqrt(x2**2 + y2**2)*(x2**2 + y2**2 + z2**2)), 0, 0, -y2*z2/(sqrt(x2**2 + y2**2)*(x2**2 + y2**2 + z2**2)), 0, 0, sqrt(x2**2 + y2**2)/(x2**2 + y2**2 + z2**2), 0, 0]])
 
-        computed_H = self.multiple_ca.HJacob(X)
+        computed_H = self.multiple_ta.HJacob(X)
         self.assertTrue(np.array_equal(computed_H,H))
 
     def test_hx_computing(self):
@@ -332,7 +326,7 @@ class MultipleRadarsCATestCase(unittest.TestCase):
         theta2 = atan2(y2,x2)
         phi2   = atan2(z2,sqrt(x2**2 + y2**2))
         Zk     = np.array([[r1,theta1,phi1,r2,theta2,phi2]]).T
-        computed_Zk = self.multiple_ca.hx(X)
+        computed_Zk = self.multiple_ta.hx(X)
         self.assertTrue(np.array_equal(Zk,computed_Zk))
 
     # ==========================================================================
@@ -342,17 +336,17 @@ class MultipleRadarsCATestCase(unittest.TestCase):
         X       = np.array([[1000, 100, 10, 1000, 100, 10, 8000, 2, 10]]).T
         X_prior = np.array([[2000, 200, 20, 2000, 200, 20, 8000, 2, 10]]).T
         z       = np.array([[200, 10, 10, 210, 9, 8]]).T
-        computed_resid   = z - self.multiple_ca.HJacob(X)@X_prior
+        computed_resid   = z - self.multiple_ta.HJacob(X)@X_prior
 
-        self.multiple_ca.x       = X
-        self.multiple_ca.x_prior = X_prior
-        resid = self.multiple_ca.residual_of(z)
+        self.multiple_ta.x       = X
+        self.multiple_ta.x_prior = X_prior
+        resid = self.multiple_ta.residual_of(z)
 
         self.assertTrue(np.array_equal(computed_resid,resid))
 
     def test_predict(self):
         X = np.array([[1000, 100, 10, 1000, 100, 10, 8000, 2, 10]]).T
-        filt = self.multiple_ca
+        filt = self.multiple_ta
         filt.x = X
         predicted_X = filt.F@filt.x
         predicted_P = filt.F@filt.P@filt.F.T + filt.Q
@@ -366,7 +360,7 @@ class MultipleRadarsCATestCase(unittest.TestCase):
     def test_update(self):
         X = np.array([[1000, 100, 10, 1000, 100, 10, 8000, 2, 10]]).T
         z = np.array([[200, 10, 10, 210, 9, 8]]).T
-        filt = self.multiple_ca
+        filt = self.multiple_ta
         filt.x = X
         filt.predict()
         H = filt.HJacob(filt.x)
@@ -382,7 +376,6 @@ class MultipleRadarsCATestCase(unittest.TestCase):
         filt.update(z)
         self.assertTrue(np.allclose(filt.P,new_P))
         self.assertTrue(np.allclose(filt.x,new_X))
-
 
 if __name__ == "__main__":
     unittest.main()

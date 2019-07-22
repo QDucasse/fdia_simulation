@@ -60,9 +60,10 @@ class RadarFilterCT(RadarModel):
         self.Q = block_diag(Q_block, Q_block, Q_block)
         return self.Q
 
-    def predict_x(self, u=0):
-        RadarModel.predict_x(self, u)
+    def predict(self, u=0):
         self.compute_F(self.x)
+        RadarModel.predict(self, u)
+
 
 
 class MultipleRadarsFilterCT(RadarFilterCT,MultipleRadarsFilterModel):

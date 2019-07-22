@@ -34,7 +34,8 @@ class NoisySensor(object):
         noisy_val: float
             Real value with simulated measurement noise.
         '''
-        return (val + (randn()* self.std))
+        jitter = randn()*self.std
+        return (val + jitter)
 
     def gen_sensor_data(self,val_list):
         '''

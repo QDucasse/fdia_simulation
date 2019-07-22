@@ -7,7 +7,7 @@ Created on Wed Jul 17 11:08:40 2019
 
 from __future__ import absolute_import
 
-__all__ = ["m_radar_filter", "radar_filter_cv", "radar_filter_ca",
+__all__ = ["m_radars_filter_model", "radar_filter_cv", "radar_filter_ca",
            "radar_filter_ct", "radar_filter_ta", "radar_filter_model"]
 
 from .radar_filter_model    import *

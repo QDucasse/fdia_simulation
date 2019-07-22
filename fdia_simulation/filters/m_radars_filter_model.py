@@ -88,20 +88,20 @@ class MultipleRadarsFilterModel(RadarModel):
             H = np.concatenate((H,H_part),axis=0)
         return H
 
-class MultipleFreqRadarsFilter(MultipleRadarsFilterModel):
+class MultipleFreqRadarsFilterModel(MultipleRadarsFilterModel):
     r'''Implements a filter model using multiple sensors with different data rates
     and combining them through the measurement function and matrix.
     '''
-    def __init__(self,dim_x, dim_z, q, radars, model,
+    def __init__(self,dim_x, dim_z, q, radars,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6):
 
-        MultipleRadarsFilter.__init__(self, dim_x = dim_x, dim_z = dim_z, q = q,
-                                     radars = radars, model = model,
-                                     x0  = x0, y0  = y0, z0  = z0,
-                                     vx0 = vx0, vy0 = vy0, vz0 = vz0,
-                                     ax0 = ax0, ay0 = ay0, az0 = az0)
+        MultipleRadarsFilterModel.__init__(self, dim_x = dim_x, dim_z = dim_z, q = q,
+                                           radars = radars,
+                                           x0  = x0, y0  = y0, z0  = z0,
+                                           vx0 = vx0, vy0 = vy0, vz0 = vz0,
+                                           ax0 = ax0, ay0 = ay0, az0 = az0)
         self._last_t = 0
         self._tag_radars()
         self.Hs = []
@@ -146,7 +146,7 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilterModel):
             X_cur[3,0] -= position[1]
             X_cur[6,0] -= position[2]
             if i == tag:
-                Z_part = self.model.hx(self,X_cur)
+                Z_part = RadarModel.hx(self,X_cur)
             else:
                 Z_part = np.zeros((3,1))
             Z = np.concatenate((Z,Z_part),axis=0)
@@ -174,12 +174,31 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilterModel):
             X_cur[3,0] -= position[1]
             X_cur[6,0] -= position[2]
             if i == tag: # If the radar if the one sending the measurement
-                H_part = self.model.HJacob(self,X_cur)
+                H_part = RadarModel.HJacob(self,X_cur)
             else:
                 H_part = np.zeros((3,9))
             H = np.concatenate((H,H_part),axis=0)
         self.Hs.append(H)
         return H
+
+    def residual_of(self, tag, z):
+        """
+        Returns the residual for the given measurement (z). Does not alter
+        the state of the filter.
+        """
+        z_input = self.gen_complete_measurement(tag,z)
+        return np.subtract(z_input, self.HJacob(self.x,tag = tag)@self.x_prior)
+
+
+    def gen_complete_measurement(self,tag,z):
+        '''
+        Generates the whole measurement from one labeled measurement.
+        '''
+        radars_nb = len(self.radars)
+        z_input   = np.zeros((3*radars_nb,1))
+        z         = np.reshape(z,(-2,1))
+        z_input[(3*tag):(3*tag+3),:] = z
+        return z_input
 
     def update(self, labeled_z):
         '''
@@ -190,15 +209,13 @@ class MultipleFreqRadarsFilter(MultipleRadarsFilterModel):
         z: LabeledMeasurement
             The container of tag, time and measurement
         '''
-        tag, t ,z = labeled_z.tag, labeled_z.time, np.array(labeled_z.value)
+        tag, t, z = labeled_z.tag, labeled_z.time, np.array(labeled_z.value)
         self.dt      = t - self._last_t
         self._last_t = t
         self.compute_Q(self.q)
         self.compute_F(self.x)
         radars_nb = len(self.radars)
-        z_input   = np.zeros((3*radars_nb,1))
-        z = np.reshape(z,(-2,1))
-        z_input[(3*tag):(3*tag+3),:] = z
+        z_input = self.gen_complete_measurement(tag = tag, z = z)
         ExtendedKalmanFilter.update(self,z = z_input,
                                     HJacobian = self.HJacob, args = (tag),
                                     Hx = self.hx, hx_args = (tag))

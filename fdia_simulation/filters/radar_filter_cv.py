@@ -12,7 +12,7 @@ from sympy                   import symbols, Matrix
 from math                    import sqrt, atan2
 from scipy.linalg            import block_diag
 from copy                    import deepcopy
-from fdia_simulation.filters import RadarModel, MultipleRadarsFilterModel
+from fdia_simulation.filters import RadarModel, MultipleRadarsFilterModel, MultipleFreqRadarsFilterModel
 
 class RadarFilterCV(RadarModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
@@ -71,6 +71,36 @@ class MultipleRadarsFilterCV(RadarFilterCV,MultipleRadarsFilterModel):
 
     def HJacob(self,X):
         return MultipleRadarsFilterModel.HJacob(self,X)
+
+class MultipleFreqRadarsFilterCV(RadarFilterCV,MultipleFreqRadarsFilterModel):
+    def __init__(self,dim_x, dim_z, q, radars,
+                 x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
+                 vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
+                 ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6):
+        MultipleFreqRadarsFilterModel.__init__(self,dim_x = dim_x, dim_z = dim_z,
+                                               q=q, radars=radars,
+                                               x0  = x0, y0  = y0, z0  = z0,
+                                               vx0 = vx0, vy0 = vy0, vz0 = vz0,
+                                               ax0 = ax0, ay0 = ay0, az0 = az0)
+
+    def compute_F(self,X):
+        return RadarFilterCV.compute_F(self,X)
+
+    def compute_Q(self,q):
+        return RadarFilterCV.compute_Q(self,q)
+
+    def hx(self,X,tag):
+        return MultipleFreqRadarsFilterModel.hx(self,X,tag)
+
+    def HJacob(self,X,tag):
+        return MultipleFreqRadarsFilterModel.HJacob(self,X,tag)
+
+    def update(self,labeled_z):
+        MultipleFreqRadarsFilterModel.update(self,labeled_z)
+
+
+
+
 
 if __name__ == "__main__":
     # Jacobian matrices determination using sympy

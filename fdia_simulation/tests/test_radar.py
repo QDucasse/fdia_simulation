@@ -45,8 +45,7 @@ class RadarTestCase(unittest.TestCase):
         self.assertEqual(position, self.radar.get_position())
 
     def test_sample_position_data(self):
-        position_data = np.array([[0, 0, 0],[1, 1, 1],[2, 2, 2],[3, 3, 3],[4, 4, 4],
-                                  [5, 5, 5],[6, 6, 6],[7, 7, 7],[8, 8, 8],[9, 9, 9]])
+        position_data = np.array([[i,i,i] for i in range(10)])
         self.radar.step = 3
         sample = np.array([[0, 0, 0],[3, 3, 3],[6, 6, 6],[9, 9, 9]])
         computed_sample = self.radar.sample_position_data(position_data)
@@ -81,6 +80,19 @@ class RadarTestCase(unittest.TestCase):
 
         radar_data = [r1, r2], [theta1, theta2], [phi1, phi2]
         self.assertEqual(radar_data, self.radar.gen_data(position_data))
+
+    def test_radar2cartesian(self):
+        pass
+
+    def test_radar_pos_no_influence(self):
+        position_data = np.array([[i,i,i] for i in range(10)])
+        rs,thetas,phis = self.radar.gen_data(position_data)
+        xs, ys, zs = self.radar.radar2cartesian(rs,thetas,phis)
+        computed_position_data = np.array(list(zip(xs,ys,zs)))
+        print(position_data)
+        print(computed_position_data)
+        self.assertTrue(np.allclose(position_data,computed_position_data))
+
 
     # def test_sense(self):
     #     radar_data = np.array([[0, 0, 0],[1, 1, 1],[2, 2, 2],[3, 3, 3],[4, 4, 4],

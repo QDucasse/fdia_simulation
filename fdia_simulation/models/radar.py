@@ -88,9 +88,9 @@ class Radar(object):
         rs, thetas, phis: float iterables
             Distances, azimuth/turn angles and elevation angles.
         '''
-        xs = position_data[:,0] - self.x
-        ys = position_data[:,1] - self.y
-        zs = position_data[:,2] - self.z
+        xs = position_data[:,0]
+        ys = position_data[:,1]
+        zs = position_data[:,2]
         rs, thetas, phis = [], [], []
 
         for k in range(len(position_data)):
@@ -162,9 +162,9 @@ class Radar(object):
         '''
         xs,ys,zs = [],[],[]
         for k in range(len(rs)):
-            x_k = rs[k] * cos(thetas[k]) * cos(phis[k]) + self.x
-            y_k = rs[k] * sin(thetas[k]) * cos(phis[k]) + self.y
-            z_k = rs[k] * sin(phis[k]) + self.z
+            x_k = rs[k] * cos(thetas[k]) * cos(phis[k])
+            y_k = rs[k] * sin(thetas[k]) * cos(phis[k])
+            z_k = rs[k] * sin(phis[k]) 
 
             xs.append(x_k)
             ys.append(y_k)

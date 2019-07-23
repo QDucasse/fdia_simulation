@@ -9,9 +9,7 @@ import matplotlib.pyplot as plt
 from copy                      import deepcopy
 from numpy.linalg              import inv
 from filterpy.kalman           import IMMEstimator
-from fdia_simulation.models    import Command, ManeuveredAircraft, Radar, FrequencyRadar, Track
-from fdia_simulation.attackers import MoAttacker
-
+from fdia_simulation.models    import Radar, FrequencyRadar, Track
 
 class Benchmark(object):
     r'''Implements a benchmark to create an estimation of a trajectory detected
@@ -85,6 +83,7 @@ class Benchmark(object):
             current_measured_values = np.array(list(zip(noisy_rs,noisy_thetas,noisy_phis)))
             # Addition of the computed positions to the
             self.measured_positions.append(np.array(list(zip(xs,ys,zs))))
+            print('measured positions ({1}): \n{0}\n'.format(self.measured_positions,np.shape(self.measured_positions)))
 
             if not isinstance(radar,FrequencyRadar):
                 self.measured_values = np.concatenate((self.measured_values,current_measured_values),axis=1)
@@ -139,11 +138,15 @@ class Benchmark(object):
         est_states = np.array(est_states)
         nees       = np.array(nees)
         probs      = np.array(probs)
+
+        print('estimated states: \n{0}\n'.format(est_states))
+        print(np.shape(est_states))
         # Extraction of the position (for plotting)
-        est_xs     = est_states[:,0]
-        est_ys     = est_states[:,3]
-        est_zs     = est_states[:,6]
+        est_xs     = est_states[:,0,:]
+        est_ys     = est_states[:,3,:]
+        est_zs     = est_states[:,6,:]
         self.estimated_positions = np.concatenate((est_xs,est_ys,est_zs),axis=1)
+        print('estimated positions: \n{0}\n'.format(self.estimated_positions))
         self.nees  = nees
         self.probs = probs
 
@@ -157,10 +160,7 @@ class Benchmark(object):
             filter_models = self.radar_filter.filters
             for model in filter_models:
                 # Model name creation (e.g.: Estimation-CV, Estimation-CA...)
-                if multiple_radars:
-                    model_name = 'Estimation-' + model.model.__name__[-2:]
-                else:
-                    model_name = 'Estimation-' + type(model).__name__[-2:]
+                model_name = 'Estimation-' + type(model).__name__[-2:]
 
                 self.radar_filters_names.append(model_name)
 

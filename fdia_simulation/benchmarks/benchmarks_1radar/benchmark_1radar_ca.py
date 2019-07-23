@@ -19,10 +19,8 @@ if __name__ == "__main__":
     x0=states[0,0]
     y0=states[0,3]
     z0=states[0,6]
-    print('states: \n{0}\n'.format(states))
-    print(np.shape(states))
 
-    radar = Radar(x=2000,y=2000)
+    radar = Radar(x=0,y=50)
     radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 3600., x0=x0,y0=y0,z0=z0, radar = radar)
 
     benchmark_ca = Benchmark(radars = radar, radar_filter = radar_filter_ca,states = states)
@@ -33,7 +31,7 @@ if __name__ == "__main__":
     # # ==========================================================================
     # # ======================== Radar data generation ===========================
     # trajectory = Track()
-    # states = trajectory.gen_takeoff()
+    # states = trajectory.gen_cruise()
     # # print(states)
     # xs = states[:,0]
     # ys = states[:,3]

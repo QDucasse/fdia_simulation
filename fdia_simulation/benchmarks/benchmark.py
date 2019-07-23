@@ -83,7 +83,7 @@ class Benchmark(object):
             current_measured_values = np.array(list(zip(noisy_rs,noisy_thetas,noisy_phis)))
             # Addition of the computed positions to the
             self.measured_positions.append(np.array(list(zip(xs,ys,zs))))
-            print('measured positions ({1}): \n{0}\n'.format(self.measured_positions,np.shape(self.measured_positions)))
+            # print('measured positions ({1}): \n{0}\n'.format(self.measured_positions,np.shape(self.measured_positions)))
 
             if not isinstance(radar,FrequencyRadar):
                 self.measured_values = np.concatenate((self.measured_values,current_measured_values),axis=1)
@@ -139,14 +139,14 @@ class Benchmark(object):
         nees       = np.array(nees)
         probs      = np.array(probs)
 
-        print('estimated states: \n{0}\n'.format(est_states))
-        print(np.shape(est_states))
+        # print('estimated states: \n{0}\n'.format(est_states))
+        # print(np.shape(est_states))
         # Extraction of the position (for plotting)
         est_xs     = est_states[:,0,:]
         est_ys     = est_states[:,3,:]
         est_zs     = est_states[:,6,:]
         self.estimated_positions = np.concatenate((est_xs,est_ys,est_zs),axis=1)
-        print('estimated positions: \n{0}\n'.format(self.estimated_positions))
+        # print('estimated positions: \n{0}\n'.format(self.estimated_positions))
         self.nees  = nees
         self.probs = probs
 

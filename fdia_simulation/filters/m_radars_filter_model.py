@@ -6,6 +6,7 @@ Created on Fri Jul 05 10:31:40 2019
 """
 
 import numpy as np
+from math                    import sqrt, atan2, cos, sin
 from copy                    import deepcopy
 from scipy.linalg            import block_diag
 from filterpy.kalman         import ExtendedKalmanFilter
@@ -56,11 +57,18 @@ class MultipleRadarsFilterModel(RadarModel):
 
         Z = np.reshape(np.array([[]]),(0,1))
         for position in self.radar_positions:
-            X_cur = deepcopy(X)
-            X_cur[0,0] -= position[0]
-            X_cur[3,0] -= position[1]
-            X_cur[6,0] -= position[2]
-            Z_part = RadarModel.hx(self,X_cur)
+            # X_cur = deepcopy(X)
+            # X_cur[0,0] -= position[0]
+            # X_cur[3,0] -= position[1]
+            # X_cur[6,0] -= position[2]
+            # Z_part = RadarModel.hx(self,X_cur)
+            x = X[0,0] - position[0]
+            y = X[3,0] - position[1]
+            z = X[6,0] - position[2]
+            r     = sqrt(x**2 + y**2 + z**2)
+            theta = atan2(y,x)
+            phi   = atan2(z,sqrt(x**2 + y**2))
+            Z_part = np.array([[r,theta,phi]]).T
             Z = np.concatenate((Z,Z_part),axis=0)
         return Z
 
@@ -80,11 +88,17 @@ class MultipleRadarsFilterModel(RadarModel):
         '''
         H = np.reshape(np.array([[]]),(0,9))
         for position in self.radar_positions:
-            X_cur = deepcopy(X)
-            X_cur[0,0] -= position[0]
-            X_cur[3,0] -= position[1]
-            X_cur[6,0] -= position[2]
-            H_part = RadarModel.HJacob(self,X_cur)
+            # X_cur = deepcopy(X)
+            # X_cur[0,0] -= position[0]
+            # X_cur[3,0] -= position[1]
+            # X_cur[6,0] -= position[2]
+            # H_part = RadarModel.HJacob(self,X_cur)
+            x = X[0,0] - position[0]
+            y = X[3,0] - position[1]
+            z = X[6,0] - position[2]
+            H_part = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
+                               [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
+                               [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
             H = np.concatenate((H,H_part),axis=0)
         return H
 
@@ -141,12 +155,19 @@ class MultipleFreqRadarsFilterModel(MultipleRadarsFilterModel):
 
         Z = np.reshape(np.array([[]]),(0,1))
         for i,position in enumerate(self.radar_positions):
-            X_cur = deepcopy(X)
-            X_cur[0,0] -= position[0]
-            X_cur[3,0] -= position[1]
-            X_cur[6,0] -= position[2]
+            # X_cur = deepcopy(X)
+            # X_cur[0,0] -= position[0]
+            # X_cur[3,0] -= position[1]
+            # X_cur[6,0] -= position[2]
+            x = X[0,0] - position[0]
+            y = X[3,0] - position[1]
+            z = X[6,0] - position[2]
             if i == tag:
-                Z_part = RadarModel.hx(self,X_cur)
+                # Z_part = RadarModel.hx(self,X_cur)
+                r     = sqrt(x**2 + y**2 + z**2)
+                theta = atan2(y,x)
+                phi   = atan2(z,sqrt(x**2 + y**2))
+                Z_part = np.array([[r,theta,phi]]).T
             else:
                 Z_part = np.zeros((3,1))
             Z = np.concatenate((Z,Z_part),axis=0)
@@ -169,12 +190,18 @@ class MultipleFreqRadarsFilterModel(MultipleRadarsFilterModel):
         '''
         H = np.reshape(np.array([[]]),(0,9))
         for i,position in enumerate(self.radar_positions):
-            X_cur = deepcopy(X)
-            X_cur[0,0] -= position[0]
-            X_cur[3,0] -= position[1]
-            X_cur[6,0] -= position[2]
+            # X_cur = deepcopy(X)
+            # X_cur[0,0] -= position[0]
+            # X_cur[3,0] -= position[1]
+            # X_cur[6,0] -= position[2]
+            x = X[0,0] - position[0]
+            y = X[3,0] - position[1]
+            z = X[6,0] - position[2]
             if i == tag: # If the radar if the one sending the measurement
-                H_part = RadarModel.HJacob(self,X_cur)
+                # H_part = RadarModel.HJacob(self,X_cur)
+                H_part = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
+                                   [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
+                                   [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
             else:
                 H_part = np.zeros((3,9))
             H = np.concatenate((H,H_part),axis=0)

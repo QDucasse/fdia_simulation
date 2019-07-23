@@ -17,7 +17,7 @@ from fdia_simulation.benchmarks import Benchmark
 
 if __name__ == "__main__":
     trajectory = Track()
-    states = trajectory.gen_cruise()
+    states = trajectory.gen_takeoff()
     x0=states[0,0]
     y0=states[0,3]
     z0=states[0,6]

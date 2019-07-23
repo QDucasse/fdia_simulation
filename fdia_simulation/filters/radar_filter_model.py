@@ -9,7 +9,7 @@ import sympy
 import numpy as np
 from math                            import sqrt, atan2
 from copy                            import deepcopy
-from abc                             import ABC,abstractmethod
+from abc                             import abstractmethod, ABC
 from filterpy.kalman                 import ExtendedKalmanFilter
 from filterpy.common                 import pretty_str
 from fdia_simulation.models          import Radar
@@ -87,7 +87,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         '''
         x = X[0,0]
         y = X[3,0]
-        z = X[6,0]
+        z = X[6,0] 
         H = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
                       [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
                       [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
@@ -108,9 +108,9 @@ class RadarModel(ExtendedKalmanFilter,ABC):
             Kth measurement as outputed by the measurement function.
         '''
         # State space vector
-        x = X[0,0]
-        y = X[3,0]
-        z = X[6,0]
+        x = X[0,0] - self.x_rad
+        y = X[3,0] - self.y_rad
+        z = X[6,0] - self.z_rad
         # Measurements
         r     = sqrt(x**2 + y**2 + z**2)
         theta = atan2(y,x)

@@ -17,12 +17,11 @@ from fdia_simulation.benchmarks import Benchmark
 
 if __name__ == "__main__":
     trajectory = Track()
-    states = trajectory.gen_takeoff()
+    states = trajectory.gen_cruise()
     x0=states[0,0]
     y0=states[0,3]
     z0=states[0,6]
-
-    radar = Radar(x=0,y=2000)
+    radar = Radar(x=0,y=0)
 
     radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 1.,   x0=x0,y0=y0,z0=z0,radar = radar)
     radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 10.,  x0=x0,y0=y0,z0=z0,radar = radar)

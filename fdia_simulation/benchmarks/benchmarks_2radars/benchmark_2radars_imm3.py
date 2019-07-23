@@ -9,7 +9,7 @@ import numpy             as np
 import matplotlib.pyplot as plt
 from filterpy.kalman            import IMMEstimator
 from fdia_simulation.models     import Radar, Track
-from fdia_simulation.filters    import MultipleRadarsFilterCV, MultipleRadarsFilterCA, MultipleRadarFilterCT
+from fdia_simulation.filters    import MultipleRadarsFilterCV, MultipleRadarsFilterCA, MultipleRadarsFilterCT
 from fdia_simulation.attackers  import MoAttacker
 from fdia_simulation.benchmarks import Benchmark
 
@@ -37,10 +37,10 @@ if __name__ == "__main__":
     radar_filter_cv = MultipleRadarsFilterCV(dim_x = 9, dim_z = 6, q = 1.,
                                              radars = radars,
                                              x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 20.,
+    radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 400.,
                                              radars = radars,
                                              x0 = x0, y0 = y0, z0 = z0)
-    radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 6, q = 15.,
+    radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 6, q = 75.,
                                              radars = radars,
                                              x0 = x0, y0 = y0, z0 = z0)
     filters = [radar_filter_cv, radar_filter_ca, radar_filter_ct]
@@ -51,5 +51,4 @@ if __name__ == "__main__":
     imm = IMMEstimator(filters, mu, trans)
 
     benchmark_imm3 = Benchmark(radars = radars,radar_filter = imm,states = states)
-    import pdb; pdb.set_trace()
     benchmark_imm3.launch_benchmark(with_nees = True)

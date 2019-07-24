@@ -37,6 +37,9 @@ class Benchmark(object):
         xs,ys,zs          = states[:,0], states[:,3], states[:,6]
         self.pos_data     = np.array(list(zip(xs,ys,zs)))
         # Check if the filter is an IMM or not
+        self.is_freq_radar = False
+        if  isinstance(self.radars[0],FrequencyRadar):
+            self.is_freq_radar = True
         self.filter_is_imm = False
         if type(self.radar_filter) == IMMEstimator:
             self.filter_is_imm = True
@@ -85,13 +88,18 @@ class Benchmark(object):
             self.measured_positions.append(np.array(list(zip(xs,ys,zs))))
             # print('measured positions ({1}): \n{0}\n'.format(self.measured_positions,np.shape(self.measured_positions)))
 
-            if not isinstance(radar,FrequencyRadar):
+            # If the radars do not have different data rates, the measurement
+            # vector consists of the concatenation of the different measurements
+            if not self.is_freq_radar:
                 self.measured_values = np.concatenate((self.measured_values,current_measured_values),axis=1)
 
+            # If the radars have different data rates, the measurement vector
+            # consists of labeled measurements
             else:
                 current_labeled_measurement = radar.compute_measurements(self.pos_data)
                 self.labeled_values += current_labeled_measurement
 
+        # The labeled measrurements (in case of frequency radars) are sorted by time
         self.labeled_values = sorted(self.labeled_values)
 
 
@@ -128,8 +136,14 @@ class Benchmark(object):
             est_states.append(current_state)
             # print('Estimate states vector:\n{0}\n'.format(est_states))
             if with_nees:
+                if not self.is_freq_radar:
+                    # The corresponding real state to the estimated one
+                    state_id = int(self.radars[0].step * i)
+                else:
+                    # The corresponding real state to the estimated one
+                    state_id = int(measurement.time)
                 # Computation of the error between true and estimated states
-                states_tilde = np.subtract(est_states[i],np.reshape(self.states[i,:],(-8,1)))
+                states_tilde = np.subtract(est_states[i],np.reshape(self.states[state_id,:],(-8,1)))
                 nees.append(*(states_tilde.T@inv(self.radar_filter.P)@states_tilde))
             if self.filter_is_imm:
                 probs.append(self.radar_filter.mu)
@@ -231,7 +245,7 @@ class Benchmark(object):
             plt.ylabel('Model probability')
             plt.title('Probabilities of the different models')
             plt.legend()
-            fig2.show()
+            fig3.show()
 
 
         plt.show()

@@ -45,5 +45,5 @@ class Attacker(ABC):
         pass
 
     @abstractmethod
-    def change_measurements(self):
+    def attack_measurements(self):
         pass

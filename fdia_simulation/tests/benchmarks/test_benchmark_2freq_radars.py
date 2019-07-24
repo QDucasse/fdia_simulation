@@ -1,90 +1,94 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 24 14:20:58 2019
+Created on Mon Jul 22 15:58:06 2019
 
 @author: qde
 """
 
 import unittest
 import numpy as np
-from abc                        import ABC, abstractmethod
-from filterpy.kalman            import IMMEstimator
-from fdia_simulation.models     import Radar, FrequencyRadar
-from fdia_simulation.filters    import MultipleRadarsFilterCA,MultipleRadarsFilterCV,MultipleRadarsFilterCT,MultipleRadarsFilterTA
-from fdia_simulation.benchmarks import Benchmark
-from fdia_simulation.tests      import Benchmark1RadarTestEnv
+from abc                              import ABC, abstractmethod
+from filterpy.kalman                  import IMMEstimator
+from fdia_simulation.models           import Radar, FrequencyRadar
+from fdia_simulation.filters          import MultipleFreqRadarsFilterCA,MultipleFreqRadarsFilterCV,MultipleFreqRadarsFilterCT,MultipleFreqRadarsFilterTA
+from fdia_simulation.benchmarks       import Benchmark
+from fdia_simulation.tests.benchmarks import Benchmark1RadarTestEnv, Benchmark2RadarsTestEnv
 
-class Benchmark2RadarsTestEnv(Benchmark1RadarTestEnv):
+class Benchmark2FreqRadarsTestEnv(Benchmark2RadarsTestEnv):
 
     @abstractmethod
     def setUp(self):
         pass
 
     def setUp_radar_states(self):
-        # Radars definitions
-        self.radar1 = Radar(x=2000,y=2000)
-        self.radar1.step = 1.
-        self.radar2 = Radar(x=1000,y=1000)
-        self.radar2.step = 1
+        # Radar definition
+        dt_rad1 = 0.5
+        self.radar1 = FrequencyRadar(x=2000,y=2000,dt=dt_rad1)
+        dt_rad2 = 0.4
+        self.radar2 = FrequencyRadar(x=1000,y=1000,dt=dt_rad2)
         self.radars = [self.radar1, self.radar2]
         # States definition
         self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
 
-    def test_initialization_radars_1radar(self):
-        pass
-
-    def test_initialization_radars_2radars(self):
-        self.assertEqual([self.radar1, self.radar2],self.benchmark.radars)
-
     def test_gen_data_set(self):
         self.benchmark.gen_data_set()
-        self.assertFalse(self.benchmark.labeled_values)
-        self.assertEqual(np.shape(self.benchmark.measured_values),(100,6))
+        self.assertEqual(self.benchmark.measured_values.size, 0)
+        self.assertEqual(len(self.benchmark.labeled_values),200)
 
-class Benchmark2RadarsCATestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+    def test_process_filter_correct_estimated_positions(self):
+        self.benchmark.gen_data_set()
+        self.benchmark.process_filter(with_nees = True)
+        self.assertEqual(np.shape(self.benchmark.estimated_positions), (200,3))
+
+    def test_process_filter_nees_true(self):
+        self.benchmark.gen_data_set()
+        self.benchmark.process_filter(with_nees = True)
+        self.assertEqual(np.shape(self.benchmark.nees), (200,1))
+
+class Benchmark2FreqRadarsCATestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition: CA model
-        self.radar_filter = MultipleRadarsFilterCA(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
+        self.radar_filter = MultipleFreqRadarsFilterCA(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
         # Benchmark definitions
         self.benchmark   = Benchmark(radars = self.radars, radar_filter = self.radar_filter,   states = self.states)
 
-class Benchmark2RadarsCVTestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+class Benchmark2FreqRadarsCVTestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition: CA model
-        self.radar_filter = MultipleRadarsFilterCV(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
+        self.radar_filter = MultipleFreqRadarsFilterCV(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
         # Benchmark definitions
         self.benchmark   = Benchmark(radars = self.radars, radar_filter = self.radar_filter,   states = self.states)
 
-class Benchmark2RadarsCTTestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+class Benchmark2FreqRadarsCTTestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition: CA model
-        self.radar_filter = MultipleRadarsFilterCT(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
+        self.radar_filter = MultipleFreqRadarsFilterCT(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
         # Benchmark definitions
         self.benchmark   = Benchmark(radars = self.radars, radar_filter = self.radar_filter,   states = self.states)
 
-class Benchmark2RadarsTATestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+class Benchmark2FreqRadarsTATestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition: CA model
-        self.radar_filter = MultipleRadarsFilterTA(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
+        self.radar_filter = MultipleFreqRadarsFilterTA(dim_x = 9, dim_z = 6, q = 100., radars = self.radars)
         # Benchmark definitions
         self.benchmark   = Benchmark(radars = self.radars, radar_filter = self.radar_filter,   states = self.states)
 
-class Benchmark2RadarsIMM2TestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+class Benchmark2FreqRadarsIMM2TestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition
         ## Classical models
-        self.radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
-        self.radar_filter_cv = MultipleRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_ca = MultipleFreqRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_cv = MultipleFreqRadarsFilterCV(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
         ## IMM with ca, cv and ct models
         filters = [self.radar_filter_cv, self.radar_filter_ca]
         mu = [0.5, 0.5]
@@ -101,18 +105,18 @@ class Benchmark2RadarsIMM2TestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
     def test_process_filter_computes_probs(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (100,2))
+        self.assertEqual(np.shape(self.benchmark.probs), (200,2))
 
 
-class Benchmark2RadarsIMM3TestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+class Benchmark2FreqRadarsIMM3TestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition
         ## Classical models
-        self.radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
-        self.radar_filter_cv = MultipleRadarsFilterCV(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
-        self.radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_ca = MultipleFreqRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_cv = MultipleFreqRadarsFilterCV(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_ct = MultipleFreqRadarsFilterCT(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
         ## IMM with ca, cv and ct models
         filters = [self.radar_filter_cv, self.radar_filter_ca, self.radar_filter_ct]
         mu = [0.33, 0.33, 0.33]
@@ -130,18 +134,18 @@ class Benchmark2RadarsIMM3TestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
     def test_process_filter_computes_probs(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (100,3))
+        self.assertEqual(np.shape(self.benchmark.probs), (200,3))
 
-class Benchmark2RadarsIMM4TestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
+class Benchmark2FreqRadarsIMM4TestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar & States generation
         self.setUp_radar_states()
         # Filter definition
         ## Classical models
-        self.radar_filter_ca = MultipleRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
-        self.radar_filter_cv = MultipleRadarsFilterCV(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
-        self.radar_filter_ct = MultipleRadarsFilterCT(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
-        self.radar_filter_ta = MultipleRadarsFilterTA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_ca = MultipleFreqRadarsFilterCA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_cv = MultipleFreqRadarsFilterCV(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_ct = MultipleFreqRadarsFilterCT(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
+        self.radar_filter_ta = MultipleFreqRadarsFilterTA(dim_x = 9, dim_z = 3, q = 100., radars = self.radars)
         ## IMM with ca, cv and ct models
         filters = [self.radar_filter_cv, self.radar_filter_ca, self.radar_filter_ct, self.radar_filter_ta]
         mu = [0.25, 0.25, 0.25, 0.25]
@@ -160,4 +164,4 @@ class Benchmark2RadarsIMM4TestCase(Benchmark2RadarsTestEnv,unittest.TestCase):
     def test_process_filter_computes_probs(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (100,4))
+        self.assertEqual(np.shape(self.benchmark.probs), (200,4))

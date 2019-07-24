@@ -32,7 +32,7 @@ class RadarTestCase(unittest.TestCase):
         self.assertEqual(self.radar.z, 0)
 
     def test_initial_step(self):
-        dt = 0.5
+        dt = 0.1
         DT_TRACK = 0.01
         step = dt/DT_TRACK
         self.assertEqual(self.radar.step, step)
@@ -107,7 +107,7 @@ class RadarTestCase(unittest.TestCase):
 
 class FrequencyRadarTestCase(RadarTestCase):
     def setUp(self):
-        self.radar = FrequencyRadar(x = 200, y = 200, dt = 0.5,
+        self.radar = FrequencyRadar(x = 200, y = 200, dt = 0.1,
                                     r_noise_std = 1.,
                                     theta_noise_std = 0.001,
                                     phi_noise_std = 0.001,

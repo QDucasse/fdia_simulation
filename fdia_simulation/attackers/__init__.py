@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 __all__ = ["attacker", "mo_attacker","yang_attacker"]
 
-from .attacker      import *
-from .mo_attacker   import *
-from .yang_attacker import *
+from .attacker       import *
+from .mo_attacker    import *
+from .yang_attacker  import *
+from .basic_attacker import *

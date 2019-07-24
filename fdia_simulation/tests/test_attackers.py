@@ -9,15 +9,61 @@ import unittest
 import numpy as np
 from nose.tools                import raises
 from numpy.random              import randn
-from filterpy.kalman           import KalmanFilter
-from fdia_simulation.attackers import MoAttacker, Attacker
+from filterpy.kalman           import KalmanFilter,ExtendedKalmanFilter
+from fdia_simulation.attackers import MoAttacker, Attacker, BasicAttacker
 
 class AttackerTestCase(unittest.TestCase):
 
     @raises(TypeError)
     def test_no_initialization(self):
         abstractClassInstance = Attacker()
-        abstractClassInstance.change_measurements()
+
+class BasicAttackerTestCase(unittest.TestCase):
+    def setUp(self):
+        # Simulated filter for 2 radars (2*3 measurements)
+        filter = ExtendedKalmanFilter(dim_x = 9, dim_z = 6)
+        # Attack matrix: second radar is compromised
+        gamma  = np.array([[0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 1, 0, 0],
+                           [0, 0, 0, 0, 1, 0],
+                           [0, 0, 0, 0, 0, 1]])
+
+        mag_vector = np.array([[0, 0, 0, -30, 0, 0]])
+        t0 = 0
+        time = 1000
+        self.attacker = BasicAttacker(filter = filter, gamma = gamma,
+                                      mag_vector = mag_vector, t0 = t0, time = time)
+
+    def test_initialization_no_errors(self):
+        filter = ExtendedKalmanFilter(dim_x = 9, dim_z = 6)
+        gamma  = np.array([[0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 0, 0, 0],
+                           [0, 0, 0, 1, 0, 0],
+                           [0, 0, 0, 0, 1, 0],
+                           [0, 0, 0, 0, 0, 1]])
+        mag_vector = np.array([[0, 0, 0, -30, 0, 0]])
+        t0 = 0
+        time = 1000
+        att = BasicAttacker(filter, gamma, mag_vector, t0, time)
+        self.assertTrue(np.array_equal(att.gamma,gamma))
+        self.assertTrue(np.array_equal(att.mag_vector,mag_vector))
+        self.assertEqual(t0,0)
+        self.assertEqual(time,1000)
+
+    @raises(ValueError)
+    def test_initialization_wrong_gamma(self):
+        filter = ExtendedKalmanFilter(dim_x = 9, dim_z = 6)
+        gamma  = np.array([[0, 0, 0, 0],
+                           [0, 0, 0, 0],
+                           [0, 0, 0, 0],
+                           [0, 0, 0, 1]])
+        mag_vector = np.array([[0,0,0,-30,0,0]])
+        t0 = 0
+        time = 1000
+        att = BasicAttacker(filter, gamma, mag_vector, t0, time)
 
 class MoAttackerTestCase(unittest.TestCase):
     def setUp(self):

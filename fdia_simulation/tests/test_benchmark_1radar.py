@@ -8,13 +8,9 @@ Created on Mon Jul 22 15:58:06 2019
 import unittest
 import numpy as np
 from abc                        import ABC, abstractmethod
-from copy                       import deepcopy
-from numpy.linalg               import inv
 from filterpy.kalman            import IMMEstimator
-from fdia_simulation.models     import Radar, FrequencyRadar, Track
+from fdia_simulation.models     import Radar
 from fdia_simulation.filters    import RadarFilterCA,RadarFilterCV,RadarFilterCT,RadarFilterTA
-from fdia_simulation.filters    import MultipleRadarsFilterCA,MultipleRadarsFilterCV,MultipleRadarsFilterCT,MultipleRadarsFilterTA
-from fdia_simulation.filters    import MultipleFreqRadarsFilterCA,MultipleFreqRadarsFilterCV,MultipleFreqRadarsFilterCT,MultipleFreqRadarsFilterTA
 from fdia_simulation.benchmarks import Benchmark
 
 
@@ -23,6 +19,13 @@ class Benchmark1RadarTestEnv(ABC):
     @abstractmethod
     def setUp(self):
         pass
+
+    def setUp_radar_states(self):
+        # Radar definition
+        self.radar = Radar(x=2000,y=2000)
+        self.radar.step = 1.
+        # States definition
+        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
 
     def test_initialization_radars_1radar(self):
         self.assertEqual([self.radar],self.benchmark.radars)
@@ -66,28 +69,10 @@ class Benchmark1RadarTestEnv(ABC):
         self.benchmark.process_filter(with_nees = True)
         self.assertEqual(np.shape(self.benchmark.estimated_positions), (100,3))
 
-class Benchmark1RadarIMMTestEnv(Benchmark1RadarTestEnv):
-
-    @abstractmethod
-    def setUp(self):
-        pass
-
-    def test_initialization_is_imm(self):
-        self.assertTrue(self.benchmark.filter_is_imm)
-
-    def test_process_filter_computes_probs(self):
-        self.benchmark.gen_data_set()
-        self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (100,3))
-
-
 class Benchmark1RadarCATestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition: CA model
         self.radar_filter = RadarFilterCA(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
         # Benchmark definition
@@ -95,11 +80,8 @@ class Benchmark1RadarCATestCase(Benchmark1RadarTestEnv,unittest.TestCase):
 
 class Benchmark1RadarCVTestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition: CV model
         self.radar_filter = RadarFilterCV(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
         # Benchmark definition
@@ -107,11 +89,8 @@ class Benchmark1RadarCVTestCase(Benchmark1RadarTestEnv,unittest.TestCase):
 
 class Benchmark1RadarCTTestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition: CT model
         self.radar_filter = RadarFilterCT(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
         # Benchmark definition
@@ -119,11 +98,8 @@ class Benchmark1RadarCTTestCase(Benchmark1RadarTestEnv,unittest.TestCase):
 
 class Benchmark1RadarTATestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition: TA model
         self.radar_filter = RadarFilterTA(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
         # Benchmark definition
@@ -132,17 +108,12 @@ class Benchmark1RadarTATestCase(Benchmark1RadarTestEnv,unittest.TestCase):
 
 class Benchmark1RadarIMM2TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition
         ## Classical models
         self.radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
         self.radar_filter_cv = RadarFilterCV(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
-        self.radar_filter_ct = RadarFilterCT(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
-        self.radar_filter_ta = RadarFilterTA(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
         ## IMM with ca, cv and ct models
         filters = [self.radar_filter_cv, self.radar_filter_ca]
         mu = [0.5, 0.5]
@@ -164,11 +135,8 @@ class Benchmark1RadarIMM2TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
 
 class Benchmark1RadarIMM3TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition
         ## Classical models
         self.radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)
@@ -195,11 +163,8 @@ class Benchmark1RadarIMM3TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
 
 class Benchmark1RadarIMM4TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
     def setUp(self):
-        # Radar definition
-        self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
-        # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        # Radar & States generation
+        self.setUp_radar_states()
         # Filter definition
         ## Classical models
         self.radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 100., radar = self.radar)

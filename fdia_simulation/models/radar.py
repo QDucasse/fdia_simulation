@@ -33,16 +33,16 @@ class Radar(object):
     Identical to Attributes
     '''
 
-    def __init__(self, x, y, z=0, dt = 0.5,
+    def __init__(self, x, y, z=0, dt = 0.1,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001):
-        self.dt = dt
-        self.x                = x
-        self.y                = y
-        self.z                = z
-        self.step             = self.dt / Track.DT_TRACK # Sampling step from the position data
-        self.r_noise_std      = r_noise_std
-        self.theta_noise_std  = theta_noise_std
-        self.phi_noise_std    = phi_noise_std
+        self.dt   = dt
+        self.x    = x
+        self.y    = y
+        self.z    = z
+        self.step = self.dt / Track.DT_TRACK # Sampling step from the position data
+        self.r_noise_std     = r_noise_std
+        self.theta_noise_std = theta_noise_std
+        self.phi_noise_std   = phi_noise_std
         self.R = np.array([[r_noise_std,0              ,0            ],
                            [0          ,theta_noise_std,0            ],
                            [0          ,0              ,phi_noise_std]])

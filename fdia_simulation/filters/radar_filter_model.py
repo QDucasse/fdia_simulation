@@ -56,7 +56,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                       dt = 1.):
+                       dt = 1., detector = None):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
         self.dt    = dt
@@ -68,7 +68,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         self.x = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
         self.compute_Q(q)
         self.compute_F(self.x)
-        self.detector = ChiSquareDetector()
+        self.detector = detector
 
     def HJacob(self,X):
         '''
@@ -87,7 +87,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         '''
         x = X[0,0]
         y = X[3,0]
-        z = X[6,0] 
+        z = X[6,0]
         H = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
                       [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
                       [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
@@ -191,15 +191,14 @@ class RadarModel(ExtendedKalmanFilter,ABC):
 
         # Anomaly detector à mettre en place
         # Anomaly detection using the specified detector
-        # res_detection = self.detector.review_measurement(z,self)
+        if not(self.detector is None):
+            res_detection = self.detector.review_measurement(z,self)
+            if not(res_detection):
+                z = None
         # If res_detection = True => No problem in the measurement
         # if res_detection:
         ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob,
                                     Hx = self.hx, args = args, hx_args = hx_args)
-        # else:
-        #     ExtendedKalmanFilter.update(self,z = None, HJacobian = self.HJacob,
-        #                                 Hx = self.hx, args = args, hx_args = hx_args)
-
     def __repr__(self):
         return '\n'.join([
             'RadarFilter object',

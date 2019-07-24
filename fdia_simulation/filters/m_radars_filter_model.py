@@ -21,7 +21,7 @@ class MultipleRadarsFilterModel(RadarModel):
                  x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                  vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                  ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                 dt = 1.):
+                 dt = 1., detector = None):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
         self.dt              = dt
@@ -33,6 +33,7 @@ class MultipleRadarsFilterModel(RadarModel):
         self.x               = np.array([[x0,vx0,ax0,y0,vy0,ay0,z0,vz0,az0]]).T
         self.compute_Q(q)
         self.compute_F(self.x)
+        self.detector = detector
 
 
     def hx(self,X):

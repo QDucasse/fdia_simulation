@@ -56,9 +56,11 @@ class RadarModel(ExtendedKalmanFilter,ABC):
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                       dt = 1., detector = None):
+                       dt = None, detector = None):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
+        if dt is None:
+            dt = Radar.DT_RADAR
         self.dt    = dt
         self.x_rad = radar.x
         self.y_rad = radar.y
@@ -85,9 +87,9 @@ class RadarModel(ExtendedKalmanFilter,ABC):
             Jacobian of the h function applied to the state-space X at current
             time.
         '''
-        x = X[0,0]
-        y = X[3,0]
-        z = X[6,0]
+        x = X[0,0] - self.x_rad
+        y = X[3,0] - self.y_rad
+        z = X[6,0] - self.z_rad
         H = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
                       [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
                       [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])
@@ -167,7 +169,7 @@ class RadarModel(ExtendedKalmanFilter,ABC):
         This is a correction of the behavior of IMM and ExtendedKalman Filter not
         working correctly together.
         '''
-        if u == None:
+        if u is None:
             u = 0
         ExtendedKalmanFilter.predict(self, u = u)
 
@@ -197,14 +199,14 @@ class RadarModel(ExtendedKalmanFilter,ABC):
                 z = None
         # If res_detection = True => No problem in the measurement
         # if res_detection:
-        ExtendedKalmanFilter.update(self,z = z, HJacobian = self.HJacob,
-                                    Hx = self.hx, args = args, hx_args = hx_args)
-    def __repr__(self):
-        return '\n'.join([
-            'RadarFilter object',
-            pretty_str('Name', type(self).__name__[-2:]),
-            pretty_str('Time unit', self.dt),
-            pretty_str('Radar position', [self.x_rad,self.y_rad,self.z_rad]),
-            pretty_str('Measurement noise', self.R),
-            pretty_str('Process noise', self.Q),
-            pretty_str('Transition matrix', self.F)])
+        ExtendedKalmanFilter.update(self,z = z, HJacobian = HJacobian,
+                                    Hx = Hx, args = args, hx_args = hx_args)
+    # def __repr__(self):
+    #     return '\n'.join([
+    #         'RadarFilter object',
+    #         pretty_str('Name', type(self).__name__[-2:]),
+    #         pretty_str('Time unit', self.dt),
+    #         pretty_str('Radar position', [self.x_rad,self.y_rad,self.z_rad]),
+    #         pretty_str('Measurement noise', self.R),
+    #         pretty_str('Process noise', self.Q),
+    #         pretty_str('Transition matrix', self.F)])

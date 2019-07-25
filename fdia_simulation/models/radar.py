@@ -33,8 +33,13 @@ class Radar(object):
     Identical to Attributes
     '''
 
-    def __init__(self, x, y, z=0, dt = 0.1,
+    DT_RADAR = 0.1
+
+    def __init__(self, x = 0, y = 0, z = 0, dt = None,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001):
+
+        if dt is None:
+            dt = self.DT_RADAR
         self.dt   = dt
         self.x    = x
         self.y    = y
@@ -235,10 +240,12 @@ class FrequencyRadar(Radar):
     ----------
     Identical to attributes
     '''
-    def __init__(self, x, y, z=0, dt = 0.5,
+    def __init__(self, x, y, z=0, dt = None,
                  r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
                  time_std = 0.001):
 
+        if dt is None:
+            dt = Radar.DT_RADAR
         self.time_std = time_std
         self.tag      = 0
         Radar.__init__(self,x = x, y = y, z = z, dt = dt,

@@ -118,7 +118,7 @@ class Benchmark(object):
         '''
         if measurements is None:
             # Default values for FrequencyRadars
-            if isinstance(self.radars[0],FrequencyRadar):
+            if self.is_freq_radar:
                 measurements = self.labeled_values
             # Default values for radars with the same data rates
             else:
@@ -132,6 +132,9 @@ class Benchmark(object):
         for i,measurement in enumerate(measurements):
             self.radar_filter.predict()
             self.radar_filter.update(measurement)
+            # print("================================================================")
+            # print(self.radar_filter)
+            # print("================================================================")
             current_state = deepcopy(self.radar_filter.x)
             est_states.append(current_state)
             # print('Estimate states vector:\n{0}\n'.format(est_states))
@@ -159,6 +162,10 @@ class Benchmark(object):
         est_xs     = est_states[:,0,:]
         est_ys     = est_states[:,3,:]
         est_zs     = est_states[:,6,:]
+        # print('estimated xs: \n{0}\n'.format(est_xs))
+        # print('estimated ys: \n{0}\n'.format(self.est_ys))
+        # print('estimated zs: \n{0}\n'.format(self.est_zs))
+
         self.estimated_positions = np.concatenate((est_xs,est_ys,est_zs),axis=1)
         # print('estimated positions: \n{0}\n'.format(self.estimated_positions))
         self.nees  = nees

@@ -10,6 +10,7 @@ from math                    import sqrt, atan2, cos, sin
 from copy                    import deepcopy
 from scipy.linalg            import block_diag
 from filterpy.kalman         import ExtendedKalmanFilter
+from fdia_simulation.models  import Radar
 from fdia_simulation.filters import RadarModel
 
 
@@ -21,9 +22,11 @@ class MultipleRadarsFilterModel(RadarModel):
                  x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                  vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                  ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
-                 dt = 1., detector = None):
+                 dt = None, detector = None):
 
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
+        if dt is None:
+            dt = Radar.DT_RADAR
         self.dt              = dt
         self.radars          = radars
         self.radar_positions = [radar.get_position() for radar in radars]

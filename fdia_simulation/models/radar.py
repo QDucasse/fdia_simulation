@@ -63,6 +63,33 @@ class Radar(object):
         '''
         return [self.x,self.y,self.z]
 
+    def gen_radar_values(self,x,y,z):
+        '''
+        Computes the three parameters r, theta and phi from the given positions.
+        Parameters
+        ----------
+        x,y,z: floats
+            Position of the aircraft.
+
+        Returns
+        -------
+        r,theta,phi: floats
+            Radar values corresponding to the input position.
+        '''
+        # Importance of the radar position
+        x -= self.x
+        y -= self.y
+        z -= self.z
+
+        # Computation of the distance of the aircraft
+        r = sqrt(x**2 + y**2 + z**2)
+        # Computation of the turning angle of the aircraft
+        theta = atan2(y,x)
+        # Computation of the elevation angle of the aircraft
+        phi = atan2(z, sqrt(x**2 + y**2))
+
+        return r, theta, phi
+
     def sample_position_data(self,position_data):
         '''
         Samples the initial position data (computed with dt = 0.01) to reduce it
@@ -93,20 +120,14 @@ class Radar(object):
         rs, thetas, phis: float iterables
             Distances, azimuth/turn angles and elevation angles.
         '''
-        xs = position_data[:,0] - self.x
-        ys = position_data[:,1] - self.y
-        zs = position_data[:,2] - self.z
         rs, thetas, phis = [], [], []
 
-        for k in range(len(position_data)):
+        for position in position_data:
+            x_k = position[0]
+            y_k = position[1]
+            z_k = position[2]
             # Computation of the supposed distance of the aircraft
-            r_k     = sqrt(xs[k]**2 + ys[k]**2 + zs[k]**2)
-
-            # Computation of the supposed turning angle of the aircraft
-            theta_k = atan2(ys[k],xs[k])
-
-            # Computation of the supposed elevation angle of the aircraft
-            phi_k   = atan2(zs[k], sqrt(xs[k]**2 + ys[k]**2))
+            r_k, theta_k, phi_k = self.gen_radar_values(x_k,y_k,z_k)
 
             rs.append(r_k)
             thetas.append(theta_k)
@@ -127,7 +148,6 @@ class Radar(object):
         noisy_rs, noisy_thetas, noisy_phis: float iterable
             Distances, azimuth/turn angles and elevation angles with added white noise.
         '''
-
         nsr     = NoisySensor(std_noise = self.r_noise_std)
         nstheta = NoisySensor(std_noise = self.theta_noise_std)
         nsphi   = NoisySensor(std_noise = self.phi_noise_std)
@@ -137,6 +157,25 @@ class Radar(object):
         noisy_phis   = [nsphi.sense(phi) for phi in phis]
 
         return noisy_rs, noisy_thetas, noisy_phis
+
+    def gen_position_vals(self,r,theta,phi):
+        '''
+        Compute the position from the radar values r, theta and phi.
+        Parameters
+        ----------
+        r,theta,phi: floats
+            Radar values.
+
+        Returns
+        -------
+        x,y,z: floats
+            Sensed position of the aircraft extracted from the measurement given
+            in input.
+        '''
+        x = r * cos(theta) * cos(phi) + self.x
+        y = r * sin(theta) * cos(phi) + self.y
+        z = r *              sin(phi) + self.z
+        return x,y,z
 
 
     def radar2cartesian(self,rs,thetas,phis):
@@ -166,16 +205,27 @@ class Radar(object):
             List of the computed positions along z-axis.
         '''
         xs,ys,zs = [],[],[]
-        for k in range(len(rs)):
-            x_k = rs[k] * cos(thetas[k]) * cos(phis[k]) + self.x
-            y_k = rs[k] * sin(thetas[k]) * cos(phis[k]) + self.y
-            z_k = rs[k] * sin(phis[k]) + self.z
-
+        for r,theta,phi in zip(rs,thetas,phis):
+            x_k,y_k,z_k = self.gen_position_vals(r,theta,phi)
             xs.append(x_k)
             ys.append(y_k)
             zs.append(z_k)
 
         return xs,ys,zs
+
+    def __eq__(self,other):
+        eq_dt  = (self.dt == other.dt)
+        eq_pos = (
+                    (self.y == other.y) and
+                    (self.x == other.x) and
+                    (self.z == other.z)
+                 )
+        eq_std = (
+                    (self.r_noise_std     == other.r_noise_std)     and
+                    (self.theta_noise_std == other.theta_noise_std) and
+                    (self.phi_noise_std   == other.phi_noise_std)
+                 )
+        return all([eq_dt,eq_pos,eq_std])
 
 class LabeledMeasurement(object):
     '''

@@ -4,6 +4,7 @@ fdia_simulation - False Data Injection Attack on a simulated Air Traffic Control
 Installation
 ------------
 
+I worked on the project through a virtual environment with ``virtualenvwrapper``
 For downloading and installing the source code of the project:
 
 ::

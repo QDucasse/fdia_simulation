@@ -165,3 +165,7 @@ class Benchmark2FreqRadarsIMM4TestCase(Benchmark2FreqRadarsTestEnv,unittest.Test
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
         self.assertEqual(np.shape(self.benchmark.probs), (200,4))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -11,9 +11,35 @@ from scipy.linalg              import solve_discrete_are,lstsq
 from numpy.random              import randn
 from filterpy.common           import pretty_str
 from filterpy.kalman           import KalmanFilter
-from fdia_simulation.attackers import Attacker, UnstableData
 
-class MoAttacker(Attacker):
+
+class UnstableData(object):
+    r'''Implements a model for storing unstable data.
+    Parameters
+    ----------
+    val: float
+        Unstable eigenvalue.
+
+    vect: numpy float array
+        Unstable eigenvector linked to the previous eigenvalue.
+
+    position: int
+        Position of the eigenvalue in the studied matrix.
+    '''
+    def __init__(self,val,vect,position):
+        self.value    = val
+        self.vector   = vect
+        self.position = position
+
+    def __repr__(self):
+        return '\n'.join([
+            'UnstableData object',
+            pretty_str('value', self.value),
+            pretty_str('vector', self.vector),
+            pretty_str('position', self.position)])
+
+
+class MoAttacker(object):
     r''' Implements an attack simulation based on the research article Mo et al.
     2010 in order to generate a sequence of false measurements for a given subset
     of sensors.

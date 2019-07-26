@@ -12,10 +12,8 @@ from scipy.linalg              import solve_discrete_are,lstsq
 from numpy.random              import randn
 from filterpy.common           import pretty_str
 from filterpy.kalman           import KalmanFilter
-from fdia_simulation.attackers import Attacker, UnstableData
 
-
-class YangAttacker(Attacker):
+class YangAttacker(object):
     def __init__(self):
         super().__init__()
 

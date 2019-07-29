@@ -12,9 +12,9 @@ from scipy.stats                     import chi2
 from numpy.random                    import randn
 from filterpy.common                 import kinematic_kf
 from fdia_simulation.helpers         import plot_measurements
-from fdia_simulation.fault_detectors import FaultDetector
+from fdia_simulation.anomaly_detectors import AnomalyDetector
 
-class EuclidianDetector(FaultDetector):
+class EuclidianDetector(AnomalyDetector):
     r'''Fault detector based on the Euclidian distance tests
     '''
     def __init__(self):

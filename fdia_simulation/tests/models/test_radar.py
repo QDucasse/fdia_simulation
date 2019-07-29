@@ -13,18 +13,18 @@ from fdia_simulation.models import Radar, FrequencyRadar
 class RadarTestCase(unittest.TestCase):
     def setUp(self):
         self.radar = Radar(x = 200, y = 200,
-                           r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001)
+                           r_std = 1., theta_std = 0.001, phi_std = 0.001)
 
     # ==========================================================================
     # ========================= Initialization tests ===========================
-    def test_initial_r_noise_std(self):
-        self.assertEqual(self.radar.r_noise_std,1.)
+    def test_initial_r_std(self):
+        self.assertEqual(self.radar.r_std,1.)
 
-    def test_initial_theta_noise_std(self):
-        self.assertEqual(self.radar.theta_noise_std,0.001)
+    def test_initial_theta_std(self):
+        self.assertEqual(self.radar.theta_std,0.001)
 
-    def test_initial_phi_noise_std(self):
-        self.assertEqual(self.radar.phi_noise_std,0.001)
+    def test_initial_phi_std(self):
+        self.assertEqual(self.radar.phi_std,0.001)
 
     def test_initial_position(self):
         self.assertEqual(self.radar.x, 200)
@@ -102,15 +102,15 @@ class RadarTestCase(unittest.TestCase):
     #     phis   = radar_data[:,2]
     #     noisy_rs, noisy_thetas, noisy_phis = self.radar.sense(rs,thetas,phis)
     #     print(np.std(noisy_rs))
-    #     self.assertTrue(isclose(np.std(noisy_rs),self.radar.r_noise_std))
+    #     self.assertTrue(isclose(np.std(noisy_rs),self.radar.r_std))
 
 
 class FrequencyRadarTestCase(RadarTestCase):
     def setUp(self):
         self.radar = FrequencyRadar(x = 200, y = 200, dt = 0.1,
-                                    r_noise_std = 1.,
-                                    theta_noise_std = 0.001,
-                                    phi_noise_std = 0.001,
+                                    r_std = 1.,
+                                    theta_std = 0.001,
+                                    phi_std = 0.001,
                                     time_std = 0.001)
 
     def test_compute_meas_time(self):

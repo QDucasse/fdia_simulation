@@ -22,28 +22,31 @@ class Benchmark2FreqRadarsTestEnv(Benchmark2RadarsTestEnv):
 
     def setUp_radar_states(self):
         # Radar definition
-        dt_rad1 = 0.5
+        dt_rad1 = 0.6
         self.radar1 = FrequencyRadar(x=2000,y=2000,dt=dt_rad1)
-        dt_rad2 = 0.4
+        self.radar1.step = 2
+        dt_rad2 = 0.3
         self.radar2 = FrequencyRadar(x=1000,y=1000,dt=dt_rad2)
+        self.radar2.step = 1
         self.radars = [self.radar1, self.radar2]
         # States definition
         self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        self.len_elements = int(len(self.states)/self.radar1.step + len(self.states)/self.radar2.step)
 
     def test_gen_data_set(self):
         self.benchmark.gen_data_set()
         self.assertEqual(self.benchmark.measured_values.size, 0)
-        self.assertEqual(len(self.benchmark.labeled_values),200)
+        self.assertEqual(len(self.benchmark.labeled_values),self.len_elements)
 
     def test_process_filter_correct_estimated_positions(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.estimated_positions), (200,3))
+        self.assertEqual(np.shape(self.benchmark.estimated_positions), (self.len_elements,3))
 
     def test_process_filter_nees_true(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.nees), (200,1))
+        self.assertEqual(np.shape(self.benchmark.nees), (self.len_elements,1))
 
 class Benchmark2FreqRadarsCATestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
@@ -105,7 +108,7 @@ class Benchmark2FreqRadarsIMM2TestCase(Benchmark2FreqRadarsTestEnv,unittest.Test
     def test_process_filter_computes_probs(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (200,2))
+        self.assertEqual(np.shape(self.benchmark.probs), (self.len_elements,2))
 
 
 class Benchmark2FreqRadarsIMM3TestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
@@ -134,7 +137,7 @@ class Benchmark2FreqRadarsIMM3TestCase(Benchmark2FreqRadarsTestEnv,unittest.Test
     def test_process_filter_computes_probs(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (200,3))
+        self.assertEqual(np.shape(self.benchmark.probs), (self.len_elements,3))
 
 class Benchmark2FreqRadarsIMM4TestCase(Benchmark2FreqRadarsTestEnv,unittest.TestCase):
     def setUp(self):
@@ -164,7 +167,7 @@ class Benchmark2FreqRadarsIMM4TestCase(Benchmark2FreqRadarsTestEnv,unittest.Test
     def test_process_filter_computes_probs(self):
         self.benchmark.gen_data_set()
         self.benchmark.process_filter(with_nees = True)
-        self.assertEqual(np.shape(self.benchmark.probs), (200,4))
+        self.assertEqual(np.shape(self.benchmark.probs), (self.len_elements,4))
 
 
 if __name__ == "__main__":

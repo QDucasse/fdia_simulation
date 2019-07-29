@@ -19,13 +19,13 @@ class Radar(object):
     x, y, z: floats
         Radar position along x, y and z-axis.
 
-    r_noise_std: float
+    r_std: float
         Standard deviation on the measurement of r. Default value of 1.
 
-    theta_noise_std: float
+    theta_std: float
         Standard deviation on the measurement of theta. Default value of 0.1
 
-    phi_noise_std: float
+    phi_std: float
         Standard deviation on the measurement of phi. Default value of 0.1
 
     Parameters
@@ -36,7 +36,7 @@ class Radar(object):
     DT_RADAR = 0.1
 
     def __init__(self, x = 0, y = 0, z = 0, dt = None,
-                 r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001):
+                 r_std = 1., theta_std = 0.001, phi_std = 0.001):
 
         if dt is None:
             dt = self.DT_RADAR
@@ -45,12 +45,12 @@ class Radar(object):
         self.y    = y
         self.z    = z
         self.step = self.dt / Track.DT_TRACK # Sampling step from the position data
-        self.r_noise_std     = r_noise_std
-        self.theta_noise_std = theta_noise_std
-        self.phi_noise_std   = phi_noise_std
-        self.R = np.array([[r_noise_std,0              ,0            ],
-                           [0          ,theta_noise_std,0            ],
-                           [0          ,0              ,phi_noise_std]])
+        self.r_std     = r_std
+        self.theta_std = theta_std
+        self.phi_std   = phi_std
+        self.R = np.array([[r_std,0              ,0            ],
+                           [0          ,theta_std,0            ],
+                           [0          ,0              ,phi_std]])
 
 
     def get_position(self):
@@ -148,9 +148,9 @@ class Radar(object):
         noisy_rs, noisy_thetas, noisy_phis: float iterable
             Distances, azimuth/turn angles and elevation angles with added white noise.
         '''
-        nsr     = NoisySensor(std_noise = self.r_noise_std)
-        nstheta = NoisySensor(std_noise = self.theta_noise_std)
-        nsphi   = NoisySensor(std_noise = self.phi_noise_std)
+        nsr     = NoisySensor(std_noise = self.r_std)
+        nstheta = NoisySensor(std_noise = self.theta_std)
+        nsphi   = NoisySensor(std_noise = self.phi_std)
 
         noisy_rs     = [nsr.sense(r) for r in rs]
         noisy_thetas = [nstheta.sense(theta) for theta in thetas]
@@ -221,9 +221,9 @@ class Radar(object):
                     (self.z == other.z)
                  )
         eq_std = (
-                    (self.r_noise_std     == other.r_noise_std)     and
-                    (self.theta_noise_std == other.theta_noise_std) and
-                    (self.phi_noise_std   == other.phi_noise_std)
+                    (self.r_std     == other.r_std)     and
+                    (self.theta_std == other.theta_std) and
+                    (self.phi_std   == other.phi_std)
                  )
         return all([eq_dt,eq_pos,eq_std])
 
@@ -291,7 +291,7 @@ class FrequencyRadar(Radar):
     Identical to attributes
     '''
     def __init__(self, x, y, z=0, dt = None,
-                 r_noise_std = 1., theta_noise_std = 0.001, phi_noise_std = 0.001,
+                 r_std = 1., theta_std = 0.001, phi_std = 0.001,
                  time_std = 0.001):
 
         if dt is None:
@@ -299,7 +299,7 @@ class FrequencyRadar(Radar):
         self.time_std = time_std
         self.tag      = 0
         Radar.__init__(self,x = x, y = y, z = z, dt = dt,
-                       r_noise_std = r_noise_std, theta_noise_std = theta_noise_std, phi_noise_std = phi_noise_std)
+                       r_std = r_std, theta_std = theta_std, phi_std = phi_std)
 
 
     def compute_meas_times(self, size):
@@ -380,7 +380,7 @@ if __name__ == "__main__":
     print("Measurements radar1:\n{0}\n".format(measurements_info[-25:]))
 
     # Radar 2
-    radar2 = FrequencyRadar(tag = 1, x=1000,y=1000, r_noise_std = 5., theta_noise_std = 0.005, phi_noise_std = 0.005)
+    radar2 = FrequencyRadar(tag = 1, x=1000,y=1000, r_std = 5., theta_std = 0.005, phi_std = 0.005)
     rs2, thetas2, phis2 = radar2.gen_data(position_data2)
     noisy_rs2, noisy_thetas2, noisy_phis2 = radar2.sense(rs2, thetas2, phis2)
     xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs2, noisy_thetas2, noisy_phis2)

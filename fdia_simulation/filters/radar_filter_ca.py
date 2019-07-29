@@ -62,6 +62,8 @@ class RadarFilterCA(RadarModel):
 
 
 class MultipleRadarsFilterCA(RadarFilterCA,MultipleRadarsFilterModel):
+    def __init__(self,*args,**kwargs):
+        MultipleRadarsFilterModel.__init__(self,*args,**kwargs)
 
     def compute_F(self,X):
         return RadarFilterCA.compute_F(self,X)
@@ -77,6 +79,8 @@ class MultipleRadarsFilterCA(RadarFilterCA,MultipleRadarsFilterModel):
 
 
 class MultipleFreqRadarsFilterCA(RadarFilterCA,MultipleFreqRadarsFilterModel):
+    def __init__(self,*args,**kwargs):
+        MultipleFreqRadarsFilterModel.__init__(self,*args,**kwargs)
 
     def compute_F(self,X):
         return RadarFilterCA.compute_F(self,X)

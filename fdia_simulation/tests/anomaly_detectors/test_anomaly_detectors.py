@@ -9,14 +9,14 @@ import unittest
 from nose.tools                      import raises
 from numpy.random                    import randn
 from filterpy.common                 import kinematic_kf
-from fdia_simulation.fault_detectors import ChiSquareDetector, EuclidianDetector, FaultDetector
+from fdia_simulation.anomaly_detectors import ChiSquareDetector, EuclidianDetector, AnomalyDetector
 
 
 
-class FaultDetectorTestCase(unittest.TestCase):
+class AnomalyDetectorTestCase(unittest.TestCase):
     @raises(TypeError)
     def test_no_initialization(self):
-        abstractClassInstance = FaultDetector()
+        abstractClassInstance = AnomalyDetector()
 
 class ChiSquareDetectorTestCase(unittest.TestCase):
     def setUp(self):

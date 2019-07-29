@@ -96,7 +96,7 @@ class Benchmark(object):
             # If the radars have different data rates, the measurement vector
             # consists of labeled measurements
             else:
-                current_labeled_measurement = radar.compute_measurements(self.pos_data)
+                current_labeled_measurement = radar.compute_measurements(sampled_position_data)
                 self.labeled_values += current_labeled_measurement
 
         # The labeled measrurements (in case of frequency radars) are sorted by time

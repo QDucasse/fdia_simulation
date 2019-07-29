@@ -8,7 +8,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 
-class FaultDetector(ABC):
+class AnomalyDetector(ABC):
     r'''Abstract class defining the basic function of outlier detectors.
     Attributes
     ----------

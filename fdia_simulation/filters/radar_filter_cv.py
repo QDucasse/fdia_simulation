@@ -60,6 +60,9 @@ class RadarFilterCV(RadarModel):
         return self.Q
 
 class MultipleRadarsFilterCV(RadarFilterCV,MultipleRadarsFilterModel):
+    def __init__(self,*args,**kwargs):
+        MultipleRadarsFilterModel.__init__(self,*args,**kwargs)
+        
     def compute_F(self,X):
         return RadarFilterCV.compute_F(self,X)
 
@@ -73,15 +76,8 @@ class MultipleRadarsFilterCV(RadarFilterCV,MultipleRadarsFilterModel):
         return MultipleRadarsFilterModel.HJacob(self,X)
 
 class MultipleFreqRadarsFilterCV(RadarFilterCV,MultipleFreqRadarsFilterModel):
-    def __init__(self,dim_x, dim_z, q, radars,
-                 x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
-                 vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
-                 ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6):
-        MultipleFreqRadarsFilterModel.__init__(self,dim_x = dim_x, dim_z = dim_z,
-                                               q=q, radars=radars,
-                                               x0  = x0, y0  = y0, z0  = z0,
-                                               vx0 = vx0, vy0 = vy0, vz0 = vz0,
-                                               ax0 = ax0, ay0 = ay0, az0 = az0)
+    def __init__(self,*args,**kwargs):
+        MultipleFreqRadarsFilterModel.__init__(self,*args,**kwargs)
 
     def compute_F(self,X):
         return RadarFilterCV.compute_F(self,X)

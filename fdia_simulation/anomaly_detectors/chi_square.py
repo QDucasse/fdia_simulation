@@ -12,10 +12,10 @@ from numpy.linalg                    import inv
 from numpy.random                    import randn
 from filterpy.common                 import kinematic_kf
 from fdia_simulation.helpers         import plot_measurements
-from fdia_simulation.fault_detectors import FaultDetector
+from fdia_simulation.anomaly_detectors import AnomalyDetector
 
 
-class ChiSquareDetector(FaultDetector):
+class ChiSquareDetector(AnomalyDetector):
     r'''Fault detection based on the Chi-square statistic tests
     '''
     def __init__(self):

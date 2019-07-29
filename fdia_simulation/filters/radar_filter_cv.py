@@ -12,9 +12,9 @@ from sympy                   import symbols, Matrix
 from math                    import sqrt, atan2
 from scipy.linalg            import block_diag
 from copy                    import deepcopy
-from fdia_simulation.filters import RadarModel, MultipleRadarsFilterModel, MultipleFreqRadarsFilterModel
+from fdia_simulation.filters import RadarFilterModel, MultipleRadarsFilterModel, MultipleFreqRadarsFilterModel
 
-class RadarFilterCV(RadarModel):
+class RadarFilterCV(RadarFilterModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
     radar. The model is assumed to have constant velocity.
 

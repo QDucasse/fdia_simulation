@@ -19,7 +19,7 @@ class Benchmark(object):
     radar: Radar iterable
         List of radars observing the moving target.
 
-    radar_filter: RadarModel instance
+    radar_filter: RadarFilterModel instance
         Filter or IMM that will estimate the state of the observed system.
 
     states numpy array iterable
@@ -257,7 +257,7 @@ class Benchmark(object):
 
         plt.show()
 
-    def launch_benchmark(self, with_nees = False):
+    def launch_benchmark(self, with_nees = False, plot = True):
         '''
         Launches the usual benchmark procedure:
         - Generates radar's data set
@@ -271,4 +271,4 @@ class Benchmark(object):
         self.gen_data_set()
         self.process_filter(with_nees = with_nees)
         self.generate_plotting_labels()
-        self.plot()
+        if plot: self.plot()

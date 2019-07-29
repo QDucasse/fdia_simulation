@@ -12,9 +12,9 @@ from sympy                   import symbols, Matrix
 from math                    import sqrt, atan2, cos, sin
 from scipy.linalg            import block_diag
 from copy                    import deepcopy
-from fdia_simulation.filters import RadarModel, MultipleRadarsFilterModel, MultipleFreqRadarsFilterModel
+from fdia_simulation.filters import RadarFilterModel, MultipleRadarsFilterModel, MultipleFreqRadarsFilterModel
 
-class RadarFilterCT(RadarModel):
+class RadarFilterCT(RadarFilterModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
     radar. The model is assumed to have constant velocity.
 
@@ -62,7 +62,7 @@ class RadarFilterCT(RadarModel):
 
     def predict(self, u=0):
         self.compute_F(self.x)
-        RadarModel.predict(self, u)
+        RadarFilterModel.predict(self, u)
 
 
 

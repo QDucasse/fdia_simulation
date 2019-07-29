@@ -7,7 +7,7 @@ Created on Tue Jul 24 14:20:58 2019
 
 import unittest
 import numpy as np
-from abc                              import ABC, abstractmethod
+from abc                              import ABC
 from filterpy.kalman                  import IMMEstimator
 from fdia_simulation.models           import Radar, FrequencyRadar
 from fdia_simulation.filters          import MultipleRadarsFilterCA,MultipleRadarsFilterCV,MultipleRadarsFilterCT,MultipleRadarsFilterTA
@@ -15,10 +15,6 @@ from fdia_simulation.benchmarks       import Benchmark
 from fdia_simulation.tests.benchmarks import Benchmark1RadarTestEnv
 
 class Benchmark2RadarsTestEnv(Benchmark1RadarTestEnv):
-
-    @abstractmethod
-    def setUp(self):
-        pass
 
     def setUp_radar_states(self):
         # Radars definitions

@@ -9,12 +9,12 @@ import unittest
 import numpy as np
 from nose.tools              import raises
 from fdia_simulation.models  import Radar
-from fdia_simulation.filters import RadarModel, RadarFilterCA,RadarFilterCV, MultipleRadarsFilterCA,MultipleRadarsFilterCV
+from fdia_simulation.filters import RadarFilterModel, RadarFilterCA,RadarFilterCV, MultipleRadarsFilterCA,MultipleRadarsFilterCV
 
-class RadarModelTestCase(unittest.TestCase):
+class RadarFilterModelTestCase(unittest.TestCase):
     @raises(TypeError)
     def test_no_initialization(self):
-        abstractClassInstance = RadarModel()
+        abstractClassInstance = RadarFilterModel()
 
 
 if __name__ == "__main__":

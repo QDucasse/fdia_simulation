@@ -9,7 +9,7 @@ import numpy as np
 from sympy.abc       import x, y, z
 from sympy           import symbols, Matrix
 from math            import sqrt, atan2
-from fdia_simulation.filters.radar_filter_model import RadarModel
+from fdia_simulation.filters.radar_filter_model import RadarFilterModel
 # Other model possibility
     # Following [ARIF2017] paper
     # X_next      = np.zeros((6,1))

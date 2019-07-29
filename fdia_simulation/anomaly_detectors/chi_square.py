@@ -50,8 +50,8 @@ class ChiSquareDetector(AnomalyDetector):
         dim_z = np.shape(kf.R)[0]
 
         #! TODO: Raise error if wrong dimension
-        from fdia_simulation.filters.radar_filter_model import RadarModel
-        if isinstance(kf,RadarModel):
+        from fdia_simulation.filters.radar_filter_model import RadarFilterModel
+        if isinstance(kf,RadarFilterModel):
             H = kf.HJacob(kf.x)
         else:
             H = kf.H

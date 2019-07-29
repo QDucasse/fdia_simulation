@@ -16,7 +16,7 @@ from fdia_simulation.models            import Radar
 from fdia_simulation.anomaly_detectors import ChiSquareDetector
 
 
-class RadarModel(ExtendedKalmanFilter,ABC):
+class RadarFilterModel(ExtendedKalmanFilter,ABC):
     r'''Implements the basic utilities of radar filters and functions that will
     need to be overiden by subclasses.
     Parameters

@@ -54,25 +54,25 @@ for filter in FILTERS_1_RADAR:
     noise_finder = NoiseFinder1Radar(radar1, states, filter)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
-    print(('Best value for '+ name +'&1Radar:{0}').format(best_value))
-    writer.write_row(name+'&1Radar',str(best_value))
+    print(('Best value for '+ name +'-1Radar:{0}').format(best_value))
+    writer.write_row(name+'-1Radar',str(best_value))
 
 for filter in FILTERS_2_RADARS:
     name = filter.__name__[-2:]
     print('=================================================================')
     print('=========================== '+ name +'-2 Radars =========================')
-    noise_finder = NoiseFinder1Radar(radar1, states, filter)
+    noise_finder = NoiseFinder2Radars(radars, states, filter)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
-    print(('Best value for '+ name +'&2Radars:{0}').format(best_value))
-    writer.write_row(name+'&1Radar',str(best_value))
+    print(('Best value for '+ name +'-2Radars:{0}').format(best_value))
+    writer.write_row(name+'-2Radars',str(best_value))
 
-for filter in FILTERS_2_FRADAR:
+for filter in FILTERS_2_FRADARS:
     name = filter.__name__[-2:]
     print('=================================================================')
     print('========================== '+ name +'-2 FRadars =========================')
-    noise_finder = NoiseFinder1Radar(radar1, states, filter)
+    noise_finder = NoiseFinder2Radars(radars, states, filter)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
-    print(('Best value for '+ name +'&2FRadars:{0}').format(best_value))
-    writer.write_row(name+'&2FRadars',str(best_value))
+    print(('Best value for '+ name +'-2FRadars:{0}').format(best_value))
+    writer.write_row(name+'-2FRadars',str(best_value))

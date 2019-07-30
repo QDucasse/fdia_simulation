@@ -168,3 +168,9 @@ class NoiseFinder2Radars(NoiseFinder1Radar):
         benchmark = Benchmark(radars = self.radars, radar_filter = filter, states = self.states)
         benchmark.launch_benchmark(with_nees = True, plot = False)
         return benchmark.nees
+
+class NoiseFinderIMM1Radar(object):
+    pass
+
+class NoiseFinderIMM2Radars(object):
+    pass

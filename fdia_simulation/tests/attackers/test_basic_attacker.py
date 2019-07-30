@@ -148,16 +148,16 @@ class BasicAttackerTestCase(unittest.TestCase):
         self.assertTrue(all([np.allclose(meas, mod_meas) for meas, mod_meas in comparison_list_1]))
         self.assertTrue(all([np.allclose(meas, mod_meas) for meas, mod_meas in comparison_list_2]))
 
-    # def test_attacked_vectors(self):
-    #     measurements =[np.ones((6,1))*i for i in range(100)]
-    #     modified_measurements = []
-    #     for i,measurement in enumerate(measurements):
-    #         mod_meas = self.attacker.listen_measurements(measurement)
-    #         modified_measurements.append(mod_meas)
-    #
-    #     attacked_meas = [i*np.array([[1,1,1,-10,-10,-10]]).T for i in range(10,60)]
-    #     comparison_list = zip(attacked_meas,  modified_measurements[10:60])
-    #     self.assertTrue(all([np.allclose(meas, mod_meas) for meas, mod_meas in comparison_list]))
+    def test_attacked_vectors(self):
+        measurements =[np.ones((6,1))*i for i in range(100)]
+        modified_measurements = []
+        for i,measurement in enumerate(measurements):
+            mod_meas = self.attacker.listen_measurements(measurement)
+            modified_measurements.append(mod_meas)
+
+        attacked_meas = [np.subtract(np.array([[i,i,i,i,i,i]]).T,np.array([[0,0,0,10,10,10]]).T) for i in range(10,60)]
+        comparison_list = zip(attacked_meas,  modified_measurements[10:60])
+        self.assertTrue(all([np.allclose(meas, mod_meas) for meas, mod_meas in comparison_list]))
 
 
 
@@ -183,6 +183,8 @@ class BruteForceAttackerTestCase(BasicAttackerTestCase):
         computed_measurement = self.attacker.listen_measurements(measurement)
         self.assertTrue(np.array_equal(modified_measurement,computed_measurement))
 
+    def test_attacked_vectors(self):
+        pass
 
 class DriftAttackerTestCase(BasicAttackerTestCase):
     def setUp(self):
@@ -209,6 +211,8 @@ class DriftAttackerTestCase(BasicAttackerTestCase):
         computed_measurement = self.attacker.listen_measurements(measurement)
         self.assertTrue(np.allclose(modified_measurement,computed_measurement))
 
+    def test_attacked_vectors(self):
+        pass
 
 
 if __name__ == "__main__":

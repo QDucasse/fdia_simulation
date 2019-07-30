@@ -116,8 +116,9 @@ class NoiseFinder1Radar(object):
             self.means_nees[q] = min(current_mean_nees)
 
             # Proof of life
-            if (count%10 == 0): print("Ongoing: step n°{0}".format(count))
+            if (count%10 == 0): print("Ongoing: step n°{0}/430".format(count))
             count += 1
+        print("Ongoing: step n°430/430"
 
     def best_value(self):
         '''
@@ -138,11 +139,12 @@ class NoiseFinder2Radars(NoiseFinder1Radar):
     -----
     Please see NoiseFinder1Radar help for more information.
     '''
-    def __init__(self,radars,states,filter):
-        self.radars     = radars
-        self.states     = states
-        self.filter     = filter
-        self.means_nees = {}
+    def __init__(self,radars,states,filter,nb_iterations = 1):
+        self.radars        = radars
+        self.states        = states
+        self.filter        = filter
+        self.nb_iterations = nb_iterations
+        self.means_nees    = {}
 
     def compute_nees(self,q):
         '''

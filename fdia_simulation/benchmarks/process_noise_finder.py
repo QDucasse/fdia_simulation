@@ -27,9 +27,13 @@ class NoiseFinder1Radar(object):
     filter: RadarFilterModel object
         Filter with a given model to be tested.
 
+    nb_iterations: int
+        Number of times the same simulation will be processed. Put other than 1
+        if you think the randomness can generate unlucky faulty simulations.
+
     Attributes
     ----------
-    Sale as parameters +
+    Same as parameters +
 
     mean_nees: dictionary(key:float, value:float)
         Dictionary of every tested q (key) and its associated average nees (value).
@@ -40,16 +44,18 @@ class NoiseFinder1Radar(object):
     # 0.1 ,  0.2 ... 0.9
     # 1   ,    2 ... 9
     # 10  ,   20 ... 4000
+
     TO_TEST = list(np.linspace(0.01,0.09,num=9)) + \
-              list(np.linspace(0.1,0.9,num=9)) +   \
-              list(np.linspace(1,9,num=9)) +       \
+              list(np.linspace(0.1,0.9,num=9))   + \
+              list(np.linspace(1,9,num=9))       + \
               list(np.linspace(10,4000,num=400))
 
-    def __init__(self,radar,states,filter):
-        self.radar      = radar
-        self.states     = states
-        self.filter     = filter
-        self.means_nees = {}
+    def __init__(self,radar,states,filter,nb_iterations = 1):
+        self.radar         = radar
+        self.states        = states
+        self.filter        = filter
+        self.nb_iterations = nb_iterations
+        self.means_nees    = {}
 
     def compute_nees(self,q):
         '''
@@ -74,7 +80,7 @@ class NoiseFinder1Radar(object):
         benchmark.launch_benchmark(with_nees = True, plot = False)
         return benchmark.nees
 
-    def iterate_same_simulation(self,q,nb_iterations = 10):
+    def iterate_same_simulation(self,q):
         '''
         Iterates the benchmark a given number of times to avoid unlucky singular
         behavior.
@@ -83,16 +89,13 @@ class NoiseFinder1Radar(object):
         q: float
             Tested process noise.
 
-        nb_iterations: int (default 10)
-            Number of iterations that will be done to overcome the uncertainity.
-
         Returns:
         --------
         means_nees: float iterable
             Means of the nees of the iterations.
         '''
         one_q_means_nees = []
-        for _ in range(nb_iterations): # in case of unlucky simulations
+        for _ in range(self.nb_iterations): # in case of unlucky simulations
             mean_nees = np.mean(self.compute_nees(q))
             one_q_means_nees.append(mean_nees)
         return one_q_means_nees
@@ -109,7 +112,7 @@ class NoiseFinder1Radar(object):
         '''
         count = 0
         for q in self.TO_TEST:  # Loop over all the values that should be tested
-            current_mean_nees = self.iterate_same_simulation(q,nb_iterations = 3)
+            current_mean_nees = self.iterate_same_simulation(q)
             self.means_nees[q] = min(current_mean_nees)
 
             # Proof of life
@@ -128,6 +131,13 @@ class NoiseFinder1Radar(object):
         return best_value
 
 class NoiseFinder2Radars(NoiseFinder1Radar):
+    '''
+    Implements a helper to find the correct noise in a 2 radars case.
+
+    Notes
+    -----
+    Please see NoiseFinder1Radar help for more information.
+    '''
     def __init__(self,radars,states,filter):
         self.radars     = radars
         self.states     = states

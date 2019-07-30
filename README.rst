@@ -16,8 +16,36 @@ For downloading and installing the source code of the project:
 Basic use
 ---------
 
-WIP
+Explanation of the situation (graph + state/model)
+::
+    from fdia_simulation.models     import Radar, Track
+    from fdia_simulation.filters    import RadarFilterCA
+    from fdia_simulation.benchmarks import Benchmark
 
+    # Creation of a trajectory
+    trajectory = Track()
+    states = trajectory.gen_takeoff() # Takeoff trajectory here
+    x0=states[0,0] # Initial state that will be passed to the filter
+    y0=states[0,3]
+    z0=states[0,6]
+
+    # Creation of a radar observing the trajectory
+    radar = Radar(x=0,y=500)
+
+    # Creation of the filter that will estimate the position of the plane given
+    # the radar's measurements
+    radar_filter_ca = RadarFilterCA(dim_x = 9, dim_z = 3, q = 3070.,
+                                    x0 = x0, y0 = y0, z0 = z0, radar = radar)
+    # Here, the model chosen for the filter is CA (Constant Acceleration)
+
+    # Creation and launching of the benchmark doing:
+    # - Data generation from the radar
+    # - Filter processing
+    # - Attacker influence
+    # - Performance computation
+    # - Plotting
+    benchmark_ca = Benchmark(radars = radar, radar_filter = radar_filter_ca,states = states)
+    benchmark_ca.launch_benchmark(with_nees = True)
 
 Objectives and Milestones of the project
 ----------------------------------------
@@ -36,7 +64,7 @@ and therefore automatically installed.
 Testing
 -------
 
-All tests are written to work with nose and/or pytest. Just type ``pytest`` or
+All 500~ tests are written to work with nose and/or pytest. Just type ``pytest`` or
 ``nosetests`` as a command line in the project.
 
 The tests are not robust as they verify the integrity of the data generated but

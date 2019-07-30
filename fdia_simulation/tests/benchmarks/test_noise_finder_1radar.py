@@ -32,9 +32,8 @@ class NoiseFinder1RadarTestEnv(ABC):
         self.assertEqual(100,len(self.process_noise_finder.compute_nees(10)))
 
     def test_iterate_same_simulation(self):
-        nb_iterations = 3
-        self.assertEqual(10,len(self.process_noise_finder.iterate_same_simulation(q = 10)))
-        self.assertEqual(3,len(self.process_noise_finder.iterate_same_simulation(q = 10, nb_iterations = nb_iterations)))
+        self.process_noise_finder.nb_iterations = 3
+        self.assertEqual(3,len(self.process_noise_finder.iterate_same_simulation(q = 10)))
 
     def test_launch_benchmark(self):
         self.process_noise_finder.launch_benchmark()

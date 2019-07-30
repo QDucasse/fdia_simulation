@@ -135,4 +135,4 @@ fdia_simulation/benchmarks/benchmarks_1radar
 fdia_simulation/benchmarks/benchmarks_2radars
 fdia_simulation/benchmarks/benchmarks_2freq_radars
 fdia_simulation/benchmarks/other_benchmarks
-./results/*.csv
+results/*.csv

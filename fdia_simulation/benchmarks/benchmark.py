@@ -25,7 +25,7 @@ class Benchmark(object):
     states numpy array iterable
         List of the true states of the observed system.
     '''
-    def __init__(self,radars,radar_filter,states):
+    def __init__(self,radars,radar_filter,states,attacker = None):
         # Checks if there are multiple radars or simply one
         if isinstance(radars,(Radar,FrequencyRadar)):
             self.radars = [radars]
@@ -43,6 +43,8 @@ class Benchmark(object):
         self.filter_is_imm = False
         if type(self.radar_filter) == IMMEstimator:
             self.filter_is_imm = True
+
+        self.attacker = attacker
         # Actual values to be plotted
         self.measured_values     = []
         self.labeled_values      = []
@@ -103,6 +105,7 @@ class Benchmark(object):
         self.labeled_values = sorted(self.labeled_values)
 
 
+
     def process_filter(self,measurements = None,with_nees = False):
         '''
         Launches the filter cycles of predict/update.
@@ -130,6 +133,11 @@ class Benchmark(object):
         est_states, nees, probs = [],[],[]
         # Scrolling through the measurements
         for i,measurement in enumerate(measurements):
+            # Attack_phase
+            if not(self.attacker is None):
+                self.attacker.listen_measurement(measurement)
+
+            # Filter cycle
             self.radar_filter.predict()
             self.radar_filter.update(measurement)
             # print("================================================================")
@@ -157,7 +165,6 @@ class Benchmark(object):
         probs      = np.array(probs)
 
         # print('estimated states: \n{0}\n'.format(est_states))
-        # print(np.shape(est_states))
         # Extraction of the position (for plotting)
         est_xs     = est_states[:,0,:]
         est_ys     = est_states[:,3,:]

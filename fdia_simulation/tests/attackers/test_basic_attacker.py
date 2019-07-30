@@ -113,30 +113,30 @@ class BasicAttackerTestCase(unittest.TestCase):
     # ==========================================================================
     # ========================== Listening/Attack tests ========================
 
-    def test_listen_measurements_increments_time(self):
+    def test_listen_measurement_increments_time(self):
         measurements = [np.ones((6,1))*i for i in range(100)]
         for i,measurement in enumerate(measurements):
             self.assertEqual(self.attacker.current_time,i)
-            self.attacker.listen_measurements(measurement)
+            self.attacker.listen_measurement(measurement)
 
-    def test_listen_measurements_1_step_attack(self):
+    def test_listen_measurement_1_step_attack(self):
         measurement          = np.array([[10,10,10,10,10,10]]).T
         modified_measurement = np.array([[10,10,10,0,0,0]]).T
 
         self.attacker.t0     = 0
-        computed_measurement = self.attacker.listen_measurements(measurement)
+        computed_measurement = self.attacker.listen_measurement(measurement)
         self.assertTrue(np.array_equal(modified_measurement,computed_measurement))
 
-    def test_listen_measurements_1_step_no_attack(self):
+    def test_listen_measurement_1_step_no_attack(self):
         measurement          = np.array([[1,1,1,1,1,1]]).T
-        computed_measurement = self.attacker.listen_measurements(measurement)
+        computed_measurement = self.attacker.listen_measurement(measurement)
         self.assertTrue(np.array_equal(measurement,computed_measurement))
 
     def test_unattacked_vectors(self):
         measurements = [np.ones((6,1))*i for i in range(100)]
         modified_measurements = []
         for i,measurement in enumerate(measurements):
-            mod_meas = self.attacker.listen_measurements(measurement)
+            mod_meas = self.attacker.listen_measurement(measurement)
             modified_measurements.append(mod_meas)
 
         # Unattacked measurements are the ones from 0:10 and 60:100
@@ -152,7 +152,7 @@ class BasicAttackerTestCase(unittest.TestCase):
         measurements =[np.ones((6,1))*i for i in range(100)]
         modified_measurements = []
         for i,measurement in enumerate(measurements):
-            mod_meas = self.attacker.listen_measurements(measurement)
+            mod_meas = self.attacker.listen_measurement(measurement)
             modified_measurements.append(mod_meas)
 
         attacked_meas = [np.subtract(np.array([[i,i,i,i,i,i]]).T,np.array([[0,0,0,10,10,10]]).T) for i in range(10,60)]
@@ -176,11 +176,11 @@ class BruteForceAttackerTestCase(BasicAttackerTestCase):
         self.assertEqual(self.t0,10)
         self.assertEqual(self.time,50)
 
-    def test_listen_measurements_1_step_attack(self):
+    def test_listen_measurement_1_step_attack(self):
         measurement          = np.array([[10,10,10,10,10,10]]).T
         modified_measurement = np.array([[10,10,10,-9.99999e6,-9.99999e6,-9.99999e6]]).T
         self.attacker.t0     = 0
-        computed_measurement = self.attacker.listen_measurements(measurement)
+        computed_measurement = self.attacker.listen_measurement(measurement)
         self.assertTrue(np.array_equal(modified_measurement,computed_measurement))
 
     def test_attacked_vectors(self):
@@ -204,11 +204,11 @@ class DriftAttackerTestCase(BasicAttackerTestCase):
         self.assertEqual(self.radar, Radar(x=10,y=10))
         self.assertTrue(np.array_equal(self.attacker.attack_drift,np.array([[0,0,10]]).T))
 
-    def test_listen_measurements_1_step_attack(self):
+    def test_listen_measurement_1_step_attack(self):
         measurement          = np.array([[10,10,10,10,10,10]]).T
         modified_measurement = np.array([[0.,0.,0.,9.54964805,0.57522204,0.49778714]]).T
         self.attacker.t0     = 0
-        computed_measurement = self.attacker.listen_measurements(measurement)
+        computed_measurement = self.attacker.listen_measurement(measurement)
         self.assertTrue(np.allclose(modified_measurement,computed_measurement))
 
     def test_attacked_vectors(self):

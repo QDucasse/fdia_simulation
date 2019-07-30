@@ -116,7 +116,7 @@ class BasicAttacker(object):
         modified_z = z + self.gamma@self.mag_vector
         return modified_z
 
-    def listen_measurements(self,z):
+    def listen_measurement(self,z):
         '''
         Monitors the duration (beginning and end) of the attack.
         Parameters

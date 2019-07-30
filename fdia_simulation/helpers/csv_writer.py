@@ -44,7 +44,6 @@ class CSVWriter(object):
 
 if __name__ == "__main__":
     writer = CSVWriter()
-    print(writer.filename)
     writer.write_row('CA&1Radar','3200')
     writer.write_row('CA&2Radars','5')
     writer.write_row('CV&1Radar','300')

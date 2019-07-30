@@ -5,6 +5,9 @@ Installation
 ------------
 
 I worked on the project through a virtual environment with ``virtualenvwrapper``
+and I highly recommend to do so as well. However, whether or not you are in a
+virtual environment, the installation proceeds as follows:
+
 For downloading and installing the source code of the project:
 
 ::
@@ -17,7 +20,8 @@ Basic use
 ---------
 
 Explanation of the situation (graph + state/model)
-::
+
+.. code-block:: python
     from fdia_simulation.models     import Radar, Track
     from fdia_simulation.filters    import RadarFilterCA
     from fdia_simulation.benchmarks import Benchmark

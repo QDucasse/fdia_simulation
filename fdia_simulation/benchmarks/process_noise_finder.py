@@ -118,7 +118,7 @@ class NoiseFinder1Radar(object):
             # Proof of life
             if (count%10 == 0): print("Ongoing: step n°{0}/430".format(count))
             count += 1
-        print("Ongoing: step n°430/430"
+        print("Ongoing: step n°430/430")
 
     def best_value(self):
         '''

@@ -6,7 +6,7 @@ Created on Tue Jul 30 10:05:34 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models     import Radar, Track
+from fdia_simulation.models     import Radar, FrequencyRadar, Track
 from fdia_simulation.helpers    import CSVWriter
 from fdia_simulation.filters    import (RadarFilterCV, MultipleRadarsFilterCV, MultipleFreqRadarsFilterCV,
                                         RadarFilterCA, MultipleRadarsFilterCA, MultipleFreqRadarsFilterCA,
@@ -36,9 +36,18 @@ FILTERS_2_FRADARS = [MultipleFreqRadarsFilterCV,
 ## Writer
 writer = CSVWriter()
 ## Radars
-radar1 = Radar(x=2000,y=2000)
-radar2 = Radar(x=1000,y=1000)
+## For 1&2 radars same data rate
+radar1 = Radar(x = 500, y = 500)
+radar2 = Radar(x = 1000, y = 1000)
 radars = [radar1, radar2]
+## Different data rates radars
+dt1 = 0.1
+dt2 = 0.4
+fradar1 = FrequencyRadar(x = 500,y = 500,dt = dt1)
+fradar2 = FrequencyRadar(x = 1000, y = 1000, dt = dt2,
+                         r_std = 5., theta_std = 0.005, phi_std = 0.005)
+fradars = [fradar1, fradar2]
+
 ##States
 trajectory = Track()
 states = trajectory.gen_takeoff()
@@ -71,7 +80,7 @@ for filter in FILTERS_2_FRADARS:
     name = filter.__name__[-2:]
     print('=================================================================')
     print('========================== '+ name +'-2 FRadars =========================')
-    noise_finder = NoiseFinder2Radars(radars, states, filter)
+    noise_finder = NoiseFinder2Radars(fradars, states, filter)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
     print(('Best value for '+ name +'-2FRadars:{0}').format(best_value))

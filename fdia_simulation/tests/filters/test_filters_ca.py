@@ -12,7 +12,7 @@ from math                    import sqrt,atan2
 from nose.tools              import raises
 from numpy.linalg            import inv
 from fdia_simulation.models  import Radar, LabeledMeasurement
-from fdia_simulation.filters import RadarFilterCA, MultipleRadarsFilterCA, MultipleFreqRadarsFilterCA
+from fdia_simulation.filters import RadarFilterCA, MultipleRadarsFilterCA, MultiplePeriodRadarsFilterCA
 
 
 # ==============================================================================
@@ -393,13 +393,13 @@ class MultipleRadarsCATestCase(unittest.TestCase):
 # =============== Multiple Radars with different Data Rates ====================
 # ==============================================================================
 
-class MultipleFreqRadarsCATestCase(unittest.TestCase):
+class MultiplePeriodRadarsCATestCase(unittest.TestCase):
     def setUp(self):
         self.radar1 = Radar(x=800,y=800)
         self.radar2 = Radar(x=200,y=200)
         radars = [self.radar1,self.radar2]
         self.q = 10.
-        self.multiplef_ca = MultipleFreqRadarsFilterCA(dim_x = 9, dim_z = 3, q = self.q,
+        self.multiplef_ca = MultiplePeriodRadarsFilterCA(dim_x = 9, dim_z = 3, q = self.q,
                                                       radars = radars,
                                                       x0 = 100, y0 = 100)
 

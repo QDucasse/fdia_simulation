@@ -39,7 +39,7 @@ class NoisySensor(object):
 
     def gen_sensor_data(self,val_list):
         '''
-        Generates data of a noisy sensor with a given frequency.
+        Generates data of a noisy sensor with a given perioduency.
         Parameters
         ---------
         val_list: float iterable
@@ -49,7 +49,7 @@ class NoisySensor(object):
             Total time of the measurements.
 
         time_std: float
-            Standard deviation of the frequency of the measurements.
+            Standard deviation of the perioduency of the measurements.
 
         Returns
         -------
@@ -59,30 +59,30 @@ class NoisySensor(object):
         return [self.sense(val) for val in val_list]
 
 
-class NoisyFrequencySensor(NoisySensor):
-    r'''Implements a noisy sensor with a given frequency of data rate.
+class NoisyPeriodSensor(NoisySensor):
+    r'''Implements a noisy sensor with a given perioduency of data rate.
     Parameters
     ----------
     std_noise: float
         Standard deviation of the measurement noise.
 
-    frequency: float
-        Frequency of the data sampling.
+    perioduency: float
+        Perioduency of the data sampling.
 
     Notes
     -----
-    The format of the data outputed by the NoisyFrequencySensor is no longer the same
+    The format of the data outputed by the NoisyPerioduencySensor is no longer the same
     as NoisySensor. The time of the sampling is now included within the data list.
     '''
-    def __init__(self,std_noise = 1., frequency = 1):
-        if frequency == 0:
-            raise ValueError("frequency can not be equal to 0")
+    def __init__(self,std_noise = 1., period = 1):
+        if perioduency == 0:
+            raise ValueError("perioduency can not be equal to 0")
         super().__init__(std_noise)
-        self.frequency = frequency
+        self.period = period
 
     def gen_sensor_data(self,val_list,t,time_std):
         '''
-        Generates data of a noisy sensor with a given frequency.
+        Generates data of a noisy sensor with a given perioduency.
         Parameters
         ---------
         val_list: float iterable
@@ -92,7 +92,7 @@ class NoisyFrequencySensor(NoisySensor):
             Total time of the measurements.
 
         time_std: float
-            Standard deviation of the frequency of the measurements.
+            Standard deviation of the perioduency of the measurements.
 
         Returns
         -------
@@ -101,12 +101,12 @@ class NoisyFrequencySensor(NoisySensor):
         '''
         # In case of a null time_std
         if time_std == None:
-            time_std = self.frequency / 100
+            time_std = self.perioduency / 100
 
         sensor_data = [] # Output of the function
         dt = 0           # Time as it will be different depending on the sensor
-        for i in range(t*self.frequency):
-            dt    += 1/self.frequency
+        for i in range(t*self.period):
+            dt    += 1/self.period
             t_i   =  dt + randn() * time_std   # Add noise to the time
             val_i =  np.sense(val_list[i])     # Add noise to the values
             sensor_data.append([t_i, val_i])

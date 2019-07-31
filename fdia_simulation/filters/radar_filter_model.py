@@ -5,10 +5,8 @@ Created on Fri Jun 28 14:50:36 2019
 @author: qde
 """
 
-import sympy
 import numpy as np
 from math                              import sqrt, atan2
-from copy                              import deepcopy
 from abc                               import abstractmethod, ABC
 from filterpy.kalman                   import ExtendedKalmanFilter
 from filterpy.common                   import pretty_str

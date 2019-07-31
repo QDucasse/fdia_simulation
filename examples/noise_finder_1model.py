@@ -6,12 +6,12 @@ Created on Tue Jul 30 10:05:34 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models     import Radar, FrequencyRadar, Track
+from fdia_simulation.models     import Radar, PeriodRadar, Track
 from fdia_simulation.helpers    import CSVWriter
-from fdia_simulation.filters    import (RadarFilterCV, MultipleRadarsFilterCV, MultipleFreqRadarsFilterCV,
-                                        RadarFilterCA, MultipleRadarsFilterCA, MultipleFreqRadarsFilterCA,
-                                        RadarFilterCT, MultipleRadarsFilterCT, MultipleFreqRadarsFilterCT,
-                                        RadarFilterTA, MultipleRadarsFilterTA, MultipleFreqRadarsFilterTA)
+from fdia_simulation.filters    import (RadarFilterCV, MultipleRadarsFilterCV, MultiplePeriodRadarsFilterCV,
+                                        RadarFilterCA, MultipleRadarsFilterCA, MultiplePeriodRadarsFilterCA,
+                                        RadarFilterCT, MultipleRadarsFilterCT, MultiplePeriodRadarsFilterCT,
+                                        RadarFilterTA, MultipleRadarsFilterTA, MultiplePeriodRadarsFilterTA)
 from fdia_simulation.benchmarks import NoiseFinder1Radar, NoiseFinder2Radars
 
 # Filters to be tested for 1 radar
@@ -27,10 +27,10 @@ FILTERS_2_RADARS  = [MultipleRadarsFilterCV,
                      MultipleRadarsFilterTA]
 
 # Filters to be tested for 2 radars with different data rates
-FILTERS_2_FRADARS = [MultipleFreqRadarsFilterCV,
-                     MultipleFreqRadarsFilterCA,
-                     MultipleFreqRadarsFilterCT,
-                     MultipleFreqRadarsFilterTA]
+FILTERS_2_FRADARS = [MultiplePeriodRadarsFilterCV,
+                     MultiplePeriodRadarsFilterCA,
+                     MultiplePeriodRadarsFilterCT,
+                     MultiplePeriodRadarsFilterTA]
 
 # Initialization of our components:
 ## Writer
@@ -43,8 +43,8 @@ radars = [radar1, radar2]
 ## Different data rates radars
 dt1 = 0.1
 dt2 = 0.4
-fradar1 = FrequencyRadar(x = 500,y = 500,dt = dt1)
-fradar2 = FrequencyRadar(x = 1000, y = 1000, dt = dt2,
+fradar1 = PeriodRadar(x = 500,y = 500,dt = dt1)
+fradar2 = PeriodRadar(x = 1000, y = 1000, dt = dt2,
                          r_std = 5., theta_std = 0.005, phi_std = 0.005)
 fradars = [fradar1, fradar2]
 

@@ -277,7 +277,7 @@ class LabeledMeasurement(object):
             pretty_str('time', self.time),
             pretty_str('value', self.value)])
 
-class FrequencyRadar(Radar):
+class PeriodRadar(Radar):
     r'''
     Implements a radar with a given data rate (dt).
     Attributes
@@ -371,7 +371,7 @@ if __name__ == "__main__":
     # ==========================================================================
     # ========================== Radars generation =============================
     # Radar 1
-    radar = FrequencyRadar(tag = 0, x=800,y=800)
+    radar = PeriodRadar(tag = 0, x=800,y=800)
     rs, thetas, phis = radar.gen_data(position_data)
     noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
     xs_from_rad, ys_from_rad, zs_from_rad = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
@@ -386,7 +386,7 @@ if __name__ == "__main__":
     print("Measurements radar1:\n{0}\n".format(measurements_info[-25:]))
 
     # Radar 2
-    radar2 = FrequencyRadar(tag = 1, x=1000,y=1000, r_std = 5., theta_std = 0.005, phi_std = 0.005)
+    radar2 = PeriodRadar(tag = 1, x=1000,y=1000, r_std = 5., theta_std = 0.005, phi_std = 0.005)
     rs2, thetas2, phis2 = radar2.gen_data(position_data2)
     noisy_rs2, noisy_thetas2, noisy_phis2 = radar2.sense(rs2, thetas2, phis2)
     xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs2, noisy_thetas2, noisy_phis2)

@@ -6,8 +6,8 @@ Created on Fri Jul 05 10:31:40 2019
 """
 
 import numpy as np
-from math                    import sqrt, atan2, cos, sin
-from copy                    import deepcopy
+from math                    import sqrt, atan2
+# from copy                    import deepcopy
 from scipy.linalg            import block_diag
 from filterpy.kalman         import ExtendedKalmanFilter
 from fdia_simulation.models  import Radar
@@ -106,7 +106,7 @@ class MultipleRadarsFilterModel(RadarFilterModel):
             H = np.concatenate((H,H_part),axis=0)
         return H
 
-class MultipleFreqRadarsFilterModel(MultipleRadarsFilterModel):
+class MultiplePeriodRadarsFilterModel(MultipleRadarsFilterModel):
     r'''Implements a filter model using multiple sensors with different data rates
     and combining them through the measurement function and matrix.
     '''

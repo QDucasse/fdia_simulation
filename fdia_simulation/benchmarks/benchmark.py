@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy                      import deepcopy
 from numpy.linalg              import inv
 from filterpy.kalman           import IMMEstimator
-from fdia_simulation.models    import Radar, FrequencyRadar, Track
+from fdia_simulation.models    import Radar, PeriodRadar, Track
 
 class Benchmark(object):
     r'''Implements a benchmark to create an estimation of a trajectory detected
@@ -27,7 +27,7 @@ class Benchmark(object):
     '''
     def __init__(self,radars,radar_filter,states,attacker = None):
         # Checks if there are multiple radars or simply one
-        if isinstance(radars,(Radar,FrequencyRadar)):
+        if isinstance(radars,(Radar,PeriodRadar)):
             self.radars = [radars]
         else:
             self.radars = radars
@@ -37,9 +37,9 @@ class Benchmark(object):
         xs,ys,zs          = states[:,0], states[:,3], states[:,6]
         self.pos_data     = np.array(list(zip(xs,ys,zs)))
         # Check if the filter is an IMM or not
-        self.is_freq_radar = False
-        if  isinstance(self.radars[0],FrequencyRadar):
-            self.is_freq_radar = True
+        self.is_period_radar = False
+        if  isinstance(self.radars[0],PeriodRadar):
+            self.is_period_radar = True
         self.filter_is_imm = False
         if type(self.radar_filter) == IMMEstimator:
             self.filter_is_imm = True
@@ -92,7 +92,7 @@ class Benchmark(object):
 
             # If the radars do not have different data rates, the measurement
             # vector consists of the concatenation of the different measurements
-            if not self.is_freq_radar:
+            if not self.is_period_radar:
                 self.measured_values = np.concatenate((self.measured_values,current_measured_values),axis=1)
 
             # If the radars have different data rates, the measurement vector
@@ -101,7 +101,7 @@ class Benchmark(object):
                 current_labeled_measurement = radar.compute_measurements(sampled_position_data)
                 self.labeled_values += current_labeled_measurement
 
-        # The labeled measrurements (in case of frequency radars) are sorted by time
+        # The labeled measrurements (in case of perioduency radars) are sorted by time
         self.labeled_values = sorted(self.labeled_values)
 
 
@@ -120,8 +120,8 @@ class Benchmark(object):
             Estimated states of the observed system.
         '''
         if measurements is None:
-            # Default values for FrequencyRadars
-            if self.is_freq_radar:
+            # Default values for PeriodRadars
+            if self.is_period_radar:
                 measurements = self.labeled_values
             # Default values for radars with the same data rates
             else:
@@ -146,7 +146,7 @@ class Benchmark(object):
             est_states.append(current_state)
             # print('Estimate states vector:\n{0}\n'.format(est_states))
             if with_nees:
-                if not self.is_freq_radar:
+                if not self.is_period_radar:
                     # The corresponding real state to the estimated one
                     state_id = int(self.radars[0].step * i)
                 else:

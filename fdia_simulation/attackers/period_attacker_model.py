@@ -7,14 +7,10 @@ Created on Wed Jul 31 14:07:21 2019
 
 import warnings
 import numpy as np
-from copy                      import deepcopy
-from numpy.random              import randn
-from fdia_simulation.models    import Radar, LabeledMeasurement
-from fdia_simulation.attackers import BasicAttacker,BruteForceAttacker,DriftAttacker
+from fdia_simulation.models    import LabeledMeasurement
+from fdia_simulation.attackers import Attacker,BruteForceAttacker,DriftAttacker
 
-
-
-class BasicFreqAttacker(BasicAttacker):
+class PeriodAttacker(Attacker):
     '''
     Implements a basic attacker model.
     Parameters
@@ -112,28 +108,3 @@ class BasicFreqAttacker(BasicAttacker):
         self.current_time += 1
         modified_measurement = LabeledMeasurement(time = time, tag = tag, value = value)
         return modified_measurement
-
-
-class BruteForceFreqAttacker(BasicFreqAttacker,BruteForceAttacker):
-    def __init__(self,mag = 1e6,*args,**kwargs):
-        BasicFreqAttacker.__init__(self,*args,**kwargs)
-        self.mag_vector = self.mag_vector*mag
-
-    def listen_measurement(self,measurement):
-        return BasicFreqAttacker.listen_measurement(self,measurement)
-
-    def attack_measurements(self,measurement):
-        return BruteForceAttacker.attack_measurements(self,measurement)
-
-class DriftFreqAttacker(BasicFreqAttacker,DriftAttacker):
-    def __init__(self, attack_drift = None, *args, **kwargs):
-        if attack_drift is None:
-            attack_drift = np.array([[0,0,10]]).T
-        self.attack_drift = attack_drift
-        BasicFreqAttacker.__init__(self,*args,**kwargs)
-
-    def listen_measurement(self,measurement):
-        return BasicFreqAttacker.listen_measurement(self,measurement)
-
-    def attack_measurements(self,measurement):
-        return DriftAttacker.attack_measurements(self,measurement)

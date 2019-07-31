@@ -9,10 +9,10 @@ import unittest
 import numpy as np
 from nose.tools                import raises
 from filterpy.kalman           import KalmanFilter,ExtendedKalmanFilter
-from fdia_simulation.models    import Radar, FrequencyRadar
-from fdia_simulation.attackers import BasicAttacker, BruteForceAttacker, DriftAttacker
+from fdia_simulation.models    import Radar, PeriodRadar
+from fdia_simulation.attackers import Attacker, BruteForceAttacker, DriftAttacker
 
-class BasicAttackerTestCase(unittest.TestCase):
+class AttackerTestCase(unittest.TestCase):
     def setUp(self):
         # Simulated filter for 2 radars (2*3 measurements)
         self.filter = ExtendedKalmanFilter(dim_x = 9, dim_z = 6)
@@ -28,7 +28,7 @@ class BasicAttackerTestCase(unittest.TestCase):
         self.t0 = 10
         self.time = 50
         self.radar = Radar(x=10,y=10)
-        self.attacker = BasicAttacker(filter = self.filter, radar = self.radar,
+        self.attacker = Attacker(filter = self.filter, radar = self.radar,
                                       gamma = self.gamma,mag_vector = self.mag_vector,
                                       t0 = self.t0, time = self.time)
 
@@ -44,7 +44,7 @@ class BasicAttackerTestCase(unittest.TestCase):
     def test_initialization_wrong_mag_vector(self):
         with self.assertRaises(ValueError):
             mag_vector = np.array([[0,0,0,-10]])
-            att  = BasicAttacker(filter = self.filter, radar = self.radar,
+            att  = Attacker(filter = self.filter, radar = self.radar,
                                  gamma = self.gamma,mag_vector = mag_vector,
                                  t0 = self.t0, time = self.time)
 
@@ -55,14 +55,14 @@ class BasicAttackerTestCase(unittest.TestCase):
                                [0, 0, 0, 0],
                                [0, 0, 0, 0],
                                [0, 0, 0, 1]])
-            att  =  BasicAttacker(filter = self.filter, radar = self.radar,
+            att  =  Attacker(filter = self.filter, radar = self.radar,
                                   gamma = gamma, mag_vector = self.mag_vector,
                                   t0 = self.t0, time = self.time)
 
     def test_initialization_attack_no_effect(self):
         with self.assertWarns(Warning):
             mag_vector = np.array([[10, 100, 50, 0, 0, 0]]).T
-            att  =  BasicAttacker(filter = self.filter, radar = self.radar,
+            att  =  Attacker(filter = self.filter, radar = self.radar,
                                           gamma = self.gamma, mag_vector = mag_vector,
                                           t0 = self.t0, time = self.time)
 
@@ -78,7 +78,7 @@ class BasicAttackerTestCase(unittest.TestCase):
         radar_pos = 0
 
         #Generation
-        att = BasicAttacker(filter = self.filter, radar_pos = radar_pos,
+        att = Attacker(filter = self.filter, radar_pos = radar_pos,
                             radar = self.radar,t0 = self.t0, time = self.time)
         computed_gamma      = att.gamma
         computed_mag_vector = att.mag_vector
@@ -100,7 +100,7 @@ class BasicAttackerTestCase(unittest.TestCase):
         radar_pos = 1
 
         #Generation
-        att = BasicAttacker(filter = self.filter, radar_pos = radar_pos,
+        att = Attacker(filter = self.filter, radar_pos = radar_pos,
                             radar = self.radar, t0 = self.t0, time = self.time)
         computed_gamma      = att.gamma
         computed_mag_vector = att.mag_vector
@@ -159,9 +159,9 @@ class BasicAttackerTestCase(unittest.TestCase):
         comparison_list = zip(attacked_meas,  modified_measurements[10:60])
         self.assertTrue(all([np.allclose(meas, mod_meas) for meas, mod_meas in comparison_list]))
 
-class BruteForceAttackerTestCase(BasicAttackerTestCase):
+class BruteForceAttackerTestCase(AttackerTestCase):
     def setUp(self):
-        BasicAttackerTestCase.setUp(self)
+        AttackerTestCase.setUp(self)
         self.mag = 1e6
         self.attacker = BruteForceAttacker(filter = self.filter, mag = self.mag,
                                            gamma = self.gamma,mag_vector = self.mag_vector,
@@ -183,10 +183,10 @@ class BruteForceAttackerTestCase(BasicAttackerTestCase):
     def test_attacked_vectors(self):
         pass
 
-class DriftAttackerTestCase(BasicAttackerTestCase):
+class DriftAttackerTestCase(AttackerTestCase):
     def setUp(self):
         self.radar_position = 1
-        BasicAttackerTestCase.setUp(self)
+        AttackerTestCase.setUp(self)
         self.attacker = DriftAttacker(filter = self.filter,
                                       radar = self.radar, radar_pos = self.radar_position,
                                       mag_vector = self.mag_vector,

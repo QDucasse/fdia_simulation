@@ -14,7 +14,7 @@ from nose.tools              import raises
 from numpy.linalg            import inv
 from scipy.linalg            import block_diag
 from fdia_simulation.models  import Radar, LabeledMeasurement
-from fdia_simulation.filters import RadarFilterCT, MultipleRadarsFilterCT, MultipleFreqRadarsFilterCT
+from fdia_simulation.filters import RadarFilterCT, MultipleRadarsFilterCT, MultiplePeriodRadarsFilterCT
 
 
 class RadarFilterCTTestCase(unittest.TestCase):
@@ -411,13 +411,13 @@ class MultipleRadarsCTTestCase(unittest.TestCase):
         self.assertTrue(np.allclose(filt.P,new_P))
         self.assertTrue(np.allclose(filt.x,new_X))
 
-class MultipleFreqRadarsCTTestCase(unittest.TestCase):
+class MultiplePeriodRadarsCTTestCase(unittest.TestCase):
     def setUp(self):
         self.radar1 = Radar(x=800,y=800)
         self.radar2 = Radar(x=200,y=200)
         radars = [self.radar1,self.radar2]
         self.q = 10.
-        self.multiplef_ct = MultipleFreqRadarsFilterCT(dim_x = 9, dim_z = 3, q = self.q,
+        self.multiplef_ct = MultiplePeriodRadarsFilterCT(dim_x = 9, dim_z = 3, q = self.q,
                                                       radars = radars,
                                                       x0 = 100, y0 = 100)
 

@@ -5,14 +5,10 @@ Created on Tue Jul 02 09:17:23 2019
 @author: qde
 """
 
-import sympy
 import numpy as np
-from sympy.abc               import x, y, z
-from sympy                   import symbols, Matrix
 from math                    import sqrt, atan2, exp
 from scipy.linalg            import block_diag
-from copy                    import deepcopy
-from fdia_simulation.filters import RadarFilterModel, MultipleRadarsFilterModel, MultipleFreqRadarsFilterModel
+from fdia_simulation.filters import RadarFilterModel, MultipleRadarsFilterModel, MultiplePeriodRadarsFilterModel
 
 class RadarFilterTA(RadarFilterModel):
     r'''Implements a Kalman Filter state estimator for an aircraft-detecting
@@ -77,9 +73,9 @@ class MultipleRadarsFilterTA(RadarFilterTA,MultipleRadarsFilterModel):
         return MultipleRadarsFilterModel.HJacob(self,X)
 
 
-class MultipleFreqRadarsFilterTA(RadarFilterTA,MultipleFreqRadarsFilterModel):
+class MultiplePeriodRadarsFilterTA(RadarFilterTA,MultiplePeriodRadarsFilterModel):
     def __init__(self,*args,**kwargs):
-        MultipleFreqRadarsFilterModel.__init__(self,*args,**kwargs)
+        MultiplePeriodRadarsFilterModel.__init__(self,*args,**kwargs)
 
     def compute_F(self,X):
         return RadarFilterTA.compute_F(self,X)
@@ -88,16 +84,19 @@ class MultipleFreqRadarsFilterTA(RadarFilterTA,MultipleFreqRadarsFilterModel):
         return RadarFilterTA.compute_Q(self,q)
 
     def hx(self,X,tag):
-        return MultipleFreqRadarsFilterModel.hx(self,X,tag)
+        return MultiplePeriodRadarsFilterModel.hx(self,X,tag)
 
     def HJacob(self,X,tag):
-        return MultipleFreqRadarsFilterModel.HJacob(self,X,tag)
+        return MultiplePeriodRadarsFilterModel.HJacob(self,X,tag)
 
     def update(self,labeled_z):
-        MultipleFreqRadarsFilterModel.update(self,labeled_z)
+        MultiplePeriodRadarsFilterModel.update(self,labeled_z)
 
 
 if __name__ == "__main__":
+    import sympy
+    from sympy.abc               import x, y, z
+    from sympy                   import symbols, Matrix
     # Jacobian matrices determination using sympy
     vx,vy,vz,ax,ay,az = symbols('v_x, v_y, v_z, a_x, a_y, a_z')
     # =============== Constant Velocity/acceleration model =====================

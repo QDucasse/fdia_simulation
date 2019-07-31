@@ -6,7 +6,6 @@ Created on Mon Jul 01 13:47:22 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d    import Axes3D
 from fdia_simulation.models  import ManeuveredAircraft
 from fdia_simulation.helpers import plot_track
 

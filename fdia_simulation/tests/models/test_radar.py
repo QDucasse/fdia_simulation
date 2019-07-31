@@ -8,7 +8,7 @@ Created on Mon Jun 24 10:20:16 2019
 import unittest
 import numpy as np
 from math                   import sqrt,atan2, isclose
-from fdia_simulation.models import Radar, FrequencyRadar
+from fdia_simulation.models import Radar, PeriodRadar
 
 class RadarTestCase(unittest.TestCase):
     def setUp(self):
@@ -105,9 +105,9 @@ class RadarTestCase(unittest.TestCase):
     #     self.assertTrue(isclose(np.std(noisy_rs),self.radar.r_std))
 
 
-class FrequencyRadarTestCase(RadarTestCase):
+class PeriodRadarTestCase(RadarTestCase):
     def setUp(self):
-        self.radar = FrequencyRadar(x = 200, y = 200, dt = 0.1,
+        self.radar = PeriodRadar(x = 200, y = 200, dt = 0.1,
                                     r_std = 1.,
                                     theta_std = 0.001,
                                     phi_std = 0.001,

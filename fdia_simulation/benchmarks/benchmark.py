@@ -135,8 +135,7 @@ class Benchmark(object):
         for i,measurement in enumerate(measurements):
             # Attack_phase
             if not(self.attacker is None):
-                self.attacker.listen_measurement(measurement)
-
+                measurement = self.attacker.listen_measurement(measurement)
             # Filter cycle
             self.radar_filter.predict()
             self.radar_filter.update(measurement)

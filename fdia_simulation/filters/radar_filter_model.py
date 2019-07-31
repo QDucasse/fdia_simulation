@@ -13,7 +13,6 @@ from abc                               import abstractmethod, ABC
 from filterpy.kalman                   import ExtendedKalmanFilter
 from filterpy.common                   import pretty_str
 from fdia_simulation.models            import Radar
-from fdia_simulation.anomaly_detectors import ChiSquareDetector
 
 
 class RadarFilterModel(ExtendedKalmanFilter,ABC):
@@ -194,6 +193,7 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
         # Anomaly detection using the specified detector
         if not(self.detector is None):
             res_detection = self.detector.review_measurement(z,self)
+            print(res_detection)
             if not(res_detection):
                 z = None
         # If res_detection = True => No problem in the measurement

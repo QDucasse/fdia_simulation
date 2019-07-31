@@ -9,12 +9,12 @@ from __future__ import absolute_import
 
 __all__ = ["test_benchmark_1radar",
            "test_benchmark_2radars",
-           "test_benchmark_2freq_radars",
+           "test_benchmark_2period_radars",
            "test_noise_finder_1radar",
            "test_noise_finder_2radars"]
 
 from .test_benchmark_1radar       import *
 from .test_benchmark_2radars      import *
-from .test_benchmark_2freq_radars import *
+from .test_benchmark_2period_radars import *
 from .test_noise_finder_1radar    import *
 from .test_noise_finder_2radars   import *

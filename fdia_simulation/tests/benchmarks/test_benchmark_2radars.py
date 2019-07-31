@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 from abc                              import ABC
 from filterpy.kalman                  import IMMEstimator
-from fdia_simulation.models           import Radar, FrequencyRadar
+from fdia_simulation.models           import Radar, PeriodRadar
 from fdia_simulation.filters          import MultipleRadarsFilterCA,MultipleRadarsFilterCV,MultipleRadarsFilterCT,MultipleRadarsFilterTA
 from fdia_simulation.benchmarks       import Benchmark
 from fdia_simulation.tests.benchmarks import Benchmark1RadarTestEnv

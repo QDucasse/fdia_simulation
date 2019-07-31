@@ -9,10 +9,14 @@ from __future__ import absolute_import
 
 __all__ = ["mo_attacker",
            "yang_attacker",
-           "basic_attacker",
-           "basic_freq_attacker"]
+           "attacker_model",
+           "attacker_types",
+           "period_attacker_model",
+           "period_attacker_types"]
 
-from .mo_attacker         import *
-from .yang_attacker       import *
-from .basic_attacker      import *
-from .basic_freq_attacker import *
+from .mo_attacker           import *
+from .yang_attacker         import *
+from .attacker_model        import *
+from .attacker_types        import *
+from .period_attacker_model import *
+from .period_attacker_types import *

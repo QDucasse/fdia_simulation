@@ -7,6 +7,7 @@ Created on Wed Jul 24 09:18:23 2019
 
 import warnings
 import numpy as np
+from copy                   import deepcopy
 from numpy.random           import randn
 from fdia_simulation.models import Radar
 
@@ -49,11 +50,12 @@ class BasicAttacker(object):
     current_time: int
         Progression of the attack (from t0 to time)
     '''
-    def __init__(self, filter, t0, time,
+    def __init__(self, filter, t0, time, radar,
                  gamma = None, mag_vector = None, radar_pos = None):
         # Store the filter and its dimension
         self.filter = filter
         self.dim_z  = filter.dim_z
+        self.radar  = radar
         # print('dim_z = {0}'.format(dim_z))
 
         # If gamma is not specified but the attacked radar position (in the
@@ -78,7 +80,7 @@ class BasicAttacker(object):
 
         if np.shape(mag_vector) != (self.dim_z,1):
             msg = """The magnitude vector should have the following dimensions:
-                     (1,dim_z) with dim_z = {0} here""".format(self.dim_z)
+                     (dim_z,1) with dim_z = {0} here""".format(self.dim_z)
             raise ValueError(msg)
 
 
@@ -96,7 +98,7 @@ class BasicAttacker(object):
         self.time         = time
         self.current_time = 0
 
-    def attack_measurements(self, z):
+    def attack_measurements(self, measurement):
         '''
         Performs the attack on a given measurement. It simply consists of adding
         to that measurement the quantity gamma@mag_vector. This means you are
@@ -104,7 +106,7 @@ class BasicAttacker(object):
         and with what magnitude in the magnitude vector.
         Parameters
         ----------
-        z: float numpy array (dim_z,1)
+        measurement: float numpy array
             Measurement as outputed by the radar under attack.
 
         Returns
@@ -113,22 +115,22 @@ class BasicAttacker(object):
             Modified measurement consisting of:
             Initial measurement + Gamma * Magnitude vector
         '''
-        modified_z = z + self.gamma@self.mag_vector
-        return modified_z
+        measurement = np.reshape(measurement,(-(self.dim_z-1),1))
+        modified_measurement = measurement + self.gamma@self.mag_vector
+        return modified_measurement
 
-    def listen_measurement(self,z):
+    def listen_measurement(self,measurement):
         '''
         Monitors the duration (beginning and end) of the attack.
         Parameters
         ----------
-        z: float numpy array
+        measurement: float numpy array
             Measurement
         '''
-        measurement       = z
         beginning_reached = self.t0 <= self.current_time
         end_reached       = (self.current_time - self.t0) >= self.time
         if beginning_reached and not(end_reached):
-            measurement = self.attack_measurements(z)
+            measurement = self.attack_measurements(measurement)
         self.current_time += 1
         return measurement
 
@@ -165,25 +167,24 @@ class DriftAttacker(BasicAttacker):
     radar: Radar object
         Attacked radar.
     '''
-    def __init__(self, radar, radar_pos, attack_drift = None, *args, **kwargs):
+    def __init__(self, radar_pos, attack_drift = None, *args, **kwargs):
         if attack_drift is None:
             attack_drift = np.array([[0,0,10]]).T
         self.attack_drift = attack_drift
-        self.radar        = radar
         self.radar_pos    = radar_pos
         BasicAttacker.__init__(self,radar_pos = radar_pos,*args,**kwargs)
 
-    def attack_measurements(self, z):
+    def attack_measurements(self, measurement):
         '''
         Modifies the measurement following these three steps:
-            - Computation of the computed position from the radar's measurements
+            - Computation of the position from the radar's measurements
             - Application of the attack_drift on the position.
             - Reconversion of the modified position in radar values.
         '''
         # Conversion of the radar values in the corresponding position
-        r     = z[self.radar_pos*3    ,:]
-        theta = z[self.radar_pos*3 + 1,:]
-        phi   = z[self.radar_pos*3 + 2,:]
+        r     = measurement[self.radar_pos*3    ,:]
+        theta = measurement[self.radar_pos*3 + 1,:]
+        phi   = measurement[self.radar_pos*3 + 2,:]
         x,y,z = self.radar.gen_position_vals(r,theta,phi)
         position = np.reshape(np.array([[x,y,z]]),(-2,1))
 
@@ -195,13 +196,9 @@ class DriftAttacker(BasicAttacker):
 
         # Recomputing the radar values
         mod_r,mod_theta,mod_phi = self.radar.gen_radar_values(mod_x,mod_y,mod_z)
-        modified_z = np.zeros((self.dim_z,1))
-        modified_z[self.radar_pos*3    ,:] = mod_r
-        modified_z[self.radar_pos*3 + 1,:] = mod_theta
-        modified_z[self.radar_pos*3 + 2,:] = mod_phi
+        modified_measurement = measurement
+        modified_measurement[self.radar_pos*3    ,:] = mod_r
+        modified_measurement[self.radar_pos*3 + 1,:] = mod_theta
+        modified_measurement[self.radar_pos*3 + 2,:] = mod_phi
 
-        return modified_z
-
-
-if __name__ == "__main__":
-    unittest.main()
+        return modified_measurement

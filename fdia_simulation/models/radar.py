@@ -264,6 +264,12 @@ class LabeledMeasurement(object):
     def __lt__(self,other):
         return (self.time < other.time)
 
+    def __eq__(self,other):
+        eq_time  = (self.time == other.time)
+        eq_tag   = (self.tag  == other.tag)
+        eq_value = np.array_equal(self.value,other.value)
+        return (eq_time and eq_tag and eq_value)
+
     def __repr__(self):
         return '\n'.join([
             'LabeledMeasurement object',

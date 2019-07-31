@@ -6,12 +6,13 @@ Created on Fri Jun 28 09:10:02 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from pprint                          import pprint
-from scipy.stats                     import chi2
-from numpy.linalg                    import inv
-from numpy.random                    import randn
-from filterpy.common                 import kinematic_kf
-from fdia_simulation.helpers         import plot_measurements
+from pprint                            import pprint
+from scipy.stats                       import chi2
+from numpy.linalg                      import inv
+from numpy.random                      import randn
+from filterpy.common                   import kinematic_kf
+from fdia_simulation.helpers           import plot_measurements
+from fdia_simulation.filters           import RadarFilterModel
 from fdia_simulation.anomaly_detectors import AnomalyDetector
 
 
@@ -47,10 +48,9 @@ class ChiSquareDetector(AnomalyDetector):
         The returned boolean is also added to the instance variable
         comparison_results.
         '''
-        dim_z = np.shape(kf.R)[0]
+        dim_z = kf.dim_z
 
         #! TODO: Raise error if wrong dimension
-        from fdia_simulation.filters.radar_filter_model import RadarFilterModel
         if isinstance(kf,RadarFilterModel):
             H = kf.HJacob(kf.x)
         else:
@@ -61,7 +61,7 @@ class ChiSquareDetector(AnomalyDetector):
         PHT = kf.P@H.T                        # Intermediate variable: P*H*T
         S   = H@PHT + kf.R                    # Innovation covariance: H*P*HT + R
         K   = PHT@inv(S)                      # Kalman gain:           P*HT*inv(S)
-        x   = kf.x + K@y                   # New state:             x + Ky
+        x   = kf.x + K@y                      # New state:             x + Ky
 
         # Threshold calculated by reversing the chi-square table for 0.95 (by default)
         test_quantity = y.T @ inv(S) @ y

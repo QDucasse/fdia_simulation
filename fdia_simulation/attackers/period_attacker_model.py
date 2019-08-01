@@ -104,6 +104,7 @@ class PeriodAttacker(Attacker):
         end_reached       = (self.current_time - self.t0) >= self.time
         in_attack         = beginning_reached and not(end_reached)
         if in_attack and (tag == self.radar_tag):
+            value = np.reshape(value,(-2,1))
             value = self.attack_measurements(value)
         self.current_time += 1
         modified_measurement = LabeledMeasurement(time = time, tag = tag, value = value)

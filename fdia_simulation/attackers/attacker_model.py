@@ -112,7 +112,6 @@ class Attacker(object):
             Modified measurement consisting of:
             Initial measurement + Gamma * Magnitude vector
         '''
-        measurement = np.reshape(measurement,(-(self.dim_z-1),1))
         modified_measurement = measurement + self.gamma@self.mag_vector
         return modified_measurement
 
@@ -127,6 +126,7 @@ class Attacker(object):
         beginning_reached = self.t0 <= self.current_time
         end_reached       = (self.current_time - self.t0) >= self.time
         if beginning_reached and not(end_reached):
+            measurement = np.reshape(measurement,(-(self.dim_z-1),1))
             measurement = self.attack_measurements(measurement)
         self.current_time += 1
         return measurement

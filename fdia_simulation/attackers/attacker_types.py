@@ -26,8 +26,8 @@ class BruteForceAttacker(Attacker):
         Attacker.__init__(self,*args,**kwargs)
         self.mag_vector = self.mag_vector*mag
 
-    def attack_measurements(self, z):
-        return Attacker.attack_measurements(self,z)
+    def attack_measurements(self, measurement):
+        return Attacker.attack_measurements(self,measurement)
 
 class DriftAttacker(Attacker):
     '''

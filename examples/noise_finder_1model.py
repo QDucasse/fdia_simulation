@@ -37,20 +37,20 @@ FILTERS_2_FRADARS = [MultiplePeriodRadarsFilterCV,
 writer = CSVWriter()
 ## Radars
 ## For 1&2 radars same data rate
-radar1 = Radar(x = 500, y = 500)
-radar2 = Radar(x = 1000, y = 1000)
+radar1 = Radar(x = -6000, y = 10000)
+radar2 = Radar(x = 1000, y = 8000)
 radars = [radar1, radar2]
 ## Different data rates radars
 dt1 = 0.1
 dt2 = 0.4
-fradar1 = PeriodRadar(x = 500,y = 500,dt = dt1)
-fradar2 = PeriodRadar(x = 1000, y = 1000, dt = dt2,
+fradar1 = PeriodRadar(x = -6000,y = 10000,dt = dt1)
+fradar2 = PeriodRadar(x = 1000, y = 8000, dt = dt2,
                          r_std = 5., theta_std = 0.005, phi_std = 0.005)
 fradars = [fradar1, fradar2]
 
 ##States
 trajectory = Track()
-states = trajectory.gen_takeoff()
+states = trajectory.gen_landing()
 x0=states[0,0]
 y0=states[0,3]
 z0=states[0,6]

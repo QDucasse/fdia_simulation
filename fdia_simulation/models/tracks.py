@@ -6,25 +6,25 @@ Created on Mon Jul 01 13:47:22 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from fdia_simulation.models  import ManeuveredAircraft
+from fdia_simulation.models  import ManeuveredAirplane
 from fdia_simulation.helpers import plot_track
 
 class Track(object):
     r'''Implements an airplane trajectory following several modes.
     Parameters
     ----------
-    aircraft: ManeuveredAircraft
+    airplane: ManeuveredAirplane
         The model airplane of the trajectory.
     '''
     DT_TRACK = 0.01
 
-    def __init__(self,aircraft = None, dt = None ):
+    def __init__(self,airplane = None, dt = None ):
         if dt is None:
             dt = self.DT_TRACK
 
-        if aircraft is None:
-            aircraft = ManeuveredAircraft(dt = dt)
-        self.aircraft = aircraft
+        if airplane is None:
+            airplane = ManeuveredAirplane(dt = dt)
+        self.airplane = airplane
 
     def initial_position(self,states):
         '''
@@ -64,24 +64,24 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.vel = vel
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.vel = vel
         if ax == 'y':
-            self.aircraft.headz = 0
+            self.airplane.headz = 0
 
         elif ax == 'x':
-            self.aircraft.headz = 90
+            self.airplane.headz = 90
 
         else:
             raise ValueError('Axis must be either x or y')
 
-        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+        t = int(1/self.airplane.dt * t) # Consideration of the time unit
 
         states = []
         for _ in range(t):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -107,35 +107,35 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.headz = -ang
-        self.aircraft.vel = vel
-        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.headz = -ang
+        self.airplane.vel = vel
+        t = int(1/self.airplane.dt * t) # Consideration of the time unit
         nb_steps = t//5 # Five stages maneuver each consisting of nb_steps steps
         states = []
         # First stage: Straight line
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Second stage: Constant turn of ang degrees
-        self.aircraft.change_command("headz", ang, nb_steps)
+        self.airplane.change_command("headz", ang, nb_steps)
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Third stage: Straight line
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Fourth stage: Constant turn of -ang degrees
-        self.aircraft.change_command("headz", -ang, nb_steps)
+        self.airplane.change_command("headz", -ang, nb_steps)
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Fifth stage: Straight line
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -172,26 +172,26 @@ class Track(object):
         The default values are made so that once the 25 first steps of constant
         velocity have been processed, a phase of 10 steps launches a 10g acceleration.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.vel = vel
-        t = int(1/self.aircraft.dt * t)         # Consideration of the time unit
-        t_acc = int(1/self.aircraft.dt * t_acc) # Consideration of the time unit
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.vel = vel
+        t = int(1/self.airplane.dt * t)         # Consideration of the time unit
+        t_acc = int(1/self.airplane.dt * t_acc) # Consideration of the time unit
         nb_steps = (t - t_acc)//2
         states = []
         # First phase: Constant velocity for nb_steps steps
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Second phase: Acceleration for t_acc steps
-        self.aircraft.change_command("vel", end_vel, t_acc)
+        self.airplane.change_command("vel", end_vel, t_acc)
         for _ in range(t):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Third phase: Constant velocity for nb_steps steps
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -217,28 +217,28 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.vel = vel
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.vel = vel
         states = []
-        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+        t = int(1/self.airplane.dt * t) # Consideration of the time unit
         nb_steps = t//3
         # First phase: Steady mode
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Second phase: Steady mode
-        self.aircraft.change_command("headx", -ang, 5)
-        self.aircraft.change_command("vel", 170, 5)
+        self.airplane.change_command("headx", -ang, 5)
+        self.airplane.change_command("vel", 170, 5)
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Third phase: Recovery
-        self.aircraft.change_command("headx", ang, 5)
-        self.aircraft.change_command("vel", 100, 5)
+        self.airplane.change_command("headx", ang, 5)
+        self.airplane.change_command("vel", 100, 5)
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -270,26 +270,26 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.vel = vel
-        self.aircraft.headz = 50
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.vel = vel
+        self.airplane.headz = 50
         states = []
-        t = int(1/self.aircraft.dt * t)           # Consideration of the time unit
-        t_turn = int(1/self.aircraft.dt * t_turn) # Consideration of the time unit
+        t = int(1/self.airplane.dt * t)           # Consideration of the time unit
+        t_turn = int(1/self.airplane.dt * t_turn) # Consideration of the time unit
         nb_steps = t//2
         # First phase: Steady mode.
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
         # Second phase: 1g turn.
-        self.aircraft.change_command("headz", ang, t_turn)
+        self.airplane.change_command("headz", ang, t_turn)
         for _ in range(t_turn):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Third phase: Constant velocity.
         for _ in range(nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -342,36 +342,36 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.headz = 50
-        self.aircraft.vel = vel
-        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.headz = 50
+        self.airplane.vel = vel
+        t = int(1/self.airplane.dt * t) # Consideration of the time unit
         nb_steps = t//12
         states = []
 
         # Constant velocity (3)
         for _ in range(3*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Constant turn (2) = 70° gauche
-        self.aircraft.change_command("headz", 50, 2*nb_steps)
+        self.airplane.change_command("headz", 50, 2*nb_steps)
         for _ in range(2*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Constant velocity (2)
         for _ in range(2*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
         # Constant turn (3) = 160/170°
-        self.aircraft.change_command("headz", -140, 3*nb_steps)
+        self.airplane.change_command("headz", -140, 3*nb_steps)
         for _ in range(3*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Thrust acceleration (2)
-        self.aircraft.change_command("vel", 300, 2*nb_steps)
+        self.airplane.change_command("vel", 300, 2*nb_steps)
         for _ in range(2*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -394,26 +394,26 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.headz = 50
-        self.aircraft.vel = vel
-        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.headz = 50
+        self.airplane.vel = vel
+        t = int(1/self.airplane.dt * t) # Consideration of the time unit
         nb_steps = t//12
         states = []
 
         # Constant velocity (2sec)
         for _ in range(2*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
         # Constant turn (8sec) = 360°
-        self.aircraft.change_command("headz",360,8*nb_steps)
+        self.airplane.change_command("headz",360,8*nb_steps)
         for _ in range(8*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
         # Thrust acceleration (2sec)
-        self.aircraft.change_command("vel",300,2*nb_steps)
+        self.airplane.change_command("vel",300,2*nb_steps)
         for _ in range(2*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -436,27 +436,27 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.headz = 50
-        self.aircraft.vel = vel
-        t = int(1/self.aircraft.dt * t) # Consideration of the time unit
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.headz = 50
+        self.airplane.vel = vel
+        t = int(1/self.airplane.dt * t) # Consideration of the time unit
         nb_steps = t//12
         states = []
 
         # Constant velocity (3sec)
         for _ in range(3*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         # Constant turn (6sec) = 170°
-        self.aircraft.change_command("headz", -170,6*nb_steps)
+        self.airplane.change_command("headz", -170,6*nb_steps)
         for _ in range(3*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
         # Thrust acceleration (2sec)
-        self.aircraft.change_command("vel",300,3*nb_steps)
+        self.airplane.change_command("vel",300,3*nb_steps)
         for _ in range(3*nb_steps):
-            states.append(self.aircraft.update())
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -474,33 +474,33 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.headz = 50
-        self.aircraft.vel = 0
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.headz = 50
+        self.airplane.vel = 0
         states = []
-        self.aircraft.change_command("vel", 80, int(1/self.aircraft.dt*20))
-        for _ in range(int(1/self.aircraft.dt*20)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("vel", 80, int(1/self.airplane.dt*20))
+        for _ in range(int(1/self.airplane.dt*20)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("vel", 200, int(1/self.aircraft.dt*100))
-        self.aircraft.change_command("headx", 30, int(1/self.aircraft.dt*5))
-        for _ in range(int(1/self.aircraft.dt*5)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("vel", 200, int(1/self.airplane.dt*100))
+        self.airplane.change_command("headx", 30, int(1/self.airplane.dt*5))
+        for _ in range(int(1/self.airplane.dt*5)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
-        for _ in range(int(1/self.aircraft.dt*20)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("headz", 70, int(1/self.airplane.dt*7))
+        for _ in range(int(1/self.airplane.dt*20)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
-        for _ in range(int(1/self.aircraft.dt*30)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("headz", 70, int(1/self.airplane.dt*7))
+        for _ in range(int(1/self.airplane.dt*30)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
-        self.aircraft.change_command("headx", -30, int(1/self.aircraft.dt*7))
-        for _ in range(int(1/self.aircraft.dt*30)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("headz", 70, int(1/self.airplane.dt*7))
+        self.airplane.change_command("headx", -30, int(1/self.airplane.dt*7))
+        for _ in range(int(1/self.airplane.dt*30)):
+            states.append(self.airplane.update())
 
         return np.array(states)
 
@@ -517,29 +517,29 @@ class Track(object):
         xs, ys, zs: float iterables
             Positions generated along the three axis.
         '''
-        self.aircraft.x   = x0
-        self.aircraft.y   = y0
-        self.aircraft.z   = z0
-        self.aircraft.headz = 50
-        self.aircraft.vel = 300
+        self.airplane.x   = x0
+        self.airplane.y   = y0
+        self.airplane.z   = z0
+        self.airplane.headz = 50
+        self.airplane.vel = 300
         states = []
 
-        for _ in range(int(1/self.aircraft.dt*20)):
-            states.append(self.aircraft.update())
+        for _ in range(int(1/self.airplane.dt*20)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
-        self.aircraft.change_command("headx", -30, int(1/self.aircraft.dt*7))
-        for _ in range(int(1/self.aircraft.dt*30)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("headz", 70, int(1/self.airplane.dt*7))
+        self.airplane.change_command("headx", -30, int(1/self.airplane.dt*7))
+        for _ in range(int(1/self.airplane.dt*30)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("headz", 70, int(1/self.aircraft.dt*7))
-        for _ in range(int(1/self.aircraft.dt*25)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("headz", 70, int(1/self.airplane.dt*7))
+        for _ in range(int(1/self.airplane.dt*25)):
+            states.append(self.airplane.update())
 
-        self.aircraft.change_command("headx", 30, int(1/self.aircraft.dt*7))
-        self.aircraft.change_command("vel",0, int(1/self.aircraft.dt*20))
-        for _ in range(int(1/self.aircraft.dt*20)):
-            states.append(self.aircraft.update())
+        self.airplane.change_command("headx", 30, int(1/self.airplane.dt*7))
+        self.airplane.change_command("vel",0, int(1/self.airplane.dt*20))
+        for _ in range(int(1/self.airplane.dt*20)):
+            states.append(self.airplane.update())
 
         return np.array(states)
 

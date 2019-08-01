@@ -7,7 +7,7 @@ Created on Fri Jun 14 15:14:47 2019
 
 import unittest
 from nose.tools             import raises
-from fdia_simulation.models import Command,MovingTarget
+from fdia_simulation.models import Command,ManeuveredSystem
 
 class CommandTestCase(unittest.TestCase):
     def setUp(self):
@@ -32,10 +32,10 @@ class CommandTestCase(unittest.TestCase):
         self.assertEqual(str(self.commandTest),"Command object\nname = velocity\nvalue = 0\nsteps = 1\ndelta = 2")
 
 
-class MovingTargetTestCase(unittest.TestCase):
+class ManeuveredSystemTestCase(unittest.TestCase):
     @raises(TypeError)
     def test_no_initialization(self):
-        abstractClassInstance = MovingTarget()
+        abstractClassInstance = ManeuveredSystem()
 
 
 if __name__ == "__main__":

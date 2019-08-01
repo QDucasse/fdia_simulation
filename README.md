@@ -1,5 +1,4 @@
 # False Data Injection Attack on a simulated Air Traffic Controller
--------------------------------------------------------------------
 
 ### Installation
 
@@ -17,17 +16,19 @@ virtual environment, the installation proceeds as follows:
 * For downloading and installing the source code of the project in a new virtual environment:  
 
   *Download of the source code & Creation of the virtual environment*
-```bash
+  ```bash
     $ cd <directory you want to install to>
     $ git clone https://pan.kereval.com/qde/fdia_simulation
     $ cd fdia_simulation
     $ mkvirtualenv -a . -r requirements.txt VIRTUALENV_NAME
-```
+  ```
   *Launch of the environment & installation of the project*
-```bash
+  ```bash
     $ workon VIRTUALENV_NAME
     $ pip install -e .
-```
+  ```
+
+---
 
 ### Structure of the project
 
@@ -54,6 +55,7 @@ some guidelines.
 **NOTE:** *more information can be obtained through the `README.md` of each module and
 therefore simply by clicking on those modules.*
 
+---
 
 ### Requirements
 
@@ -74,6 +76,8 @@ However, you can install each of them separately with the command:
 
 **NOTE:** *This project was created with Python 3.7.3 and no backward compatibility is
 ensured.*  
+
+---
 
 ### Basic use
 
@@ -121,7 +125,30 @@ above. This operation is made by the benchmark object through a process of:
   benchmark_ca.launch_benchmark(with_nees = True)
 ```
 
+---
+
 ### Objectives and Milestones of the project
+
+- [X] State generation for different trajectories (take off, landing, ...)
+- [X] Measurements generation by radars from system states
+- [X] Anomaly detection on simple systems
+- [ ] Anomaly detection in the ATC simulation
+- [X] 4 filter models (CA, CV, CT and TA) for one radar
+- [X] 4 filter models for multiple radars  
+- [X] 4 filter models for multiple radars with different data rates   
+- [X] IMM Estimator for one radar working in all cases
+- [X] Attacker model for the three cases
+- [X] Two attacker types (brute force and inducted drift) for the three cases
+- [X] Benchmark wrapper for the three cases
+- [X] Performance indicator for one and two radars with the same data rate
+- [ ] Performance indicator for radars with different data rates  
+- [X] Process noise finder for one given model in the three cases
+- [ ] Process noise finder for an IMM in the three cases
+- [X] Unit tests for all components
+- [X] Documentation via docstrings/READMEs
+- [X] Installation guide
+
+---
 
 ### Testing
 
@@ -138,6 +165,8 @@ The tests are not robust as they verify the integrity of the data generated but
 not its quality. Testing the reaction of a bad designed filtered on a very demanding
 trajectory was not the point of the project. However, many examples allow you to
 try and test the results of many different combinations.
+
+---
 
 ### References
 

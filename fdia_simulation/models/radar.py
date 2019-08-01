@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from math                   import cos,sin,sqrt,pi,atan2
 from numpy.random           import randn
 from filterpy.common        import pretty_str
-from fdia_simulation.models import ManeuveredAircraft, NoisySensor, Track, MovingTarget, Command
+from fdia_simulation.models import ManeuveredAirplane, NoisySensor, Track, ManeuveredSystem, Command
 
 class Radar(object):
     r'''Implements a simulated radar.
@@ -69,7 +69,7 @@ class Radar(object):
         Parameters
         ----------
         x,y,z: floats
-            Position of the aircraft.
+            Position of the airplane.
 
         Returns
         -------
@@ -81,11 +81,11 @@ class Radar(object):
         y -= self.y
         z -= self.z
 
-        # Computation of the distance of the aircraft
+        # Computation of the distance of the airplane
         r = sqrt(x**2 + y**2 + z**2)
-        # Computation of the turning angle of the aircraft
+        # Computation of the turning angle of the airplane
         theta = atan2(y,x)
-        # Computation of the elevation angle of the aircraft
+        # Computation of the elevation angle of the airplane
         phi = atan2(z, sqrt(x**2 + y**2))
 
         return r, theta, phi
@@ -126,7 +126,7 @@ class Radar(object):
             x_k = position[0]
             y_k = position[1]
             z_k = position[2]
-            # Computation of the supposed distance of the aircraft
+            # Computation of the supposed distance of the airplane
             r_k, theta_k, phi_k = self.gen_radar_values(x_k,y_k,z_k)
 
             rs.append(r_k)
@@ -169,7 +169,7 @@ class Radar(object):
         Returns
         -------
         x,y,z: floats
-            Sensed position of the aircraft extracted from the measurement given
+            Sensed position of the airplane extracted from the measurement given
             in input.
         '''
         x = r * cos(theta) * cos(phi) + self.x
@@ -360,7 +360,7 @@ class PeriodRadar(Radar):
 
 
 if __name__ == "__main__":
-    #================== Positions generation for the aircraft ==================
+    #================== Positions generation for the airplane ==================
     trajectory = Track(dt = 0.1)
     xs, ys, zs = trajectory.gen_takeoff()
     position_data = np.array(list(zip(xs,ys,zs)))

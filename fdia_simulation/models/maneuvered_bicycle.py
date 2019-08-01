@@ -8,11 +8,11 @@ Created on Fri Jun 14 16:30:25 2019
 import numpy             as np
 import matplotlib.pyplot as plt
 from math                    import cos,sin,radians
-from fdia_simulation.models  import MovingTarget, Command, NoisySensor
+from fdia_simulation.models  import ManeuveredSystem, Command, NoisySensor
 from fdia_simulation.helpers import plot_measurements
 
 
-class ManeuveredBicycle(MovingTarget):
+class ManeuveredBicycle(ManeuveredSystem):
     r'''Implements a model for a maneuvered bicycle: two wheels, commands on heading and velocity.
     The only sensor in action is a position sensor computing both x and y positions.
 
@@ -88,7 +88,7 @@ class ManeuveredBicycle(MovingTarget):
         Notes
         -----
         The change function should be called through the change_command function
-        defined under the MovingTarget abstract class.
+        defined under the ManeuveredSystem abstract class.
         '''
         cmd_head = self.commands['head']
         cmd_head.value = hdg_degrees
@@ -114,7 +114,7 @@ class ManeuveredBicycle(MovingTarget):
         Notes
         -----
         The change function should be called through the change_command function
-        defined under the MovingTarget abstract class.
+        defined under the ManeuveredSystem abstract class.
         '''
         cmd_vel = self.commands['vel']
         cmd_vel.value = speed

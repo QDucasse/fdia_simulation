@@ -79,9 +79,9 @@ for filter in FILTERS_2_RADARS:
 for filter in FILTERS_2_FRADARS:
     name = filter.__name__[-2:]
     print('=================================================================')
-    print('========================== '+ name +'-2 FRadars =========================')
+    print('========================== '+ name +'-2 PRadars =========================')
     noise_finder = NoiseFinder2Radars(fradars, states, filter, nb_iterations = 3)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
-    print(('Best value for '+ name +'-2FRadars:{0}').format(best_value))
-    writer.write_row(name+'-2FRadars',str(best_value))
+    print(('Best value for '+ name +'-2PRadars:{0}').format(best_value))
+    writer.write_row(name+'-2PRadars',str(best_value))

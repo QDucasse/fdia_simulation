@@ -52,7 +52,7 @@ class Command(object):
             pretty_str('delta', self.delta)])
 
 
-class MovingTarget(ABC):
+class ManeuveredSystem(ABC):
     r'''Abstract class of a moving target model
     Parameters
     ----------
@@ -95,7 +95,7 @@ class MovingTarget(ABC):
         -----
         The function change_command relies on the definition of a change_[commanded_parameter]
         for each command in the system. These definitions should be made in every subclass
-        of MovingTarget.
+        of ManeuveredSystem.
         '''
         methodName = getattr(self,"change_"+name)
         methodName(value,steps)
@@ -104,6 +104,6 @@ class MovingTarget(ABC):
     def update(self):
         '''
         Implements the model that defines the dynamic system represented by a
-        MovingTarget.
+        ManeuveredSystem.
         '''
         pass

@@ -9,10 +9,10 @@ import numpy             as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d   import Axes3D
 from math                   import cos,sin,radians
-from fdia_simulation.models import MovingTarget, Command
+from fdia_simulation.models import ManeuveredSystem, Command
 
-class ManeuveredAircraft(MovingTarget):
-    r'''Implements a model for a maneuvered aircraft: commands on two headings
+class ManeuveredAirplane(ManeuveredSystem):
+    r'''Implements a model for a maneuvered airplane: commands on two headings
     and velocity. The sensors are three position sensors.
 
     Parameters
@@ -117,7 +117,7 @@ class ManeuveredAircraft(MovingTarget):
         Notes
         -----
         The change function should be called through the change_command function
-        defined under the MovingTarget abstract class.
+        defined under the ManeuveredSystem abstract class.
         '''
         cmd_headx = self.commands['headx']
         cmd_headx.value = hdg_degrees
@@ -145,7 +145,7 @@ class ManeuveredAircraft(MovingTarget):
         Notes
         -----
         The change function should be called through the change_command function
-        defined under the MovingTarget abstract class.
+        defined under the ManeuveredSystem abstract class.
         '''
         cmd_headz = self.commands['headz']
         cmd_headz.value = hdg_degrees
@@ -171,7 +171,7 @@ class ManeuveredAircraft(MovingTarget):
         Notes
         -----
         The change function should be called through the change_command function
-        defined under the MovingTarget abstract class.
+        defined under the ManeuveredSystem abstract class.
         '''
         cmd_vel = self.commands['vel']
         cmd_vel.value = speed
@@ -184,35 +184,35 @@ class ManeuveredAircraft(MovingTarget):
 
 
 if __name__ == "__main__":
-    # Route generation example with a ManeuveredAircraft
+    # Route generation example with a ManeuveredAirplane
     headx_cmd = Command('headx',0,0,0)
     headz_cmd = Command('headz',0,0,0)
     vel_cmd   = Command('vel',1,0,0)
-    aircraft  = ManeuveredAircraft(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
+    airplane  = ManeuveredAirplane(x0 = 1000, y0 = 1000, z0=1, v0 = 0, hx0 = 0, hz0 = 0, command_list = [headx_cmd, headz_cmd, vel_cmd])
     xs, ys, zs = [], [], []
     states = []
 
     # Take off acceleration objective
-    aircraft.change_command("vel",200, 20)
+    airplane.change_command("vel",200, 20)
     # First phase -> Acceleration
     for i in range(10):
-        states.append(aircraft.update())
+        states.append(airplane.update())
 
     # Change in commands -> Take off
-    aircraft.change_command("headx",45, 25)
-    aircraft.change_command("headz",90, 25)
+    airplane.change_command("headx",45, 25)
+    airplane.change_command("headz",90, 25)
 
     # Second phase -> Take off
     for i in range(30):
-        states.append(aircraft.update())
+        states.append(airplane.update())
 
     # Change in commands -> Steady state
-    aircraft.change_command("headx",-45, 25)
-    aircraft.change_command("headz",180, 25)
+    airplane.change_command("headx",-45, 25)
+    airplane.change_command("headz",180, 25)
 
     # Third phase -> Steady state
     for i in range(60):
-        states.append(aircraft.update())
+        states.append(airplane.update())
 
 
     states = np.array(states)

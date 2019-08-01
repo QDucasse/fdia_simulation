@@ -31,13 +31,13 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
         Process noise input.
 
     x0, y0, z0: floats
-        Initial positions of the aircraft.
+        Initial positions of the airplane.
 
     vx0, vy0, vz0: floats
-        Initial velocities of the aircraft.
+        Initial velocities of the airplane.
 
     ax0, ay0, az0: floats
-        Initial accelerations of the aircraft.
+        Initial accelerations of the airplane.
 
     dt: float
         Time step.

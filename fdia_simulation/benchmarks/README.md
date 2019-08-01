@@ -1,5 +1,7 @@
 # Benchmarks
 
+---
+
 ### Simulation Benchmark
 The `Benchmark` object is the highest-level component of the project.
 It wraps the other components and creates the environment in which
@@ -17,6 +19,8 @@ following steps:
 
 **Note:** *The `Benchmark` object has a common interface for both one,
 multiple radars and different data rates radars*
+
+---
 
 ### Process noise finder
 
@@ -53,6 +57,8 @@ the `nb_iterations` parameters of the `NoiseFinder`.
     CT-2PRadars,3620.0
     TA-2PRadars,1010.0
 ```
+
+---
 
 ### Examples of use
 

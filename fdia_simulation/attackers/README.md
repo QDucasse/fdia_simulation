@@ -2,6 +2,8 @@
 
 (IMAGE NEEDED) measurement --> attacker --> estimator
 
+---
+
 ### Attacker models
 
 The two attacker's models `AttackerModel` and `PeriodAttackerModel` have
@@ -13,6 +15,8 @@ The attack uses the **attack matrix Gamma** and a **magnitude vector**
 and modifies the measurement outputed by the attacled sensor as follows:
 
 **New measurement = Old measurement + Gamma * Magnitude vector**
+
+---
 
 ### Attacker types
 

@@ -12,7 +12,7 @@ from fdia_simulation.filters    import (RadarFilterCV, MultipleRadarsFilterCV, M
                                         RadarFilterCA, MultipleRadarsFilterCA, MultiplePeriodRadarsFilterCA,
                                         RadarFilterCT, MultipleRadarsFilterCT, MultiplePeriodRadarsFilterCT,
                                         RadarFilterTA, MultipleRadarsFilterTA, MultiplePeriodRadarsFilterTA)
-from fdia_simulation.benchmarks import NoiseFinder1Radar, NoiseFinder2Radars
+from fdia_simulation.benchmarks import NoiseFinder1Radar, NoiseFinderMultipleRadars
 
 # Filters to be tested for 1 radar
 FILTERS_1_RADAR   = [RadarFilterCV,
@@ -70,7 +70,7 @@ for filter in FILTERS_2_RADARS:
     name = filter.__name__[-2:]
     print('=================================================================')
     print('=========================== '+ name +'-2 Radars =========================')
-    noise_finder = NoiseFinder2Radars(radars, states, filter, nb_iterations = 3)
+    noise_finder = NoiseFinderMultipleRadars(radars, states, filter, nb_iterations = 3)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
     print(('Best value for '+ name +'-2Radars:{0}').format(best_value))
@@ -80,7 +80,7 @@ for filter in FILTERS_2_FRADARS:
     name = filter.__name__[-2:]
     print('=================================================================')
     print('========================== '+ name +'-2 PRadars =========================')
-    noise_finder = NoiseFinder2Radars(fradars, states, filter, nb_iterations = 3)
+    noise_finder = NoiseFinderMultipleRadars(fradars, states, filter, nb_iterations = 3)
     noise_finder.launch_benchmark()
     best_value   = noise_finder.best_value()
     print(('Best value for '+ name +'-2PRadars:{0}').format(best_value))

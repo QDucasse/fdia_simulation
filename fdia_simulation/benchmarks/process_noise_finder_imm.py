@@ -8,7 +8,7 @@ Created on Mon Jul 30 13:56:47 2019
 import numpy as np
 from fdia_simulation.models     import Radar, Track
 from fdia_simulation.benchmarks import Benchmark
-from fdia_simulation.benchmarks import NoiseFinder1Radar,NoiseFinder2Radars
+from fdia_simulation.benchmarks import NoiseFinder1Radar,NoiseFinderMultipleRadars
 
 class NoiseFinderIMM1Radar(NoiseFinder1Radar):
     '''

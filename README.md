@@ -32,8 +32,6 @@ virtual environment, the installation proceeds as follows:
 
 ### Structure of the project
 
-(IMAGE NEEDED)
-
 Quick presentation of the different modules of the project:
 * [**Models:**][models]
 Dynamic systems models.

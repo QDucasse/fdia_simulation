@@ -26,8 +26,8 @@ class BruteForceAttacker(Attacker):
         Attacker.__init__(self,*args,**kwargs)
         self.mag_vector = self.mag_vector*mag
 
-    def attack_measurements(self, measurement):
-        return Attacker.attack_measurements(self,measurement)
+    def attack_measurement(self, measurement):
+        return Attacker.attack_measurement(self,measurement)
 
 class DriftAttacker(Attacker):
     '''
@@ -38,8 +38,8 @@ class DriftAttacker(Attacker):
     attack_drift:  float numpy array (3,1)
         Impact of the attack on the three position parameters.
 
-    radar: Radar object
-        Attacked radar.
+    radar_pos: int
+        Position of the attacked radar.
     '''
     def __init__(self, radar_pos, attack_drift = None, *args, **kwargs):
         if attack_drift is None:
@@ -48,7 +48,7 @@ class DriftAttacker(Attacker):
         self.radar_pos    = radar_pos
         Attacker.__init__(self,radar_pos = radar_pos,*args,**kwargs)
 
-    def attack_measurements(self, measurement):
+    def attack_measurement(self, measurement):
         '''
         Modifies the measurement following these three steps:
             - Computation of the position from the radar's measurements

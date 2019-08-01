@@ -11,11 +11,11 @@ from abc                              import ABC, abstractmethod
 from filterpy.kalman                  import IMMEstimator
 from fdia_simulation.models           import Radar
 from fdia_simulation.filters          import MultipleRadarsFilterCA,MultipleRadarsFilterCV,MultipleRadarsFilterCT,MultipleRadarsFilterTA
-from fdia_simulation.benchmarks       import Benchmark, NoiseFinder2Radars
+from fdia_simulation.benchmarks       import Benchmark, NoiseFinderMultipleRadars
 from fdia_simulation.tests.benchmarks import NoiseFinder1RadarTestEnv
 
 
-class NoiseFinder2RadarsTestEnv(NoiseFinder1RadarTestEnv):
+class NoiseFinderMultipleRadarsTestEnv(NoiseFinder1RadarTestEnv):
 
     def setUp_radars_states(self):
         # Radars definitions
@@ -32,53 +32,53 @@ class NoiseFinder2RadarsTestEnv(NoiseFinder1RadarTestEnv):
         self.assertTrue(np.array_equal(self.process_noise_finder.states,np.array([[i,i/2,i/10]*3 for i in range(100)])))
 
 
-class NoiseFinder2RadarsCATestCase(NoiseFinder2RadarsTestEnv,unittest.TestCase):
+class NoiseFinderMultipleRadarsCATestCase(NoiseFinderMultipleRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar and states generation
         self.setUp_radars_states()
         # Filter definition
         self.filter = MultipleRadarsFilterCA
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes
         self.process_noise_finder.TO_TEST = [1.,2.,3.,4.,5.]
 
-class NoiseFinder2RadarsCVTestCase(NoiseFinder2RadarsTestEnv,unittest.TestCase):
+class NoiseFinderMultipleRadarsCVTestCase(NoiseFinderMultipleRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar and states generation
         self.setUp_radars_states()
         # Filter definition
         self.filter = MultipleRadarsFilterCV
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes
         self.process_noise_finder.TO_TEST = [1.,2.,3.,4.,5.]
 
-class NoiseFinder2RadarsCTTestCase(NoiseFinder2RadarsTestEnv,unittest.TestCase):
+class NoiseFinderMultipleRadarsCTTestCase(NoiseFinderMultipleRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar and states generation
         self.setUp_radars_states()
         # Filter definition
         self.filter = MultipleRadarsFilterCT
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes
         self.process_noise_finder.TO_TEST = [1.,2.,3.,4.,5.]
 
-class NoiseFinder2RadarsTATestCase(NoiseFinder2RadarsTestEnv,unittest.TestCase):
+class NoiseFinderMultipleRadarsTATestCase(NoiseFinderMultipleRadarsTestEnv,unittest.TestCase):
     def setUp(self):
         # Radar and states generation
         self.setUp_radars_states()
         # Filter definition
         self.filter = MultipleRadarsFilterTA
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes

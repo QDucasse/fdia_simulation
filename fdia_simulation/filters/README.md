@@ -1,11 +1,15 @@
 # Filters
 
+---
+
 ### Extended Kalman Filter
 
 The estimator used by Air Traffic Controllers to estimate the position
 of airplanes approaching from the measurements made by different sensors
 (Radars, ADSB, etc.).
 (IMAGE NEEDED) Equations + cycle
+
+---
 
 ### Models
 
@@ -22,6 +26,8 @@ Each model works well in certain cases but will mainly perform badly in
 complicated cases or maneuvers.
 (EXAMPLE OF COMPLICATED TRAJECTORY)
 
+---
+
 ### IMM
 An **Interactive Multiple Models estimator** allows the estimator to
 perform the predict/update cycle other a bank of filters and choose the
@@ -29,6 +35,8 @@ best fitting one to output the state estimation.
 
 This choice is made by computing each filter's likelihood and take the most
 likely.
+
+---
 
 ### Sensor Fusion
 
@@ -39,6 +47,8 @@ a measurement vector and therefore take all available data into our
 filter whether it is data itself or belief about a measurement.
 
 (IMAGE NEEDED) H concatenation
+
+---
 
 ### Different data rates
 

@@ -18,12 +18,14 @@ class MultipleRadarsFilterModel(RadarFilterModel):
     r'''Implements a filter model using multiple sensors and combining them
     through the measurement function and matrix.
     '''
-    def __init__(self,dim_x, dim_z, q, radars,
+    def __init__(self, q, radars, dim_x = 9, dim_z = None,
                  x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                  vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                  ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,
                  dt = None, detector = None):
 
+        if dim_z is None:
+            dim_z = 3*len(radars)
         ExtendedKalmanFilter.__init__(self, dim_x = dim_x, dim_z = dim_z)
         if dt is None:
             dt = Radar.DT_RADAR

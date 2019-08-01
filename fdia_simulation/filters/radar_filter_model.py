@@ -49,7 +49,7 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
         Radar position.
     '''
 
-    def __init__(self, dim_x, dim_z, q, radar,
+    def __init__(self, q, radar, dim_x = 9, dim_z = 3,
                        x0  = 1e-6, y0  = 1e-6, z0  = 1e-6,
                        vx0 = 1e-6, vy0 = 1e-6, vz0 = 1e-6,
                        ax0 = 1e-6, ay0 = 1e-6, az0 = 1e-6,

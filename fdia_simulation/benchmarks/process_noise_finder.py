@@ -123,7 +123,7 @@ class NoiseFinder1Radar(object):
         best_value = min(self.means_nees, key=self.means_nees.get)
         return best_value
 
-class NoiseFinder2Radars(NoiseFinder1Radar):
+class NoiseFinderMultipleRadars(NoiseFinder1Radar):
     '''
     Implements a helper to find the correct noise in a 2 radars case.
     Parameters
@@ -169,7 +169,7 @@ class NoiseFinder2Radars(NoiseFinder1Radar):
         x0 = self.states[0,0]
         y0 = self.states[0,3]
         z0 = self.states[0,6]
-        filter = self.filter(dim_x = 9, dim_z = 6, radars = self.radars, q = q, x0 = x0, y0 = y0, z0 = z0)
+        filter = self.filter(radars = self.radars, q = q, x0 = x0, y0 = y0, z0 = z0)
         benchmark = Benchmark(radars = self.radars, radar_filter = filter, states = self.states)
         benchmark.launch_benchmark(with_nees = True, plot = False)
         return benchmark.nees

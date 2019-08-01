@@ -95,7 +95,7 @@ class Attacker(object):
         self.time         = time
         self.current_time = 0
 
-    def attack_measurements(self, measurement):
+    def attack_measurement(self, measurement):
         '''
         Performs the attack on a given measurement. It simply consists of adding
         to that measurement the quantity gamma@mag_vector. This means you are
@@ -127,6 +127,6 @@ class Attacker(object):
         end_reached       = (self.current_time - self.t0) >= self.time
         if beginning_reached and not(end_reached):
             measurement = np.reshape(measurement,(-(self.dim_z-1),1))
-            measurement = self.attack_measurements(measurement)
+            measurement = self.attack_measurement(measurement)
         self.current_time += 1
         return measurement

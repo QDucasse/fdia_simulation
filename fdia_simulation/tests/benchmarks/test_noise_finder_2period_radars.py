@@ -11,11 +11,11 @@ from abc                              import ABC, abstractmethod
 from filterpy.kalman                  import IMMEstimator
 from fdia_simulation.models           import PeriodRadar
 from fdia_simulation.filters          import MultiplePeriodRadarsFilterCA,MultiplePeriodRadarsFilterCV,MultiplePeriodRadarsFilterCT,MultiplePeriodRadarsFilterTA
-from fdia_simulation.benchmarks       import Benchmark, NoiseFinder2Radars
-from fdia_simulation.tests.benchmarks import NoiseFinder2RadarsTestEnv
+from fdia_simulation.benchmarks       import Benchmark, NoiseFinderMultipleRadars
+from fdia_simulation.tests.benchmarks import NoiseFinderMultipleRadarsTestEnv
 
 
-class NoiseFinder2PeriodRadarsTestEnv(NoiseFinder2RadarsTestEnv):
+class NoiseFinder2PeriodRadarsTestEnv(NoiseFinderMultipleRadarsTestEnv):
 
     def setUp_radars_states(self):
         # Radars definitions
@@ -44,7 +44,7 @@ class NoiseFinder2PeriodRadarsCATestCase(NoiseFinder2PeriodRadarsTestEnv,unittes
         # Filter definition
         self.filter = MultiplePeriodRadarsFilterCA
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes
@@ -57,7 +57,7 @@ class NoiseFinder2PeriodRadarsCVTestCase(NoiseFinder2PeriodRadarsTestEnv,unittes
         # Filter definition
         self.filter = MultiplePeriodRadarsFilterCV
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes
@@ -70,7 +70,7 @@ class NoiseFinder2PeriodRadarsCTTestCase(NoiseFinder2PeriodRadarsTestEnv,unittes
         # Filter definition
         self.filter = MultiplePeriodRadarsFilterCT
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes
@@ -83,7 +83,7 @@ class NoiseFinder2PeriodRadarsTATestCase(NoiseFinder2PeriodRadarsTestEnv,unittes
         # Filter definition
         self.filter = MultiplePeriodRadarsFilterTA
         # Process noise finder definition
-        self.process_noise_finder = NoiseFinder2Radars(radars = self.radars,
+        self.process_noise_finder = NoiseFinderMultipleRadars(radars = self.radars,
                                                        states = self.states,
                                                        filter = self.filter)
         # Reduction of the actual list for testing purposes

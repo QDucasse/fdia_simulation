@@ -327,7 +327,7 @@ class MoAttacker(object):
 
         return self.attack_sequence, Gamma
 
-    def attack_measurements(self):
+    def attack_measurement(self):
         '''
         Alters the measurements with the attack sequence
         '''

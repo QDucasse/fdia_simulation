@@ -2,6 +2,8 @@
 
 (IMAGE NEEDED) z --> detec --> True False
 
+---
+
 ### Detection methods
 
 The two mainly used detection methods use different approaches:
@@ -22,6 +24,8 @@ This method helps ensure *coherence* but fails against a compromised
 estimator and sensor.
 
 (IMAGE NEEDED) Threshold
+
+---
 
 ### Examples of use
 

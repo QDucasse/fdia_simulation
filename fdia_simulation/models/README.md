@@ -1,5 +1,7 @@
 # Models
 
+---
+
 ### Maneuvered system
 A **maneuvered system** allows you to design a dydnamic system with
 parameters that can be changed while processing the model. For
@@ -10,6 +12,8 @@ update model) in which the value should be reached.
 
 (IMAGE NEEDED) Bicycle
 (IMAGE NEEDED) Airplane
+
+---
 
 ### Sensors
 
@@ -32,12 +36,15 @@ The `PeriodRadar` creates measurements with a **tag** refering the radar
 it comes from, a **time** the measurement was taken (the time is noisy as
 well) and the **measurement** itself.
 
+---
 
 ### Tracks
 
 The `Tracks` object implements several airplane trajectories to be used
 more easily. They implement a step by step process resulting in a set of
 system states.
+
+---
 
 ### Examples of use
 

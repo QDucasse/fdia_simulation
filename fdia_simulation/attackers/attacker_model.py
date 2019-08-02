@@ -7,6 +7,7 @@ Created on Wed Jul 24 09:18:23 2019
 
 import warnings
 import numpy as np
+from filterpy.kalman import IMMEstimator
 
 class Attacker(object):
     '''
@@ -51,7 +52,11 @@ class Attacker(object):
                  gamma = None, mag_vector = None, radar_pos = None):
         # Store the filter and its dimension
         self.filter = filter
-        self.dim_z  = filter.dim_z
+        self.is_imm = isinstance(filter,IMMEstimator)
+        if self.is_imm:
+            self.dim_z  = filter.filters[0].dim_z
+        else:
+            self.dim_z = filter.dim_z
         self.radar  = radar
         # print('dim_z = {0}'.format(dim_z))
 

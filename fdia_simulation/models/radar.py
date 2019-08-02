@@ -361,17 +361,16 @@ class PeriodRadar(Radar):
 
 if __name__ == "__main__":
     #================== Positions generation for the airplane ==================
-    trajectory = Track(dt = 0.1)
-    xs, ys, zs = trajectory.gen_takeoff()
+    trajectory = Track()
+    states = trajectory.gen_landing()
+    xs = states[:,0]
+    ys = states[:,3]
+    zs = states[:,6]
     position_data = np.array(list(zip(xs,ys,zs)))
-
-    trajectory2 = Track(dt = 0.4)
-    xs2, ys2, zs2 = trajectory2.gen_takeoff()
-    position_data2 = np.array(list(zip(xs2,ys2,zs2)))
     # ==========================================================================
     # ========================== Radars generation =============================
     # Radar 1
-    radar = PeriodRadar(tag = 0, x=800,y=800)
+    radar = Radar(x=-6000,y=10000, dt = 0.4)
     rs, thetas, phis = radar.gen_data(position_data)
     noisy_rs, noisy_thetas, noisy_phis = radar.sense(rs, thetas, phis)
     xs_from_rad, ys_from_rad, zs_from_rad = radar.radar2cartesian(noisy_rs, noisy_thetas, noisy_phis)
@@ -381,13 +380,8 @@ if __name__ == "__main__":
 
     radar_computed_values = np.array(list(zip(xs_from_rad, ys_from_rad, zs_from_rad)))
     # print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
-
-    measurements_info = radar.compute_measurements(position_data)
-    print("Measurements radar1:\n{0}\n".format(measurements_info[-25:]))
-
-    # Radar 2
-    radar2 = PeriodRadar(tag = 1, x=1000,y=1000, r_std = 5., theta_std = 0.005, phi_std = 0.005)
-    rs2, thetas2, phis2 = radar2.gen_data(position_data2)
+    radar2 = Radar(x=-6000,y=10000, dt = 0.7)
+    rs2, thetas2, phis2 = radar2.gen_data(position_data)
     noisy_rs2, noisy_thetas2, noisy_phis2 = radar2.sense(rs2, thetas2, phis2)
     xs_from_rad2, ys_from_rad2, zs_from_rad2 = radar2.radar2cartesian(noisy_rs2, noisy_thetas2, noisy_phis2)
 
@@ -395,23 +389,18 @@ if __name__ == "__main__":
     # print("Noisy radar data:\n{0}\n".format(radar_values[-25:,:]))
 
     radar_computed_values2 = np.array(list(zip(xs_from_rad2, ys_from_rad2, zs_from_rad2)))
-    # print("Estimated positions:\n{0}\n".format(radar_computed_values[-25:,:]))
-
-    measurements_info2 = radar2.compute_measurements(position_data2)
-    print("Measurements radar2:\n{0}\n".format(measurements_info2[-25:]))
 
 
-    measurement_infos = (measurements_info + measurements_info2).sort()
     # ==========================================================================
     # =============================== Plotting =================================
     fig = plt.figure(1)
     plt.rc('font', family='serif')
     ax = fig.gca(projection='3d')
     ax.plot(xs, ys, zs, label='Real airplane position', color='k', linestyle='dashed')
-    ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad, color='b', marker='o', label='Precision radar measurements')
-    ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2, color='m', marker='o', label='Standard radar measurements')
-    ax.scatter(radar.x,radar.y,radar.z,color='r',label='Precision radar')
-    ax.scatter(radar2.x,radar2.y,radar2.z,color='r',label='Standard radar')
+    ax.scatter(xs_from_rad, ys_from_rad, zs_from_rad, color='b', marker='o', label='Radar measurements')
+    ax.scatter(radar.x,radar.y,radar.z,color='r',label='Radar')
+    ax.scatter(xs_from_rad2, ys_from_rad2, zs_from_rad2, color='g', marker='o', label='Radar2 measurements')
+    ax.scatter(radar2.x,radar2.y,radar2.z,color='orange',label='Radar2')
     ax.set_xlabel('X axis')
     ax.set_ylabel('Y axis')
     ax.set_zlabel('Z axis')

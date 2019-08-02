@@ -39,7 +39,7 @@ class Track(object):
         x0,y0,z0: floats
             Initial position of the observed system.
         '''
-        return states[0,0], states[3,0], states[6,0]
+        return states[0,0], states[0,3], states[0,6]
 
     def gen_cruise(self,x0 = 100,y0 = 100,z0 = 8000,t = 50,vel = 250,ax='y'):
         '''

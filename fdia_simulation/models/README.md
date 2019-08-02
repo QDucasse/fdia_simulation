@@ -48,6 +48,8 @@ system states.
 
 ### Examples of use
 
-Maneuvered airplane
-Maneuvered bicycle
-Tracks
+Examples of use are present within the source code, simply execute
+the files `fdia_simulation/models/maneuvered_aircraft.py` and
+`fdia_simulation/anomaly_detectors/maneuvered_bicycle.py` to have an example
+of trajectory and use of the objects. The file `fdia_simulation/anomaly_detectors/tracks.py`
+displays all implemented trajectories if executed.

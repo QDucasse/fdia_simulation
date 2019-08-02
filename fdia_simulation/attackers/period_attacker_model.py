@@ -7,6 +7,7 @@ Created on Wed Jul 31 14:07:21 2019
 
 import warnings
 import numpy as np
+from filterpy.kalman           import IMMEstimator
 from fdia_simulation.models    import LabeledMeasurement
 from fdia_simulation.attackers import Attacker,BruteForceAttacker,DriftAttacker
 
@@ -47,7 +48,11 @@ class PeriodAttacker(Attacker):
                  gamma = None, mag_vector = None):
         # Store the filter and its dimension
         self.filter = filter
-        self.dim_z  = filter.dim_z
+        self.is_imm = isinstance(filter,IMMEstimator)
+        if self.is_imm:
+            self.dim_z  = filter.filters[0].dim_z
+        else:
+            self.dim_z = filter.dim_z
         self.radar  = radar
         # The tag corresponds to the 'position' of the radar
         self.radar_tag = radar_pos

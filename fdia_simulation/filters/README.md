@@ -27,10 +27,13 @@ fitting model for a trajectory is to test one of the following models:
 
 * **Constant Acceleration:**  
 <img src="../../images/phiCA.png" height="60">
+
 * **Constant Velocity:**  
 <img src="../../images/phiCV.png" height="60">
+
 * **Constant Turn:**  
 <img src="../../images/phiCT.png" height="55">
+
 * **Thrust Acceleration:**  
 <img src="../../images/phiTA.png" height="60">
 

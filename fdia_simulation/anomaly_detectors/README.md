@@ -35,5 +35,5 @@ the files `fdia_simulation/anomaly_detectors/chi_square.py` and
 
 
 [detector]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/detector.png "Detector Use"
-[d_mah]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/d_euc.png "Euclidian Distance"
-[d_euc]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/d_mah.png "Mahalanobis Distance"
+[d_mah]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/d_euc.png =300x "Euclidian Distance"
+[d_euc]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/d_mah.png =300x "Mahalanobis Distance"

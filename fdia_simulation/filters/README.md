@@ -7,7 +7,8 @@
 The estimator used by Air Traffic Controllers to estimate the position
 of airplanes approaching from the measurements made by different sensors
 (Radars, ADSB, etc.).
-(IMAGE NEEDED) Equations + cycle
+
+![alt-text][equations]
 
 ---
 
@@ -17,14 +18,16 @@ of airplanes approaching from the measurements made by different sensors
 
 There is not a single good answer here and the actual way to determine a
 fitting model for a trajectory is to test one of the following models:
-* **Constant Acceleration:** F = (IMAGE NEEDED)
-* **Constant Velocity:** F = (IMAGE NEEDED)
-* **Constant Turn:** F = (IMAGE NEEDED)
-* **Thrust Acceleration:** F = (IMAGE NEEDED)
+
+![alt-text][F]
+
+* **Constant Acceleration:**   ![alt-text][Fca]
+* **Constant Velocity:**  ![alt-text][Fcv]
+* **Constant Turn:**  ![alt-text][Fct]
+* **Thrust Acceleration:**  ![alt-text][Fta]
 
 Each model works well in certain cases but will mainly perform badly in
 complicated cases or maneuvers.
-(EXAMPLE OF COMPLICATED TRAJECTORY)
 
 ---
 
@@ -65,11 +68,12 @@ at a time and (nearly) never together.
 
 (IMAGE NEEDED) LabeledMeasurement + H
 
-[equations]:https://
-[cycle]:https://
-[Fca]:https://
-[Fcv]:https://
-[Fct]:https://
-[Fta]:https://
+[equations]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/filter_equations.png "EKF Equations"
+[cycle]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/cycle.png "Predict/Update cycle"
+[F]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/F.png "State transition matrix"
+[Fca]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Constant Acceleration"
+[Fcv]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Constant Velocity"
+[Fct]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Constant Turn"
+[Fta]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Thrust Acceleration"
 [sensor_fusion]:https://
 [dif_data_rates]:https://

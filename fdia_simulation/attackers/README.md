@@ -29,3 +29,5 @@ Two attacker types are added as well:
 * `DriftAttacker` / `DriftPeriodAttacker`:
  The goal of this kind of attacker is to add a constant **drift** to the
  position of the observed system along either **x,y,z or any combination**.
+
+[attacker]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/attacker.png "Attacker use"

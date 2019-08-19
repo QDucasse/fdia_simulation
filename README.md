@@ -79,7 +79,7 @@ ensured.*
 
 ### Basic use
 
-Explanation of the situation (graph + state/model) (IMAGE NEEDED)
+![alt-text][basic_use]
 
 We will first need to import the essential components from the different packages:
 * `models` from which we will extract our **track** and **radar**
@@ -185,3 +185,5 @@ Bar Shalom "Estimation with Application to Tracking and Navigation"
 [matplotlib]:https://github.com/matplotlib/matplotlib
 [filterpy]:https://github.com/rlabbe/filterpy
 [sympy]:https://github.com/sympy/sympy
+
+[basic_use]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/basic_use.png "Basic use of the project"

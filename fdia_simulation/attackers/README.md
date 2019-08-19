@@ -1,7 +1,7 @@
 # Attackers
-
-<img src="../../images/attacker.png" width="200">
-
+<p align="center">
+  <img src="../../images/attacker.png" width="200">
+</p>
 ---
 
 ### Attacker models

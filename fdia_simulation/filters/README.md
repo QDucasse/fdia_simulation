@@ -8,9 +8,12 @@ The estimator used by Air Traffic Controllers to estimate the position
 of airplanes approaching from the measurements made by different sensors
 (Radars, ADSB, etc.).
 
-<img src="../../images/filter_equations.png" width="200">
-<img src="../../images/cycle.png" width="200">
-
+<p align="center">
+  <img src="../../images/filter_equations.png" width="200">
+</p>
+<p align="center">
+  <img src="../../images/cycle.png" width="200">
+</p>
 ---
 
 ### Models

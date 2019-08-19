@@ -29,8 +29,9 @@ The `Radar` and `PeriodRadar` main objective is to convert positions
 **x**,**y** and **z** into **range (r)**, **azimuth angle (theta)**
 and **elevation angle (phi)**.
 
-<img src="../../images/radar.png" width="200">
-
+<p align="center">
+  <img src="../../images/radar.png" width="200">
+</p>
 
 The `PeriodRadar` creates measurements with a **tag** refering the radar
 it comes from, a **time** the measurement was taken (the time is noisy as

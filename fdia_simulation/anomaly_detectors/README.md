@@ -1,6 +1,8 @@
 # Anomaly Detectors
 
-![alt-text][detector]
+<p align="center">
+  <img src="../../images/detector.png" width="80">
+</p>
 
 ---
 

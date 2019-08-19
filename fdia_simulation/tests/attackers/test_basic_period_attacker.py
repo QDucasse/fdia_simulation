@@ -10,7 +10,7 @@ import numpy as np
 from nose.tools                import raises
 from filterpy.kalman           import KalmanFilter,ExtendedKalmanFilter
 from fdia_simulation.models    import Radar, PeriodRadar, LabeledMeasurement
-from fdia_simulation.attackers import PeriodAttacker, BruteForcePeriodAttacker, DriftPeriodAttacker
+from fdia_simulation.attackers import PeriodAttacker, DOSPeriodAttacker, DriftPeriodAttacker
 
 class PeriodAttackerTestCase(unittest.TestCase):
     def setUp(self):
@@ -160,11 +160,11 @@ class PeriodAttackerTestCase(unittest.TestCase):
     #     self.assertTrue(all([np.allclose(meas, mod_meas) for meas, mod_meas in comparison_list]))
 
 
-class BruteForcePeriodAttackerTestCase(PeriodAttackerTestCase):
+class DOSPeriodAttackerTestCase(PeriodAttackerTestCase):
     def setUp(self):
         PeriodAttackerTestCase.setUp(self)
         self.mag = 1e6
-        self.attacker = BruteForcePeriodAttacker(filter = self.filter, mag = self.mag,
+        self.attacker = DOSPeriodAttacker(filter = self.filter, mag = self.mag,
                                            gamma = self.gamma,mag_vector = self.mag_vector,
                                            radar_pos = self.radar_pos, radar = self.radar,
                                            t0 = self.t0, time = self.time)

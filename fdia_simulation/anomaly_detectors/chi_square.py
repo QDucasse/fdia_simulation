@@ -6,6 +6,7 @@ Created on Fri Jun 28 09:10:02 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
+from math                              import sqrt
 from pprint                            import pprint
 from scipy.stats                       import chi2
 from numpy.linalg                      import inv
@@ -64,7 +65,7 @@ class ChiSquareDetector(AnomalyDetector):
         x   = kf.x + K@y                      # New state:             x + Ky
 
         # Threshold calculated by reversing the chi-square table for 0.95 (by default)
-        test_quantity = y.T @ inv(S) @ y
+        test_quantity = sqrt(y.T @ inv(S) @ y)
         threshold = chi2.ppf(1-error_rate,dim_z)
         self.reviewed_values.append(test_quantity)
 

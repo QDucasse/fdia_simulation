@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 from filterpy.kalman           import IMMEstimator
 from fdia_simulation.models    import LabeledMeasurement
-from fdia_simulation.attackers import Attacker,BruteForceAttacker,DriftAttacker
+from fdia_simulation.attackers import Attacker,DOSAttacker,DriftAttacker
 
 class PeriodAttacker(Attacker):
     '''

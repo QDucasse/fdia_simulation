@@ -21,7 +21,7 @@ and modifies the measurement outputed by the attacled sensor as follows:
 ### Attacker types
 
 Two attacker types are added as well:
-* `BruteForceAttacker` / `BruteForcePeriodAttacker`:  
+* `DOSAttacker` / `DOSPeriodAttacker`:  
   The goal of this kind of attacker is to make any anomaly detector
   **discard** all measurements coming from the attacked sensor. Therefore,
   the *magnitude vector* consists of **immense values** for them to be **discarded** instantly.

@@ -10,8 +10,8 @@ from fdia_simulation.filters           import (RadarFilterCA, MultipleRadarsFilt
                                                RadarFilterCV, MultipleRadarsFilterCV, MultiplePeriodRadarsFilterCV,
                                                RadarFilterCT, MultipleRadarsFilterCT, MultiplePeriodRadarsFilterCT,
                                                RadarFilterTA, MultipleRadarsFilterTA, MultiplePeriodRadarsFilterTA)
-from fdia_simulation.attackers         import (Attacker,BruteForceAttacker,DriftAttacker,
-                                               PeriodAttacker,BruteForcePeriodAttacker,DriftPeriodAttacker)
+from fdia_simulation.attackers         import (Attacker,DOSAttacker,DriftAttacker,
+                                               PeriodAttacker,DOSPeriodAttacker,DriftPeriodAttacker)
 from fdia_simulation.benchmarks        import Benchmark
 from fdia_simulation.anomaly_detectors import ChiSquareDetector, EuclidianDetector
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     radar_filter = MultiplePeriodRadarsFilterCV(q = 3920., radars = pradars, detector = detector,
                                                  x0 = x0, y0 = y0, z0 = z0)
-                                                 
+
     # ==========================================================================
     # ========================= Attacker Generation ============================
     # ==========================================================================
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     attacker = None
 
     ## Attacker for 1 or 2 Radars
-    attacker = BruteForceAttacker(filter = radar_filter,
+    attacker = DOSAttacker(filter = radar_filter,
                                   t0 = 200, time = 100, radar_pos = 1)
 
     attacker = DriftAttacker(filter = radar_filter, t0 = 200,
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     attacker = DriftPeriodAttacker(filter = radar_filter_cv, t0 = 200, time = 2000,
                                    radar = pradar2, radar_pos = 1)
 
-    attacker = BruteForcePeriodAttacker(filter = radar_filter, t0 = 200, time = 2000,
+    attacker = DOSPeriodAttacker(filter = radar_filter, t0 = 200, time = 2000,
                                         radar = pradar2, radar_pos = 1)
 
     # ==========================================================================

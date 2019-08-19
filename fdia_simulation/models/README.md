@@ -10,8 +10,8 @@ The change is made through the `Command` object that needs a specification
 of the *new value* and the *number of steps* (number of calls to the
 update model) in which the value should be reached.
 
-(IMAGE NEEDED) Bicycle
-(IMAGE NEEDED) Airplane
+<img src="../../images/bicycle.png" width="200">
+<img src="../../images/landing.png" width="200">
 
 ---
 
@@ -29,8 +29,8 @@ The `Radar` and `PeriodRadar` main objective is to convert positions
 **x**,**y** and **z** into **range (r)**, **azimuth angle (theta)**
 and **elevation angle (phi)**.
 
-(IMAGE NEEDED) Radar cartesian
-(CITATION NEEDED) Articles
+<img src="../../images/radar.png" width="200">
+
 
 The `PeriodRadar` creates measurements with a **tag** refering the radar
 it comes from, a **time** the measurement was taken (the time is noisy as

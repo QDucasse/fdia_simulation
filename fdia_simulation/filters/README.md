@@ -8,7 +8,8 @@ The estimator used by Air Traffic Controllers to estimate the position
 of airplanes approaching from the measurements made by different sensors
 (Radars, ADSB, etc.).
 
-![alt-text][equations]
+<img src="../../images/filter_equations.png" width="200">
+<img src="../../images/cycle.png" width="200">
 
 ---
 
@@ -19,12 +20,16 @@ of airplanes approaching from the measurements made by different sensors
 There is not a single good answer here and the actual way to determine a
 fitting model for a trajectory is to test one of the following models:
 
-![alt-text][F]
+<img src="../../images/F.png" height="60">  
 
-* **Constant Acceleration:**   ![alt-text][Fca]
-* **Constant Velocity:**  ![alt-text][Fcv]
-* **Constant Turn:**  ![alt-text][Fct]
-* **Thrust Acceleration:**  ![alt-text][Fta]
+* **Constant Acceleration:**  
+<img src="../../images/phiCA.png" height="60">
+* **Constant Velocity:**  
+<img src="../../images/phiCV.png" height="60">
+* **Constant Turn:**  
+<img src="../../images/phiCT.png" height="55">
+* **Thrust Acceleration:**  
+<img src="../../images/phiTA.png" height="60">
 
 Each model works well in certain cases but will mainly perform badly in
 complicated cases or maneuvers.
@@ -67,13 +72,3 @@ The **H** matrix changes as well as measurement are coming from one radar
 at a time and (nearly) never together.
 
 (IMAGE NEEDED) LabeledMeasurement + H
-
-[equations]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/filter_equations.png "EKF Equations"
-[cycle]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/cycle.png "Predict/Update cycle"
-[F]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/F.png "State transition matrix"
-[Fca]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Constant Acceleration"
-[Fcv]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Constant Velocity"
-[Fct]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Constant Turn"
-[Fta]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/phiCA.png "Thrust Acceleration"
-[sensor_fusion]:https://
-[dif_data_rates]:https://

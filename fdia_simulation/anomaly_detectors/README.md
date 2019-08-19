@@ -14,7 +14,8 @@ to a chi-squared distribution and see if it corresponds.
 This method helps ensure *consistency* as it takes in consideration *all previous measurements*. However, some insidious measurements can make
 the distribution stay unchanged even though the estimation is off.
 
-![alt-text][d_mah]
+<img src="../../images/d_mah.png" width="200">
+
 
 * **Euclidian distance Detection**  
 The objective of the **euclidian distance detection** method is to
@@ -23,7 +24,7 @@ state) to a threshold.
 This method helps ensure *coherence* but fails against a compromised
 estimator and sensor.
 
-![alt-text][d_euc]
+<img src="../../images/d_euc.png" width="200">
 
 ---
 
@@ -32,8 +33,3 @@ estimator and sensor.
 Examples of use are present within the source code, simply execute
 the files `fdia_simulation/anomaly_detectors/chi_square.py` and
 `fdia_simulation/anomaly_detectors/euclidian.py`
-
-
-[detector]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/detector.png "Detector Use"
-[d_mah]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/d_euc.png =300x "Euclidian Distance"
-[d_euc]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/d_mah.png =300x "Mahalanobis Distance"

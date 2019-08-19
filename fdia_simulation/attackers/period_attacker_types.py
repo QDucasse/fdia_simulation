@@ -6,9 +6,9 @@ Created on Wed Jul 31 14:07:21 2019
 """
 
 import numpy as np
-from fdia_simulation.attackers import PeriodAttacker,BruteForceAttacker,DriftAttacker
+from fdia_simulation.attackers import PeriodAttacker,DOSAttacker,DriftAttacker
 
-class BruteForcePeriodAttacker(PeriodAttacker,BruteForceAttacker):
+class DOSPeriodAttacker(PeriodAttacker,DOSAttacker):
     '''
     Implements an attack strategy consisting of systematically giving out wrong
     measurements in order to make the filter condemn the attacked sensor. This
@@ -30,7 +30,7 @@ class BruteForcePeriodAttacker(PeriodAttacker,BruteForceAttacker):
         return PeriodAttacker.listen_measurement(self,measurement)
 
     def attack_measurement(self,measurement):
-        return BruteForceAttacker.attack_measurement(self,measurement)
+        return DOSAttacker.attack_measurement(self,measurement)
 
 class DriftPeriodAttacker(PeriodAttacker,DriftAttacker):
     '''

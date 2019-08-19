@@ -8,7 +8,7 @@ Created on Wed Jul 24 16:17:02 2019
 import numpy as np
 from fdia_simulation.attackers import Attacker
 
-class BruteForceAttacker(Attacker):
+class DOSAttacker(Attacker):
     '''
     Implements an attack strategy consisting of systematically giving out wrong
     measurements in order to make the filter condemn the attacked sensor. This

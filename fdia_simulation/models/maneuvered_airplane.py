@@ -12,7 +12,7 @@ from math                   import cos,sin,radians
 from fdia_simulation.models import ManeuveredSystem, Command
 
 class ManeuveredAirplane(ManeuveredSystem):
-    r'''Implements a model for a maneuvered airplane: commands on two headings
+    '''Implements a model for a maneuvered airplane: commands on two headings
     and velocity. The sensors are three position sensors.
 
     Parameters

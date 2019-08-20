@@ -15,7 +15,7 @@ from fdia_simulation.filters import RadarFilterModel
 
 
 class MultipleRadarsFilterModel(RadarFilterModel):
-    r'''Implements a filter model using multiple sensors and combining them
+    '''Implements a filter model using multiple sensors and combining them
     through the measurement function and matrix.
     '''
     def __init__(self, q, radars, dim_x = 9, dim_z = None,
@@ -63,11 +63,6 @@ class MultipleRadarsFilterModel(RadarFilterModel):
 
         Z = np.reshape(np.array([[]]),(0,1))
         for position in self.radar_positions:
-            # X_cur = deepcopy(X)
-            # X_cur[0,0] -= position[0]
-            # X_cur[3,0] -= position[1]
-            # X_cur[6,0] -= position[2]
-            # Z_part = RadarFilterModel.hx(self,X_cur)
             x = X[0,0] - position[0]
             y = X[3,0] - position[1]
             z = X[6,0] - position[2]
@@ -94,11 +89,6 @@ class MultipleRadarsFilterModel(RadarFilterModel):
         '''
         H = np.reshape(np.array([[]]),(0,9))
         for position in self.radar_positions:
-            # X_cur = deepcopy(X)
-            # X_cur[0,0] -= position[0]
-            # X_cur[3,0] -= position[1]
-            # X_cur[6,0] -= position[2]
-            # H_part = RadarFilterModel.HJacob(self,X_cur)
             x = X[0,0] - position[0]
             y = X[3,0] - position[1]
             z = X[6,0] - position[2]
@@ -109,7 +99,7 @@ class MultipleRadarsFilterModel(RadarFilterModel):
         return H
 
 class MultiplePeriodRadarsFilterModel(MultipleRadarsFilterModel):
-    r'''Implements a filter model using multiple sensors with different data rates
+    '''Implements a filter model using multiple sensors with different data rates
     and combining them through the measurement function and matrix.
     '''
     def __init__(self,*args,**kwargs):
@@ -153,15 +143,10 @@ class MultiplePeriodRadarsFilterModel(MultipleRadarsFilterModel):
 
         Z = np.reshape(np.array([[]]),(0,1))
         for i,position in enumerate(self.radar_positions):
-            # X_cur = deepcopy(X)
-            # X_cur[0,0] -= position[0]
-            # X_cur[3,0] -= position[1]
-            # X_cur[6,0] -= position[2]
             x = X[0,0] - position[0]
             y = X[3,0] - position[1]
             z = X[6,0] - position[2]
             if i == tag:
-                # Z_part = RadarFilterModel.hx(self,X_cur)
                 r     = sqrt(x**2 + y**2 + z**2)
                 theta = atan2(y,x)
                 phi   = atan2(z,sqrt(x**2 + y**2))
@@ -188,15 +173,10 @@ class MultiplePeriodRadarsFilterModel(MultipleRadarsFilterModel):
         '''
         H = np.reshape(np.array([[]]),(0,9))
         for i,position in enumerate(self.radar_positions):
-            # X_cur = deepcopy(X)
-            # X_cur[0,0] -= position[0]
-            # X_cur[3,0] -= position[1]
-            # X_cur[6,0] -= position[2]
             x = X[0,0] - position[0]
             y = X[3,0] - position[1]
             z = X[6,0] - position[2]
             if i == tag: # If the radar if the one sending the measurement
-                # H_part = RadarFilterModel.HJacob(self,X_cur)
                 H_part = np.array([[x/sqrt(x**2 + y**2 + z**2), 0, 0, y/sqrt(x**2 + y**2 + z**2), 0, 0, z/sqrt(x**2 + y**2 + z**2),0 ,0],
                                    [-y/(x**2 + y**2), 0, 0, x/(x**2 + y**2), 0, 0, 0, 0, 0],
                                    [-x*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, -y*z/(sqrt(x**2 + y**2)*(x**2 + y**2 + z**2)), 0, 0, sqrt(x**2 + y**2)/(x**2 + y**2 + z**2), 0, 0]])

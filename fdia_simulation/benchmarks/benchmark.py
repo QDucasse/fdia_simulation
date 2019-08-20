@@ -12,7 +12,7 @@ from filterpy.kalman           import IMMEstimator
 from fdia_simulation.models    import Radar, PeriodRadar, Track
 
 class Benchmark(object):
-    r'''Implements a benchmark to create an estimation of a trajectory detected
+    '''Implements a benchmark to create an estimation of a trajectory detected
     from a set of radars and estimated by a set of filters.
     Parameters
     ----------
@@ -139,41 +139,34 @@ class Benchmark(object):
             # Filter cycle
             self.radar_filter.predict()
             self.radar_filter.update(measurement)
-            # print("================================================================")
-            # print(self.radar_filter)
-            # print("================================================================")
             current_state = deepcopy(self.radar_filter.x)
             est_states.append(current_state)
-            # print('Estimate states vector:\n{0}\n'.format(est_states))
             if with_nees:
                 if not self.is_period_radar:
                     # The corresponding real state to the estimated one
                     state_id = int(self.radars[0].step * i)
                 else:
                     # The corresponding real state to the estimated one
+                    #### CORRECTION NEEDED!!!
                     state_id = int(measurement.time)
+                    #### CORRECTION NEEDED!!!
                 # Computation of the error between true and estimated states
                 states_tilde = np.subtract(est_states[i],np.reshape(self.states[state_id,:],(-8,1)))
                 nees.append(*(states_tilde.T@inv(self.radar_filter.P)@states_tilde))
             if self.filter_is_imm:
                 probs.append(self.radar_filter.mu)
 
-        # Conversion in arrays
+        # Conversion to arrays
         est_states = np.array(est_states)
         nees       = np.array(nees)
         probs      = np.array(probs)
 
-        # print('estimated states: \n{0}\n'.format(est_states))
         # Extraction of the position (for plotting)
         est_xs     = est_states[:,0,:]
         est_ys     = est_states[:,3,:]
         est_zs     = est_states[:,6,:]
-        # print('estimated xs: \n{0}\n'.format(est_xs))
-        # print('estimated ys: \n{0}\n'.format(self.est_ys))
-        # print('estimated zs: \n{0}\n'.format(self.est_zs))
 
         self.estimated_positions = np.concatenate((est_xs,est_ys,est_zs),axis=1)
-        # print('estimated positions: \n{0}\n'.format(self.estimated_positions))
         self.nees  = nees
         self.probs = probs
 

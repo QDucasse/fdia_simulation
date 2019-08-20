@@ -12,7 +12,7 @@ from filterpy.common        import pretty_str
 from fdia_simulation.models import ManeuveredAirplane, NoisySensor, Track, ManeuveredSystem, Command
 
 class Radar(object):
-    r'''Implements a simulated radar.
+    '''Implements a simulated radar.
     The radar will output a data set corresponding to typical radar values.
     Attributes
     ----------
@@ -278,7 +278,7 @@ class LabeledMeasurement(object):
             pretty_str('value', self.value)])
 
 class PeriodRadar(Radar):
-    r'''
+    '''
     Implements a radar with a given data rate (dt).
     Attributes
     ----------

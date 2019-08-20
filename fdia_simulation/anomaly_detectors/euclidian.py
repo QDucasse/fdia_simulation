@@ -15,29 +15,25 @@ from fdia_simulation.helpers         import plot_measurements
 from fdia_simulation.anomaly_detectors import AnomalyDetector
 
 class EuclidianDetector(AnomalyDetector):
-    r'''Fault detector based on the Euclidian distance tests
     '''
-    def __init__(self):
-        super().__init__()
+    Fault detector based on the Euclidian distance tests
+    '''
 
-    def review_measurement(self,new_measurement,kf,error_rate = 0.05):
-        r'''Tests the input data and detects faulty measurements using Euclidian distance approach
+    def compute_test_quantity(self,measurement,filter):
         '''
-        #! TODO: sigma verification
-        #! TODO: test_quantity verification
-        # sigma = kf.R[0,0]
-        # threshold = 3*sigma
-        threshold = chi2.ppf(1-error_rate,kf.dim_z)
-        test_quantity = sqrt(kf.y.T@kf.y)
-        self.reviewed_values.append(test_quantity)
-        if test_quantity <= threshold:
-            self.comparison_results.append("Success")
-            return "Success"
-        else:
-            self.comparison_results.append("Failure")
-            return "Failure"
+        Computes the float that will be put against the threshold to determine
+        wether or not the measurement is correct.
+        Parameters
+        ----------
+        measurement: float numpy array
+            Measurement coming from a radar and needed to be tested.
 
+        self.filter: KalmanFilter object
+            The Kalman filter the detector is attached to.
+        '''
+        test_quantity = sqrt(filter.y.T@filter.y)
 
+        return test_quantity
 
 if __name__ == "__main__":
     # Example Kalman filter for a kinematic model

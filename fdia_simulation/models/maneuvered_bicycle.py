@@ -13,7 +13,7 @@ from fdia_simulation.helpers import plot_measurements
 
 
 class ManeuveredBicycle(ManeuveredSystem):
-    r'''Implements a model for a maneuvered bicycle: two wheels, commands on heading and velocity.
+    '''Implements a model for a maneuvered bicycle: two wheels, commands on heading and velocity.
     The only sensor in action is a position sensor computing both x and y positions.
 
     Parameters

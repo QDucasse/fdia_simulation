@@ -14,7 +14,7 @@ from fdia_simulation.models            import Radar
 
 
 class RadarFilterModel(ExtendedKalmanFilter,ABC):
-    r'''Implements the basic utilities of radar filters and functions that will
+    '''Implements the basic utilities of radar filters and functions that will
     need to be overiden by subclasses.
     Parameters
     ---------
@@ -187,13 +187,12 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
         if Hx is None:
             Hx = self.hx
         z = np.reshape(z,(-(self.dim_z-1),1))
-        # Anomaly detector à mettre en place
         # Anomaly detection using the specified detector
         if not(self.detector is None):
             res_detection = self.detector.review_measurement(z,self)
-            print(res_detection)
             if not(res_detection):
                 z = None
+        print(z)
         # If res_detection = True => No problem in the measurement
         # if res_detection:
         ExtendedKalmanFilter.update(self,z = z, HJacobian = HJacobian,

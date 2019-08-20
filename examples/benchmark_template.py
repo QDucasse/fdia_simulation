@@ -13,7 +13,7 @@ from fdia_simulation.filters           import (RadarFilterCA, MultipleRadarsFilt
 from fdia_simulation.attackers         import (Attacker,DOSAttacker,DriftAttacker,
                                                PeriodAttacker,DOSPeriodAttacker,DriftPeriodAttacker)
 from fdia_simulation.benchmarks        import Benchmark
-from fdia_simulation.anomaly_detectors import ChiSquareDetector, EuclidianDetector
+from fdia_simulation.anomaly_detectors import MahalanobisDetector, EuclidianDetector
 
 if __name__ == "__main__":
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # ==========================================================================
     ## Comment the unused detectors!
     detector = None
-    detector = ChiSquareDetector()
+    detector = MahalanobisDetector()
     detector = EuclidianDetector()
 
     # ==========================================================================

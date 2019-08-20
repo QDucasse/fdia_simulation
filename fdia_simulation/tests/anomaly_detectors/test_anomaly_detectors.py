@@ -9,7 +9,7 @@ import unittest
 from nose.tools                      import raises
 from numpy.random                    import randn
 from filterpy.common                 import kinematic_kf
-from fdia_simulation.anomaly_detectors import ChiSquareDetector, EuclidianDetector, AnomalyDetector
+from fdia_simulation.anomaly_detectors import MahalanobisDetector, EuclidianDetector, AnomalyDetector
 
 
 
@@ -18,7 +18,7 @@ class AnomalyDetectorTestCase(unittest.TestCase):
     def test_no_initialization(self):
         abstractClassInstance = AnomalyDetector()
 
-class ChiSquareDetectorTestCase(unittest.TestCase):
+class MahalanobisDetectorTestCase(unittest.TestCase):
     def setUp(self):
         self.kinematic_test_kf = kinematic_kf(dim=1,order=1,dt=1)
         x         = [0.,2.]
@@ -43,7 +43,7 @@ class ChiSquareDetectorTestCase(unittest.TestCase):
         self.zs[20] += 10.
         self.zs[25] += 10.
 
-        self.detector = ChiSquareDetector()
+        self.detector = MahalanobisDetector()
 
     def test_initial_reviewed_values(self):
         self.assertEqual(self.detector.reviewed_values,[])

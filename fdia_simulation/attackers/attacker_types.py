@@ -76,3 +76,38 @@ class DriftAttacker(Attacker):
         modified_measurement[self.radar_pos*3 + 2,:] = mod_phi
 
         return modified_measurement
+
+
+class CumulativeDriftAttacker(DriftAttacker):
+    '''
+    Implements an attack strategy consisting of injecting measurements to build
+    a drift delta_drift after delta_drift
+    Parameters
+    ----------
+    delta_drift:  float numpy array (3,1)
+        Impact of the attack on the three position parameters.
+
+    radar_pos: int
+        Position of the attacked radar.
+    '''
+    def __init__(self, delta_drift, *args, **kwargs):
+        self.delta_drift = delta_drift
+        DriftAttacker.__init__(self,attack_drift = delta_drift,*args,**kwargs)
+
+    def attack_measurement(self, measurement):
+        '''
+        See DriftAttacker.attack_measurement() for more information
+        The CumulativeDriftAttacker uses the same idea except it amplifies the drift
+        with every step that goes by.
+        Parameters
+        ----------
+        measurement: float numpy array
+            Raw measurement coming from the attacked radar
+
+        Returns
+        -------
+        modified_measurement: float numpy array
+            Compromised measurement (added the cumulative drift)
+        '''
+        self.attack_drift += self.delta_drift
+        return DriftAttacker.attack_measurement(self,measurement)

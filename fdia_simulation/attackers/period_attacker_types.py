@@ -6,7 +6,7 @@ Created on Wed Jul 31 14:07:21 2019
 """
 
 import numpy as np
-from fdia_simulation.attackers import PeriodAttacker,DOSAttacker,DriftAttacker
+from fdia_simulation.attackers import PeriodAttacker,DOSAttacker,DriftAttacker,CumulativeDriftAttacker
 
 class DOSPeriodAttacker(PeriodAttacker,DOSAttacker):
     '''
@@ -52,3 +52,22 @@ class DriftPeriodAttacker(PeriodAttacker,DriftAttacker):
 
     def attack_measurement(self,measurement):
         return DriftAttacker.attack_measurement(self,measurement)
+
+class CumulativeDriftPeriodAttacker(PeriodAttacker,CumulativeDriftAttacker):
+    '''
+    Implements an attack strategy consisting of injecting measurements to make
+    one to three directional parameter drifting.
+    Parameters
+    ----------
+    attack_drift:  float numpy array (3,1)
+        Impact of the attack on the three position parameters.
+    '''
+    def __init__(self,delta_drift, *args, **kwargs):
+        self.delta_drift = delta_drift
+        PeriodAttacker.__init__(self,*args,**kwargs)
+
+    def listen_measurement(self,measurement):
+        return PeriodAttacker.listen_measurement(self,measurement)
+
+    def attack_measurement(self,measurement):
+        return CumulativeDriftAttacker.attack_measurement(self,measurement)

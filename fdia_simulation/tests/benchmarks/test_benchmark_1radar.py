@@ -8,9 +8,8 @@ Created on Mon Jul 22 15:58:06 2019
 import unittest
 import numpy as np
 from abc                        import ABC
-from filterpy.kalman            import IMMEstimator
 from fdia_simulation.models     import Radar
-from fdia_simulation.filters    import RadarFilterCA,RadarFilterCV,RadarFilterCT,RadarFilterTA
+from fdia_simulation.filters    import RadarFilterCA,RadarFilterCV,RadarFilterCT,RadarFilterTA,RadarIMM
 from fdia_simulation.benchmarks import Benchmark
 
 
@@ -115,7 +114,7 @@ class Benchmark1RadarIMM2TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
         mu = [0.5, 0.5]
         trans = np.array([[0.999, 0.001],
                           [0.001, 0.999]])
-        self.radar_filter = IMMEstimator(filters = filters, mu = mu, M = trans)
+        self.radar_filter = RadarIMM(filters = filters, mu = mu, M = trans)
 
         # Benchmark definition
         self.benchmark = Benchmark(radars = self.radar, radar_filter = self.radar_filter, states = self.states)
@@ -144,7 +143,7 @@ class Benchmark1RadarIMM3TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
         trans = np.array([[0.998, 0.001, 0.001],
                           [0.050, 0.900, 0.050],
                           [0.001, 0.001, 0.998]])
-        self.radar_filter = IMMEstimator(filters = filters, mu = mu, M = trans)
+        self.radar_filter = RadarIMM(filters = filters, mu = mu, M = trans)
 
         # Benchmark definition
         self.benchmark = Benchmark(radars = self.radar, radar_filter = self.radar_filter, states = self.states)
@@ -174,7 +173,7 @@ class Benchmark1RadarIMM4TestCase(Benchmark1RadarTestEnv,unittest.TestCase):
                           [0.050, 0.850, 0.050, 0.050],
                           [0.001, 0.001, 0.997, 0.001],
                           [0.001, 0.001, 0.001, 0.997]])
-        self.radar_filter = IMMEstimator(filters = filters, mu = mu, M = trans)
+        self.radar_filter = RadarIMM(filters = filters, mu = mu, M = trans)
 
         # Benchmark definitions
         self.benchmark = Benchmark(radars = self.radar, radar_filter = self.radar_filter, states = self.states)

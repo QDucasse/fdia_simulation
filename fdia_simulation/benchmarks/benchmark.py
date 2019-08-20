@@ -6,10 +6,10 @@ Created on Mon Jul 15 15:06:12 2019
 """
 import numpy             as np
 import matplotlib.pyplot as plt
-from copy                      import deepcopy
-from numpy.linalg              import inv
-from filterpy.kalman           import IMMEstimator
-from fdia_simulation.models    import Radar, PeriodRadar, Track
+from copy                    import deepcopy
+from numpy.linalg            import inv
+from fdia_simulation.filters import RadarIMM
+from fdia_simulation.models  import Radar, PeriodRadar, Track
 
 class Benchmark(object):
     '''Implements a benchmark to create an estimation of a trajectory detected
@@ -41,7 +41,7 @@ class Benchmark(object):
         if  isinstance(self.radars[0],PeriodRadar):
             self.is_period_radar = True
         self.filter_is_imm = False
-        if type(self.radar_filter) == IMMEstimator:
+        if type(self.radar_filter) == RadarIMM:
             self.filter_is_imm = True
 
         self.attacker = attacker
@@ -270,4 +270,9 @@ class Benchmark(object):
         self.gen_data_set()
         self.process_filter(with_nees = with_nees)
         self.generate_plotting_labels()
+        if not(self.filter_is_imm):
+            print("{0} anomalies out of {1} measurements".format(self.radar_filter.anomaly_counter,len(self.estimated_positions)))
+        else:
+            for filter in self.radar_filter.filters:
+                print("{0} anomalies out of {1} measurements".format(filter.anomaly_counter,len(self.estimated_positions)))
         if plot: self.plot()

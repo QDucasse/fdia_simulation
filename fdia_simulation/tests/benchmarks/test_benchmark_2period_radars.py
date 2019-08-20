@@ -8,9 +8,11 @@ Created on Mon Jul 22 15:58:06 2019
 import unittest
 import numpy as np
 from abc                              import ABC
-from filterpy.kalman                  import IMMEstimator
 from fdia_simulation.models           import Radar, PeriodRadar
-from fdia_simulation.filters          import MultiplePeriodRadarsFilterCA,MultiplePeriodRadarsFilterCV,MultiplePeriodRadarsFilterCT,MultiplePeriodRadarsFilterTA
+from fdia_simulation.filters          import (MultiplePeriodRadarsFilterCA,
+                                              MultiplePeriodRadarsFilterCV,
+                                              MultiplePeriodRadarsFilterCT,
+                                              MultiplePeriodRadarsFilterTA,RadarIMM)
 from fdia_simulation.benchmarks       import Benchmark
 from fdia_simulation.tests.benchmarks import Benchmark1RadarTestEnv, Benchmark2RadarsTestEnv
 
@@ -93,7 +95,7 @@ class Benchmark2PeriodRadarsIMM2TestCase(Benchmark2PeriodRadarsTestEnv,unittest.
         mu = [0.5, 0.5]
         trans = np.array([[0.999, 0.001],
                           [0.001, 0.999]])
-        self.radar_filter = IMMEstimator(filters = filters, mu = mu, M = trans)
+        self.radar_filter = RadarIMM(filters = filters, mu = mu, M = trans)
 
         # Benchmark definition
         self.benchmark = Benchmark(radars = self.radars, radar_filter = self.radar_filter, states = self.states)
@@ -122,7 +124,7 @@ class Benchmark2PeriodRadarsIMM3TestCase(Benchmark2PeriodRadarsTestEnv,unittest.
         trans = np.array([[0.998, 0.001, 0.001],
                           [0.050, 0.900, 0.050],
                           [0.001, 0.001, 0.998]])
-        self.radar_filter = IMMEstimator(filters = filters, mu = mu, M = trans)
+        self.radar_filter = RadarIMM(filters = filters, mu = mu, M = trans)
 
         # Benchmark definition
         self.benchmark = Benchmark(radars = self.radars, radar_filter = self.radar_filter, states = self.states)
@@ -152,7 +154,7 @@ class Benchmark2PeriodRadarsIMM4TestCase(Benchmark2PeriodRadarsTestEnv,unittest.
                           [0.050, 0.850, 0.050, 0.050],
                           [0.001, 0.001, 0.997, 0.001],
                           [0.001, 0.001, 0.001, 0.997]])
-        self.radar_filter = IMMEstimator(filters = filters, mu = mu, M = trans)
+        self.radar_filter = RadarIMM(filters = filters, mu = mu, M = trans)
 
         # Benchmark definitions
         self.benchmark = Benchmark(radars = self.radars, radar_filter = self.radar_filter, states = self.states)

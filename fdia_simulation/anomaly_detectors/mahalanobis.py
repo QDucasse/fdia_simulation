@@ -12,7 +12,7 @@ from numpy.linalg                      import inv
 from numpy.random                      import randn
 from filterpy.common                   import kinematic_kf
 from fdia_simulation.helpers           import plot_measurements
-from fdia_simulation.filters           import RadarFilterModel
+from fdia_simulation.filters           import RadarFilterModel, MultiplePeriodRadarsFilterModel
 from fdia_simulation.anomaly_detectors import AnomalyDetector
 
 
@@ -36,7 +36,12 @@ class MahalanobisDetector(AnomalyDetector):
         '''
         # dim_z = filter.dim_z
         # # The measurement matrix has to be computed if the filter is Eself.filter like
-        if isinstance(filter,RadarFilterModel):
+        if isinstance(filter,MultiplePeriodRadarsFilterModel):
+            tag = measurement[0]
+            z   = measurement[1]
+            H = filter.HJacob(filter.x,tag)
+            measurement = z
+        elif isinstance(filter,RadarFilterModel):
             H = filter.HJacob(filter.x)
         else:
             H = filter.H

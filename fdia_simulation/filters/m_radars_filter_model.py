@@ -39,6 +39,8 @@ class MultipleRadarsFilterModel(RadarFilterModel):
         self.compute_Q(q)
         self.compute_F(self.x)
         self.detector = detector
+        self.detection = False
+        self.anomaly_counter = 0
 
 
     def hx(self,X):
@@ -221,6 +223,18 @@ class MultiplePeriodRadarsFilterModel(MultipleRadarsFilterModel):
         self.compute_F(self.x)
         radars_nb = len(self.radars)
         z_input = self.gen_complete_measurement(tag = tag, z = z)
+
+
+        # Anomaly detection
+        # Passing a repackaged measurement containing tag + z_input
+        if not(self.detector is None) and self.detection:
+            res_detection = self.detector.review_measurement([tag,z_input],self)
+            if not(res_detection):
+                z = None
+                self.anomaly_counter += 1
+
+        self.detection = False
+
         ExtendedKalmanFilter.update(self,z = z_input,
                                     HJacobian = self.HJacob, args = (tag),
                                     Hx = self.hx, hx_args = (tag))

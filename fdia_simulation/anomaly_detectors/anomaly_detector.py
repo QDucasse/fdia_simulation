@@ -54,9 +54,6 @@ class AnomalyDetector(ABC):
             self.compute_threshold(dim_z = filter.dim_z)
         test_quantity = self.compute_test_quantity(measurement,filter)
         res = self.compare_test_quantity(test_quantity)
-        # print("===========================")
-        # print("Measurement: {0}".format(measurement))
-        # print("Comparing value {0} to threshold {1}".format(test_quantity,self.threshold))
         return res
 
     def compute_threshold(self,dim_z,error_rate = None):

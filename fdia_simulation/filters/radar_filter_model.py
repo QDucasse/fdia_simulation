@@ -68,6 +68,8 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
         self.compute_Q(q)
         self.compute_F(self.x)
         self.detector = detector
+        self.detection = False
+        self.anomaly_counter = 0
 
     def HJacob(self,X):
         '''
@@ -170,6 +172,13 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
             u = 0
         ExtendedKalmanFilter.predict(self, u = u)
 
+    def activate_detection(self):
+        '''
+        Switches the detection boolean triggering the anomaly detection on
+        measurements.
+        '''
+        self.detection = True
+
     def update(self,z, HJacobian = None, Hx = None,
                args = (), hx_args = ()):
         '''
@@ -188,13 +197,13 @@ class RadarFilterModel(ExtendedKalmanFilter,ABC):
             Hx = self.hx
         z = np.reshape(z,(-(self.dim_z-1),1))
         # Anomaly detection using the specified detector
-        if not(self.detector is None):
+        if not(self.detector is None) and self.detection:
             res_detection = self.detector.review_measurement(z,self)
             if not(res_detection):
                 z = None
-        print(z)
+                self.anomaly_counter += 1
+        self.detection = False
         # If res_detection = True => No problem in the measurement
-        # if res_detection:
         ExtendedKalmanFilter.update(self,z = z, HJacobian = HJacobian,
                                     Hx = Hx, args = args, hx_args = hx_args)
     # def __repr__(self):

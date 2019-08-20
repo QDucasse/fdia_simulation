@@ -7,7 +7,7 @@ Created on Mon Jun 24 09:54:32 2019
 from numpy.random import randn
 
 class NoisySensor(object):
-    r'''Implements a noisy sensor.
+    '''Implements a noisy sensor.
     Parameters
     ----------
     std_noise: float

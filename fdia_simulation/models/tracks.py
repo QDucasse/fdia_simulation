@@ -10,7 +10,7 @@ from fdia_simulation.models  import ManeuveredAirplane
 from fdia_simulation.helpers import plot_track
 
 class Track(object):
-    r'''Implements an airplane trajectory following several modes.
+    '''Implements an airplane trajectory following several modes.
     Parameters
     ----------
     airplane: ManeuveredAirplane

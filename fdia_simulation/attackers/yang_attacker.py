@@ -13,11 +13,11 @@ class YangAttacker(object):
         super().__init__()
 
     def compute_attack_sequence(self):
-        r'''Creates the attack sequence (aka the falsified measurements passed to the filter)
+        '''Creates the attack sequence (aka the falsified measurements passed to the filter)
         '''
         pass
 
     def change_measurements(self):
-        r'''Alters the measurement with the attack sequence
+        '''Alters the measurement with the attack sequence
         '''
         pass

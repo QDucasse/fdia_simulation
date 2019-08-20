@@ -8,7 +8,7 @@ from abc             import ABC, abstractmethod
 from filterpy.common import pretty_str
 
 class Command(object):
-    r'''Representation of a commanded parameter within a dynamic system. Used
+    '''Representation of a commanded parameter within a dynamic system. Used
     for modelization purposes only.
 
     Notes
@@ -53,7 +53,7 @@ class Command(object):
 
 
 class ManeuveredSystem(ABC):
-    r'''Abstract class of a moving target model
+    '''Abstract class of a moving target model
     Parameters
     ----------
     command_list: Command list

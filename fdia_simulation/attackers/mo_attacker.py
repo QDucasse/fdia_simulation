@@ -14,7 +14,7 @@ from filterpy.kalman           import KalmanFilter
 
 
 class UnstableData(object):
-    r'''Implements a model for storing unstable data.
+    '''Implements a model for storing unstable data.
     Parameters
     ----------
     val: float
@@ -40,7 +40,8 @@ class UnstableData(object):
 
 
 class MoAttacker(object):
-    r''' Implements an attack simulation based on the research article Mo et al.
+    '''
+    Implements an attack simulation based on the research article Mo et al.
     2010 in order to generate a sequence of false measurements for a given subset
     of sensors.
     Parameters

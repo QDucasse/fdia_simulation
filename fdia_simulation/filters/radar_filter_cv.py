@@ -11,7 +11,7 @@ from scipy.linalg            import block_diag
 from fdia_simulation.filters import RadarFilterModel, MultipleRadarsFilterModel, MultiplePeriodRadarsFilterModel
 
 class RadarFilterCV(RadarFilterModel):
-    r'''Implements a Kalman Filter state estimator for an airplane-detecting
+    '''Implements a Kalman Filter state estimator for an airplane-detecting
     radar. The model is assumed to have constant velocity.
 
     Notes

@@ -7,8 +7,8 @@ Created on Wed Jul 17 11:17:03 2019
 
 from __future__ import absolute_import
 
-__all__ = ["anomaly_detector", "chi_square", "euclidian"]
+__all__ = ["anomaly_detector", "mahalanobis", "euclidian"]
 
 from .anomaly_detector import *
-from .chi_square       import *
+from .mahalanobis      import *
 from .euclidian        import *

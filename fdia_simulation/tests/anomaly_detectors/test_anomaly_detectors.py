@@ -68,44 +68,21 @@ class MahalanobisDetectorTestCase(unittest.TestCase):
 
     def test_wrong_value_detected(self):
         # First correct values
-        for i in range(5):
+        for i in range(6):
             self.kinematic_test_kf.predict()
             self.detector.review_measurement(self.zs[i],self.kinematic_test_kf)
             self.kinematic_test_kf.update(self.zs[i])
-
         # Incorrect value
         self.kinematic_test_kf.predict()
-        result = self.detector.review_measurement(self.zs[5],self.kinematic_test_kf)
-        self.kinematic_test_kf.update(self.zs[5])
+        result = self.detector.review_measurement(self.zs[6],self.kinematic_test_kf)
+        self.kinematic_test_kf.update(self.zs[6])
         self.assertEqual(result,False)
 
 
-class EuclidianDetectorTestCase(unittest.TestCase):
+class EuclidianDetectorTestCase(MahalanobisDetectorTestCase):
     def setUp(self):
-        self.kinematic_test_kf = kinematic_kf(dim=1,order=1,dt=1)
-        self.zs = []
-        x = [0.,6.]
-        noise_std = 0.001
-
-        # Noisy measurements generation for 30 samples
-        for _ in range(30):
-            last_pos = x[0]
-            last_vel = x[1]
-            new_vel  = last_vel
-            new_pos  = last_pos + last_vel
-            x = [new_pos, new_vel]
-            z = new_pos + (randn()*noise_std)
-            self.zs.append(z)
-
-        # Outlier generation
-        self.zs[5]  += 10.
-        self.zs[10] += 10.
-        self.zs[15] += 10.
-        self.zs[20] += 10.
-        self.zs[25] += 10.
-
+        MahalanobisDetectorTestCase.setUp(self)
         self.detector = EuclidianDetector()
-
-
+        
 if __name__ == "__main__":
     unittest.main()

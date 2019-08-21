@@ -10,7 +10,7 @@ import numpy as np
 from nose.tools                import raises
 from filterpy.kalman           import KalmanFilter,ExtendedKalmanFilter
 from fdia_simulation.models    import Radar, PeriodRadar
-from fdia_simulation.attackers import Attacker, DOSAttacker, DriftAttacker
+from fdia_simulation.attackers import Attacker, DOSAttacker, DriftAttacker, CumulativeDriftAttacker
 
 class AttackerTestCase(unittest.TestCase):
     def setUp(self):
@@ -169,7 +169,6 @@ class DOSAttackerTestCase(AttackerTestCase):
 
     def test_initialization_no_errors(self):
         self.assertTrue(np.array_equal(self.attacker.gamma,self.gamma))
-        self.assertTrue(np.array_equal(self.attacker.mag_vector,self.mag_vector*self.mag))
         self.assertEqual(self.t0,10)
         self.assertEqual(self.time,50)
 
@@ -189,12 +188,10 @@ class DriftAttackerTestCase(AttackerTestCase):
         AttackerTestCase.setUp(self)
         self.attacker = DriftAttacker(filter = self.filter,
                                       radar = self.radar, radar_pos = self.radar_position,
-                                      mag_vector = self.mag_vector,
                                       t0 = self.t0, time = self.time)
 
     def test_initialization_no_errors(self):
         self.assertTrue(np.array_equal(self.attacker.gamma,self.gamma))
-        self.assertTrue(np.array_equal(self.attacker.mag_vector,self.mag_vector))
         self.assertEqual(self.t0,10)
         self.assertEqual(self.time,50)
         self.assertEqual(self.radar, Radar(x=10,y=10))
@@ -210,6 +207,38 @@ class DriftAttackerTestCase(AttackerTestCase):
 
     def test_attacked_vectors(self):
         pass
+
+
+class CumulativeDriftAttackerTestCase(AttackerTestCase):
+    def setUp(self):
+        self.radar_position = 1
+        self.delta_drift = np.array([[0,0,1]]).T
+        AttackerTestCase.setUp(self)
+        self.attacker = CumulativeDriftAttacker(filter = self.filter,
+                                                radar = self.radar, radar_pos = self.radar_position,
+                                                delta_drift = self.delta_drift,
+                                                t0 = self.t0, time = self.time)
+
+    def test_initialization_no_errors(self):
+        self.assertTrue(np.array_equal(self.attacker.gamma,self.gamma))
+        self.assertEqual(self.t0,10)
+        self.assertEqual(self.time,50)
+        self.assertEqual(self.radar, Radar(x=10,y=10))
+        self.assertTrue(np.array_equal(self.attacker.delta_drift,np.array([[0,0,1]]).T))
+        self.assertTrue(np.array_equal(self.attacker.attack_drift,np.array([[0,0,1]]).T))
+
+    def test_listen_measurement_1_step_attack(self):
+        measurement          = np.array([[10,10,10,10,10,10]]).T
+        modified_measurement = np.array([[10.,10.,10.,9.,0.,0.]]).T
+        self.attacker.t0     = 0
+        computed_measurement = self.attacker.listen_measurement(measurement)
+        print(computed_measurement)
+        print(self.attacker)
+        self.assertTrue(np.allclose(modified_measurement,computed_measurement))
+
+    def test_attacked_vectors(self):
+        pass
+
 
 
 if __name__ == "__main__":

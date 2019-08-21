@@ -109,5 +109,6 @@ class CumulativeDriftAttacker(DriftAttacker):
         modified_measurement: float numpy array
             Compromised measurement (added the cumulative drift)
         '''
+        print('blob')
         self.attack_drift += self.delta_drift
         return DriftAttacker.attack_measurement(self,measurement)

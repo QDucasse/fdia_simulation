@@ -13,8 +13,8 @@ class RadarIMM(IMMEstimator):
         self.dim_z = self.filters[0].dim_z
 
     def update(self,measurement):
-        if max(self.mu)>0.95:
+        if max(self.mu)>0.8:
             for filter in self.filters:
                 filter.activate_detection()
-                
+
         IMMEstimator.update(self,measurement)

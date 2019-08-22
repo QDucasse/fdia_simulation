@@ -6,6 +6,7 @@ Created on Wed Jul 31 14:07:21 2019
 """
 
 import numpy as np
+from copy import deepcopy
 from fdia_simulation.attackers import PeriodAttacker,DOSAttacker,DriftAttacker,CumulativeDriftAttacker
 
 class DOSPeriodAttacker(PeriodAttacker,DOSAttacker):
@@ -22,7 +23,7 @@ class DOSPeriodAttacker(PeriodAttacker,DOSAttacker):
 
     + same than Attacker
     '''
-    def __init__(self,mag = 1e6,*args,**kwargs):
+    def __init__(self,mag = 1e4,*args,**kwargs):
         PeriodAttacker.__init__(self,*args,**kwargs)
         self.mag_vector = self.mag_vector*mag
 
@@ -62,8 +63,11 @@ class CumulativeDriftPeriodAttacker(PeriodAttacker,CumulativeDriftAttacker):
     attack_drift:  float numpy array (3,1)
         Impact of the attack on the three position parameters.
     '''
-    def __init__(self,delta_drift, *args, **kwargs):
-        self.delta_drift = delta_drift
+    def __init__(self,delta_drift = None, *args, **kwargs):
+        if delta_drift is None:
+            delta_drift = np.array([[0,0,1]]).T
+        self.delta_drift  = delta_drift
+        self.attack_drift = deepcopy(delta_drift)
         PeriodAttacker.__init__(self,*args,**kwargs)
 
     def listen_measurement(self,measurement):

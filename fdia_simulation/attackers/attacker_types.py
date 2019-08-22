@@ -22,7 +22,7 @@ class DOSAttacker(Attacker):
 
     + same than Attacker
     '''
-    def __init__(self,mag = 1e6, *args, **kwargs):
+    def __init__(self,mag = 1e4, *args, **kwargs):
         Attacker.__init__(self,*args,**kwargs)
         self.mag_vector = self.mag_vector*mag
 
@@ -109,6 +109,5 @@ class CumulativeDriftAttacker(DriftAttacker):
         modified_measurement: float numpy array
             Compromised measurement (added the cumulative drift)
         '''
-        print('blob')
         self.attack_drift += self.delta_drift
         return DriftAttacker.attack_measurement(self,measurement)

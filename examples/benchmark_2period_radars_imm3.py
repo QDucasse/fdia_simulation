@@ -23,8 +23,8 @@ if __name__ == "__main__":
     x0,y0,z0 = trajectory.initial_position(states)
     # ================================ Radar(s) ================================
     ## Period radars
-    dt_rad1 = 0.05
-    dt_rad2 = 0.2
+    dt_rad1 = 0.2
+    dt_rad2 = 0.05
     # Radar 1: Precision radar
     pradar1 = PeriodRadar(x = -6000, y = 10000, dt = dt_rad1)
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     attacker = CumulativeDriftPeriodAttacker(filter = imm, t0 = 300, time = 2000,
                                    delta_drift = np.array([[0,0,1]]).T,
-                                   radar = pradar1, radar_pos = 0)
+                                   radar = pradar2, radar_pos = 1)
 
 
     # =============================== Benchmark ================================

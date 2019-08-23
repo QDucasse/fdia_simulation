@@ -37,9 +37,9 @@ class Benchmark(object):
         xs,ys,zs          = states[:,0], states[:,3], states[:,6]
         self.pos_data     = np.array(list(zip(xs,ys,zs)))
         # Check if the filter is an IMM or not
-        self.is_period_radar = False
+        self.radar_is_period = False
         if  isinstance(self.radars[0],PeriodRadar):
-            self.is_period_radar = True
+            self.radar_is_period = True
         self.filter_is_imm = False
         if type(self.radar_filter) == RadarIMM:
             self.filter_is_imm = True
@@ -92,7 +92,7 @@ class Benchmark(object):
 
             # If the radars do not have different data rates, the measurement
             # vector consists of the concatenation of the different measurements
-            if not self.is_period_radar:
+            if not self.radar_is_period:
                 self.measured_values = np.concatenate((self.measured_values,current_measured_values),axis=1)
 
             # If the radars have different data rates, the measurement vector
@@ -121,7 +121,7 @@ class Benchmark(object):
         '''
         if measurements is None:
             # Default values for PeriodRadars
-            if self.is_period_radar:
+            if self.radar_is_period:
                 measurements = self.labeled_values
             # Default values for radars with the same data rates
             else:
@@ -142,14 +142,12 @@ class Benchmark(object):
             current_state = deepcopy(self.radar_filter.x)
             est_states.append(current_state)
             if with_nees:
-                if not self.is_period_radar:
+                if not self.radar_is_period:
                     # The corresponding real state to the estimated one
                     state_id = int(self.radars[0].step * i)
                 else:
                     # The corresponding real state to the estimated one
-                    #### CORRECTION NEEDED!!!
-                    state_id = int(measurement.time)
-                    #### CORRECTION NEEDED!!!
+                    state_id = min(int(measurement.time//Track.DT_TRACK),len(self.states))
                 # Computation of the error between true and estimated states
                 states_tilde = np.subtract(est_states[i],np.reshape(self.states[state_id,:],(-8,1)))
                 nees.append(*(states_tilde.T@inv(self.radar_filter.P)@states_tilde))
@@ -274,5 +272,6 @@ class Benchmark(object):
             print("{0} anomalies out of {1} measurements".format(self.radar_filter.anomaly_counter,len(self.estimated_positions)))
         else:
             for filter in self.radar_filter.filters:
-                print("{0} anomalies out of {1} measurements".format(filter.anomaly_counter,len(self.estimated_positions)))
+                if not(filter.detector is None):
+                    print("{0} anomalies out of {1} measurements".format(filter.anomaly_counter,len(self.estimated_positions)))
         if plot: self.plot()

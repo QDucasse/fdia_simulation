@@ -23,7 +23,7 @@ from fdia_simulation.anomaly_detectors import MahalanobisDetector,EuclidianDetec
 # ================================ Window Generation ===========================
 window = tk.Tk()
 window.title("False Data Injection an Air Traffic Control Tower")
-window.geometry("800x500")
+window.geometry("650x500")
 
 # ==============================================================================
 # ============================= Frames Definitions =============================
@@ -61,14 +61,16 @@ label_rad.grid(column = 0, columnspan = 10,row = 0)
 
 # Radar type selection
 type_label = tk.Label(rad_frame,text = "Radar type:")
-type_label.grid(column = 1, row = 1)
+type_label.grid(column = 3, row = 1)
 types = [ "Radar","PeriodRadar"]
 rad_combobox = ttk.Combobox(rad_frame,values = types)
 rad_combobox.current(0)
-rad_combobox.grid(column = 2, row = 1)
+rad_combobox.grid(column = 4, row = 1)
 
 std_var = tk.IntVar()
 prec_var = tk.IntVar()
+std_var.set(1)
+prec_var.set(1)
 # Radar Selection
 std_rad_check  = tk.Checkbutton(rad_frame, text="Standard",variable = std_var)
 std_rad_check.grid(column = 0, row = 2)
@@ -82,6 +84,13 @@ std_rad_y_label.grid(column = 3, row = 2)
 std_rad_y_entry = tk.Entry(rad_frame)
 std_rad_y_entry.insert("end","1000")
 std_rad_y_entry.grid(column = 4, row = 2)
+std_rad_dt_label = tk.Label(rad_frame,text = "dt: ")
+std_rad_dt_label.grid(column = 5, row = 2)
+std_rad_dt_entry = tk.Entry(rad_frame)
+std_rad_dt_entry.insert("end","0.2")
+std_rad_dt_entry.grid(column = 6, row = 2)
+
+
 
 prec_rad_check = tk.Checkbutton(rad_frame, text="Precision",variable = prec_var)
 prec_rad_check.grid(column = 0, row = 3)
@@ -95,6 +104,11 @@ prec_rad_y_label.grid(column = 3, row = 3)
 prec_rad_y_entry = tk.Entry(rad_frame)
 prec_rad_y_entry.insert("end","4000")
 prec_rad_y_entry.grid(column = 4, row = 3)
+prec_rad_dt_label = tk.Label(rad_frame,text = "dt: ")
+prec_rad_dt_label.grid(column = 5, row = 3)
+prec_rad_dt_entry = tk.Entry(rad_frame)
+prec_rad_dt_entry.insert("end","0.05")
+prec_rad_dt_entry.grid(column = 6, row = 3)
 
 
 # ==============================================================================
@@ -107,6 +121,10 @@ ca_var = tk.IntVar()
 cv_var = tk.IntVar()
 ct_var = tk.IntVar()
 ta_var = tk.IntVar()
+ca_var.set(1)
+cv_var.set(1)
+ct_var.set(1)
+ta_var.set(1)
 
 detec_models = [ "None", "Mahalanobis", "Euclidian"]
 
@@ -117,7 +135,7 @@ cv_check.grid(column = 0, row = 1)
 pn_cv_label = tk.Label(filt_frame,text = "Process noise: ")
 pn_cv_label.grid(column = 1, row = 1)
 pn_cv_entry = tk.Entry(filt_frame)
-pn_cv_entry.insert("end","100")
+pn_cv_entry.insert("end","10")
 pn_cv_entry.grid(column = 2, row = 1)
 # Detector selection : Label + Combobox
 cv_detec_label = tk.Label(filt_frame,text = "Detector model: ")
@@ -133,7 +151,7 @@ ca_check.grid(column = 0, row = 2)
 pn_ca_label = tk.Label(filt_frame,text = "Process noise: ")
 pn_ca_label.grid(column = 1, row = 2)
 pn_ca_entry = tk.Entry(filt_frame)
-pn_ca_entry.insert("end","200")
+pn_ca_entry.insert("end","400")
 pn_ca_entry.grid(column = 2, row = 2)
 # Detector selection : Label + Combobox
 ca_detec_label = tk.Label(filt_frame,text = "Detector model: ")
@@ -149,7 +167,7 @@ ct_check.grid(column = 0, row = 3)
 pn_ct_label = tk.Label(filt_frame,text = "Process noise: ")
 pn_ct_label.grid(column = 1, row = 3)
 pn_ct_entry = tk.Entry(filt_frame)
-pn_ct_entry.insert("end","350")
+pn_ct_entry.insert("end","25")
 pn_ct_entry.grid(column = 2, row = 3)
 # Detector selection : Label + Combobox
 ct_detec_label = tk.Label(filt_frame,text = "Detector model: ")
@@ -165,7 +183,7 @@ ta_check.grid(column = 0, row = 4)
 pn_ta_label = tk.Label(filt_frame,text = "Process noise: ")
 pn_ta_label.grid(column = 1, row = 4)
 pn_ta_entry = tk.Entry(filt_frame)
-pn_ta_entry.insert("end","400")
+pn_ta_entry.insert("end","350")
 pn_ta_entry.grid(column = 2, row = 4)
 # Detector selection : Label + Combobox
 ta_detec_label = tk.Label(filt_frame,text = "Detector model: ")
@@ -188,7 +206,7 @@ label_att_type = tk.Label(att_frame,text = "Attacker Type:")
 label_att_type.grid(column = 0, row = 1)
 att_models = [ "None","DOS", "Constant Drift", "Cumulative Drift"]
 att_combobox = ttk.Combobox(att_frame,values = att_models)
-att_combobox.current(0)
+att_combobox.current(3)
 att_combobox.grid(column = 0, row = 2)
 
 label_type = tk.Label(att_frame,text = "Attacked Radar:")
@@ -214,7 +232,7 @@ time_entry.grid(column = 3, row = 2)
 drift_label = tk.Label(att_frame,text = "drift:")
 drift_label.grid(column = 2, row = 3)
 drift_entry = tk.Entry(att_frame, width = 20)
-drift_entry.insert("end","0 0 100")
+drift_entry.insert("end","0 0 1")
 drift_entry.grid(column = 3, row = 3)
 
 
@@ -283,13 +301,15 @@ def generate_dicts():
     std_dict = {
         "is_chosen":std_var.get(),
         "x":std_rad_x_entry.get(),
-        "y":std_rad_y_entry.get()
+        "y":std_rad_y_entry.get(),
+        "dt":std_rad_dt_entry.get()
     }
     global prec_dict
     prec_dict = {
         "is_chosen":prec_var.get(),
         "x":prec_rad_x_entry.get(),
-        "y":prec_rad_y_entry.get()
+        "y":prec_rad_y_entry.get(),
+        "dt":prec_rad_dt_entry.get()
     }
     # Filters dictionaries
     global ca_dict
@@ -366,18 +386,20 @@ def generate_radars(radar_type):
         if std_dict["is_chosen"]:
             x = int(std_dict["x"])
             y = int(std_dict["y"])
+            dt = float(std_dict["dt"])
             std_radar = PeriodRadar(x = x, y = y, r_std = 5., theta_std = 0.005,
-                                    phi_std = 0.005, dt = 0.2)
+                                    phi_std = 0.005, dt = dt)
             radars.append(std_radar)
         if prec_dict["is_chosen"]:
             x = int(prec_dict["x"])
             y = int(prec_dict["y"])
-            prec_radar = PeriodRadar(x = x, y = y, dt = 0.05)
+            dt = float(prec_dict["dt"])
+            prec_radar = PeriodRadar(x = x, y = y, dt = dt)
             radars.append(prec_radar)
 
 def generate_filters(radar_type):
     global ca_dict, cv_dict, ct_dict, ta_dict, filter, filters, radars, x0, y0, z0
-    filter_dicts = [ca_dict, cv_dict, ct_dict, ta_dict]
+    filter_dicts = [cv_dict, ca_dict, ct_dict, ta_dict]
     current_filters = []
     for filter_dict in filter_dicts:
         if filter_dict["is_chosen"]:

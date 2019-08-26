@@ -20,14 +20,14 @@ class Benchmark2PeriodRadarsTestEnv(Benchmark2RadarsTestEnv):
 
     def setUp_radar_states(self):
         # Radar definition
-        dt_rad1 = 0.6
+        dt_rad1 = 0.01
         self.radar1 = PeriodRadar(x=2000,y=2000,dt=dt_rad1)
-        dt_rad2 = 0.3
+        dt_rad2 = 0.02
         self.radar2 = PeriodRadar(x=1000,y=1000,dt=dt_rad2)
         self.radars = [self.radar1, self.radar2]
         # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(225)])
-        self.len_elements = int(len(self.states)/self.radar1.step + len(self.states)/self.radar2.step)
+        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        self.len_elements = int(len(self.states)/self.radar1.step) + int(len(self.states)/self.radar2.step)
 
     def test_gen_data_set(self):
         self.benchmark.gen_data_set()

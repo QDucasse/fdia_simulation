@@ -19,22 +19,20 @@ class NoiseFinder2PeriodRadarsTestEnv(NoiseFinderMultipleRadarsTestEnv):
 
     def setUp_radars_states(self):
         # Radars definitions
-        dt_rad1 = 0.6
+        dt_rad1 = 0.01
         self.radar1 = PeriodRadar(x=2000,y=2000,dt=dt_rad1)
-        self.radar1.step = 2
-        dt_rad2 = 0.3
+        dt_rad2 = 0.02
         self.radar2 = PeriodRadar(x=1000,y=1000,dt=dt_rad2)
-        self.radar2.step = 1
         self.radars = [self.radar1, self.radar2]
         # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        self.states = np.array([[i,i/2,i/10]*3 for i in range(300)])
 
     def test_initialization_noise_finder(self):
-        self.assertEqual(self.process_noise_finder.radars, [PeriodRadar(x=2000,y=2000,dt=0.6),PeriodRadar(x=1000,y=1000,dt=0.3)])
-        self.assertTrue(np.array_equal(self.process_noise_finder.states,np.array([[i,i/2,i/10]*3 for i in range(100)])))
+        self.assertEqual(self.process_noise_finder.radars, [PeriodRadar(x=2000,y=2000,dt=0.01),PeriodRadar(x=1000,y=1000,dt=0.02)])
+        self.assertTrue(np.array_equal(self.process_noise_finder.states,np.array([[i,i/2,i/10]*3 for i in range(300)])))
 
     def test_compute_nees(self):
-        self.assertEqual(150,len(self.process_noise_finder.compute_nees(10)))
+        self.assertEqual(450,len(self.process_noise_finder.compute_nees(10)))
 
 
 class NoiseFinder2PeriodRadarsCATestCase(NoiseFinder2PeriodRadarsTestEnv,unittest.TestCase):

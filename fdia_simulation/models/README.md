@@ -10,8 +10,12 @@ The change is made through the `Command` object that needs a specification
 of the *new value* and the *number of steps* (number of calls to the
 update model) in which the value should be reached.
 
-<img src="../../images/bicycle.png" width="400">
-<img src="../../images/landing.png" width="400">
+*Maneuvered Bicycle with two commands: heading & speed*
+<img src="../../images/bicycle.png" width="400">  
+
+*Maneuvered Airplane with three commands: heading around z-axis, heading around x-axis & speed*
+<img src="../../images/landing.png" width="400">  
+
 
 ---
 

@@ -147,7 +147,7 @@ class Benchmark(object):
                     state_id = int(self.radars[0].step * i)
                 else:
                     # The corresponding real state to the estimated one
-                    state_id = min(int(measurement.time//Track.DT_TRACK),len(self.states))
+                    state_id = min(int(measurement.time//Track.DT_TRACK),len(self.states)-1)
                 # Computation of the error between true and estimated states
                 states_tilde = np.subtract(est_states[i],np.reshape(self.states[state_id,:],(-8,1)))
                 nees.append(*(states_tilde.T@inv(self.radar_filter.P)@states_tilde))
@@ -251,7 +251,6 @@ class Benchmark(object):
             plt.legend()
             fig3.show()
 
-
         plt.show()
 
     def launch_benchmark(self, with_nees = False, plot = True):
@@ -271,7 +270,9 @@ class Benchmark(object):
         if not(self.filter_is_imm):
             print("{0} anomalies out of {1} measurements".format(self.radar_filter.anomaly_counter,len(self.estimated_positions)))
         else:
-            for filter in self.radar_filter.filters:
+            for i,filter in enumerate(self.radar_filter.filters):
                 if not(filter.detector is None):
-                    print("{0} anomalies out of {1} measurements".format(filter.anomaly_counter,len(self.estimated_positions)))
+                    print("{0} anomalies out of {1} measurements for {2} filter".format(filter.anomaly_counter,len(self.estimated_positions),self.radar_filters_names[i][-2:]))
+        if with_nees:
+            print("NEES mean: {0}\nNEES max: {1}".format(np.mean(self.nees[200:]),*max(self.nees[200:])))
         if plot: self.plot()

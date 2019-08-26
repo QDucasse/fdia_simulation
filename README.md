@@ -28,6 +28,12 @@ virtual environment, the installation proceeds as follows:
     $ pip install -e .
   ```
 
+  *Launch of the basic GUI*
+  ```bash
+    $ python fdia_simulation/app.py
+  ```
+Note that the GUI does not contain all the features of the project but allows 
+you getting familiar with the components and interactions between them.
 ---
 
 ### Structure of the project

@@ -32,7 +32,7 @@ virtual environment, the installation proceeds as follows:
   ```bash
     $ python fdia_simulation/app.py
   ```
-Note that the GUI does not contain all the features of the project but allows 
+Note that the GUI does not contain all the features of the project but allows
 you getting familiar with the components and interactions between them.  
 
 ---
@@ -167,19 +167,19 @@ by executing the testfile itself.
 ```
 
 The tests are not robust as they verify the integrity of the data generated but
-not its quality. What that means is that even if the result of a filter might be 
-considered bad as the estimation is not correct, his behavior is correct. 
-Testing the reaction of a bad designed filtered on a very demanding trajectory is 
-not the point of the project. However, many examples allow you to try and test the 
+not its quality. What that means is that even if the result of a filter might be
+considered bad as the estimation is not correct, his behavior is correct.
+Testing the reaction of a bad designed filtered on a very demanding trajectory is
+not the point of the project. However, many examples allow you to try and test the
 results of many different combinations and that is how the filter should be designed.
 
 ---
 
 ### References
 
-I used Roger Labbe Jr. "Kalman and Bayesian Filters in Python" as a starting point
+I used **Roger Labbe Jr. "Kalman and Bayesian Filters in Python"** as a starting point
 and not only did it showed me the FilterPy library but it also made me discover
-Bar Shalom "Estimation with Application to Tracking and Navigation"
+**Bar Shalom "Estimation with Application to Tracking and Navigation"** providing an in-depth take on the subject with several examples.
 
 
 [models]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/models

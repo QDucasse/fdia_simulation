@@ -1,4 +1,10 @@
-# Noise finder results
+# Noise finder results & Attack report
+
+### Attack report
+
+The results of several attacks is stored in `attack_report.txt`.
+It contains the configuration that provided the results, the mean NEES, max NEES,
+and number of anomalies detected for each filter observing the system.
 
 ### Launch
 All filters are parameterized in the `examples/noise_finder_1model.py`. To

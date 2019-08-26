@@ -60,7 +60,7 @@ likely.
 a measurement vector and therefore take all available data into our
 filter whether it is data itself or belief about a measurement.
 
-(IMAGE NEEDED) H concatenation
+<img src="../../images/HJac.png" width="100">
 
 ---
 
@@ -77,4 +77,5 @@ We also need to recompute the **Q** and **F** matrix as they depend on the
 The **H** matrix changes as well as measurement are coming from one radar
 at a time and (nearly) never together.
 
-(IMAGE NEEDED) LabeledMeasurement + H
+Therefore measurements are considered `LabeledMeasurement` and use a `tag`, a
+`time` stamp and the `measurement` itself.

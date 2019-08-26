@@ -20,16 +20,16 @@ class NoiseFinder1RadarTestEnv(ABC):
     def setUp_radars_states(self):
         # Radar definition
         self.radar = Radar(x=2000,y=2000)
-        self.radar.step = 1.
+        self.radar.step = 1
         # States definition
-        self.states = np.array([[i,i/2,i/10]*3 for i in range(100)])
+        self.states = np.array([[i,i/2,i/10]*3 for i in range(300)])
 
     def test_initialization_noise_finder(self):
         self.assertEqual(self.process_noise_finder.radar, Radar(x=2000,y=2000))
-        self.assertTrue(np.array_equal(self.process_noise_finder.states,np.array([[i,i/2,i/10]*3 for i in range(100)])))
+        self.assertTrue(np.array_equal(self.process_noise_finder.states,np.array([[i,i/2,i/10]*3 for i in range(300)])))
 
     def test_compute_nees(self):
-        self.assertEqual(100,len(self.process_noise_finder.compute_nees(10)))
+        self.assertEqual(300,len(self.process_noise_finder.compute_nees(10)))
 
     def test_iterate_same_simulation(self):
         self.process_noise_finder.nb_iterations = 3

@@ -8,12 +8,17 @@ The estimator used by Air Traffic Controllers to estimate the position
 of airplanes approaching from the measurements made by different sensors
 (Radars, ADSB, etc.).
 
+*Predict/Update cycle for a filter*  
 <p align="center">
-  <img src="../../images/filter_equations.png" width="200">
+  <img src="../../images/cycle.png" width="400">
 </p>
+
+*Equations of the Extended Kalman Filter*  
 <p align="center">
-  <img src="../../images/cycle.png" width="200">
+  <img src="../../images/filter_equations.png" width="400">
 </p>
+
+
 ---
 
 ### Models
@@ -60,7 +65,7 @@ likely.
 a measurement vector and therefore take all available data into our
 filter whether it is data itself or belief about a measurement.
 
-(IMAGE NEEDED) H concatenation
+<img src="../../images/HJac.png" width="100">
 
 ---
 
@@ -77,4 +82,5 @@ We also need to recompute the **Q** and **F** matrix as they depend on the
 The **H** matrix changes as well as measurement are coming from one radar
 at a time and (nearly) never together.
 
-(IMAGE NEEDED) LabeledMeasurement + H
+Therefore measurements are considered `LabeledMeasurement` and use a `tag`, a
+`time` stamp and the `measurement` itself.

@@ -7,7 +7,7 @@ The `Benchmark` object is the highest-level component of the project.
 It wraps the other components and creates the environment in which
 the simulation will be executed.  
 
-(IMAGE NEEDED) Links between components wrapped by the benchmark
+![alt-text][basic_use]
 
 The simulation made by the benchmark object is processed through the
 following steps:
@@ -34,7 +34,13 @@ one of the four models (CA, CV, CT and TA) and three configurations
 (one radar, two radars and two radars with different data rates), it
  iterates over the following qs:
 
-(IMAGE NEEDED) Loops over
+```csv
+    0.01, 0.02 ... 0.09
+    0.1 ,  0.2 ... 0.9
+    1   ,    2 ... 9
+    10  ,   20 ... 4000
+
+```
 
 The results of the iterations can be found in the `results` folder under
 the name `noise_finder_results-date_time.csv`. Due to the random behavior
@@ -62,8 +68,16 @@ the `nb_iterations` parameters of the `NoiseFinder`.
 
 ### Examples of use
 
-(LINK NEEDED) Redirection in the correct examples.
+* Examples of use are present within the source code, simply execute
+the files `examples/benchmark_1radar_imm3.py` or `examples/benchmark_2radars_imm3.py`
+for a presentation of a simulated trajectory with no attackers.  
+* The file `examples/benchmark_2period_radars_imm3.py` displays an example of an attack
+on two radars with different data rates.  
+* The file `examples/benchmark_template.py` provides all object definitions to design
+your attack simulation.
+* The file `examples/noise_finder_1model.py` provides a run of the `NoiseFinder` for
+each of the model separately.
+* The file `examples/mo_attacker_poc.py` provides an implementation of the attack described
+in the research article [MO2010].
 
-
-[benchmark]:https://
-[q_values]:https://
+[basic_use]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/basic_use.png "Basic use of the project"

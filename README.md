@@ -28,6 +28,13 @@ virtual environment, the installation proceeds as follows:
     $ pip install -e .
   ```
 
+  *Launch of the basic GUI*
+  ```bash
+    $ python fdia_simulation/app.py
+  ```
+Note that the GUI does not contain all the features of the project but allows 
+you getting familiar with the components and interactions between them.  
+
 ---
 
 ### Structure of the project
@@ -130,7 +137,7 @@ above. This operation is made by the benchmark object through a process of:
 - [X] State generation for different trajectories (take off, landing, ...)
 - [X] Measurements generation by radars from system states
 - [X] Anomaly detection on simple systems
-- [ ] Anomaly detection in the ATC simulation
+- [X] Anomaly detection in the ATC simulation
 - [X] 4 filter models (CA, CV, CT and TA) for one radar
 - [X] 4 filter models for multiple radars  
 - [X] 4 filter models for multiple radars with different data rates   
@@ -139,9 +146,9 @@ above. This operation is made by the benchmark object through a process of:
 - [X] Two attacker types (brute force and inducted drift) for the three cases
 - [X] Benchmark wrapper for the three cases
 - [X] Performance indicator for one and two radars with the same data rate
-- [ ] Performance indicator for radars with different data rates  
+- [X] Performance indicator for radars with different data rates  
 - [X] Process noise finder for one given model in the three cases
-- [ ] Process noise finder for an IMM in the three cases
+- [X] Process noise finder for an IMM in the three cases
 - [X] Unit tests for all components
 - [X] Documentation via docstrings/READMEs
 - [X] Installation guide
@@ -150,7 +157,7 @@ above. This operation is made by the benchmark object through a process of:
 
 ### Testing
 
-All 500~ tests are written to work with `nose` and/or `pytest`. Just type `pytest` or
+All 570~ tests are written to work with `nose` and/or `pytest`. Just type `pytest` or
 `nosetests` as a command line in the project. Every test file can still be launched
 by executing the testfile itself.
 ```bash
@@ -160,9 +167,11 @@ by executing the testfile itself.
 ```
 
 The tests are not robust as they verify the integrity of the data generated but
-not its quality. Testing the reaction of a bad designed filtered on a very demanding
-trajectory was not the point of the project. However, many examples allow you to
-try and test the results of many different combinations.
+not its quality. What that means is that even if the result of a filter might be 
+considered bad as the estimation is not correct, his behavior is correct. 
+Testing the reaction of a bad designed filtered on a very demanding trajectory is 
+not the point of the project. However, many examples allow you to try and test the 
+results of many different combinations and that is how the filter should be designed.
 
 ---
 

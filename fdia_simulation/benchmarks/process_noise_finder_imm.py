@@ -10,6 +10,11 @@ from fdia_simulation.models     import Radar, Track
 from fdia_simulation.benchmarks import Benchmark
 from fdia_simulation.benchmarks import NoiseFinder1Radar,NoiseFinderMultipleRadars
 
+##############################
+# Not implemented anymore due
+# to computational limitations
+##############################
+
 class NoiseFinderIMM1Radar(NoiseFinder1Radar):
     '''
     Implements a helper to find the correct process noises of an Interactive

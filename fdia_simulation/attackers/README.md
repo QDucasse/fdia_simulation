@@ -1,7 +1,8 @@
 # Attackers
 <p align="center">
   <img src="../../images/attacker.png" width="200">
-</p>
+</p>  
+
 ---
 
 ### Attacker models
@@ -29,3 +30,9 @@ Two attacker types are added as well:
 * `DriftAttacker` / `DriftPeriodAttacker`:
  The goal of this kind of attacker is to add a constant **drift** to the
  position of the observed system along either **x,y,z or any combination**.
+
+ * `CumulativeDriftAttacker` / `CumulativeDriftPeriodAttacker`:
+  The goal of this kind of attacker is to add a cumulative **drift** to the
+  position of the observed system along either **x,y,z or any combination**. This
+  drift will be more efficient than the previous one as it will be considered
+  correct by the filter and therefore the drift will be undetected and amplified.

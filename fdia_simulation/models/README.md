@@ -10,8 +10,12 @@ The change is made through the `Command` object that needs a specification
 of the *new value* and the *number of steps* (number of calls to the
 update model) in which the value should be reached.
 
-<img src="../../images/bicycle.png" width="200">
-<img src="../../images/landing.png" width="200">
+*Maneuvered Bicycle with two commands: heading & speed*  
+<img src="../../images/bicycle.png" width="400">  
+
+*Maneuvered Airplane with three commands: heading around z-axis, heading around x-axis & speed*  
+<img src="../../images/landing.png" width="400">  
+
 
 ---
 
@@ -30,7 +34,7 @@ The `Radar` and `PeriodRadar` main objective is to convert positions
 and **elevation angle (phi)**.
 
 <p align="center">
-  <img src="../../images/radar.png" width="200">
+  <img src="../../images/radar.png" width="400">
 </p>
 
 The `PeriodRadar` creates measurements with a **tag** refering the radar

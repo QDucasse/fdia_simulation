@@ -10,7 +10,7 @@ virtual environment, the installation proceeds as follows:
 
   ```bash
     $ cd <directory you want to install to>
-    $ git clone https://pan.kereval.com/qde/fdia_simulation
+    $ git clone https://github.com/QDucasse/fdia_simulation
     $ python setup.py install
   ```
 * For downloading and installing the source code of the project in a new virtual environment:  
@@ -18,7 +18,7 @@ virtual environment, the installation proceeds as follows:
   *Download of the source code & Creation of the virtual environment*
   ```bash
     $ cd <directory you want to install to>
-    $ git clone https://pan.kereval.com/qde/fdia_simulation
+    $ git clone https://github.com/QDucasse/fdia_simulation
     $ cd fdia_simulation
     $ mkvirtualenv -a . -r requirements.txt VIRTUALENV_NAME
   ```
@@ -182,12 +182,12 @@ and not only did it showed me the FilterPy library but it also made me discover
 **Bar Shalom "Estimation with Application to Tracking and Navigation"** providing an in-depth take on the subject with several examples.
 
 
-[models]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/models
-[detectors]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/anomaly_detectors
-[filters]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/filters
-[attackers]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/attackers
-[benchmarks]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/benchmarks
-[helpers]:https://pan.kereval.com/qde/fdia_simulation/tree/master/fdia_simulation/helpers
+[models]:https://github.com/QDucasse/fdia_simulation/tree/master/fdia_simulation/models
+[detectors]:https://github.com/QDucasse/fdia_simulation/tree/master/fdia_simulation/anomaly_detectors
+[filters]:https://github.com/QDucasse/fdia_simulation/tree/master/fdia_simulation/filters
+[attackers]:https://github.com/QDucasse/fdia_simulation/tree/master/fdia_simulation/attackers
+[benchmarks]:https://github.com/QDucasse/fdia_simulation/tree/master/fdia_simulation/benchmarks
+[helpers]:https://github.com/QDucasse/fdia_simulation/tree/master/fdia_simulation/helpers
 
 [numpy]:https://github.com/numpy/numpy
 [scipy]:https://github.com/scipy/scipy
@@ -195,4 +195,4 @@ and not only did it showed me the FilterPy library but it also made me discover
 [filterpy]:https://github.com/rlabbe/filterpy
 [sympy]:https://github.com/sympy/sympy
 
-[basic_use]:https://pan.kereval.com/qde/fdia_simulation/raw/master/images/basic_use.png "Basic use of the project"
+[basic_use]:https://github.com/QDucasse/fdia_simulation/raw/master/images/basic_use.png "Basic use of the project"

@@ -3,7 +3,7 @@
 > [!WARNING]
 > **Archived.** This is the original 2019 version of the project, kept as-is
 > for reference. Development continues in
-> [QDucasse/radinject](https://github.com/QDucasse/radinject), which fixes
+> [QDucasse/ghosttrack](https://github.com/QDucasse/ghosttrack), which fixes
 > several estimation and detection bugs present here, so results produced by
 > this version should not be relied upon.
 >
